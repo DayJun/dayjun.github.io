@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     
     
-    <title>tags | DaJun的Blog</title>
+    <title>about | DaJun的Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <meta name="keywords" content>
@@ -15,7 +15,7 @@
     <script type="text/javascript">
         // Data Center
         var DC = {
-            reward:	false,
+            reward:	true,
             lv: JSON.parse('{"enable":false,"app_id":null,"app_key":null,"icon":true}'),
             v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
             g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
@@ -103,7 +103,7 @@
               </a>
             </li>
         
-            <li class=" active">
+            <li class="">
               <a href="/tags"  >
                 <i class="icon icon-lg icon-tags"></i>
                 TAGS
@@ -117,7 +117,7 @@
               </a>
             </li>
         
-            <li class="">
+            <li class=" active">
               <a href="/about"  >
                 <i class="icon icon-lg icon-user"></i>
                 ABOUT
@@ -136,7 +136,7 @@
           <i class="icon icon-lg icon-navicon"></i>
         </a>
         <div class="flex-col header-title ellipsis">
-            <span>Tags</span>
+            <span>about</span>
             
         </div>
         
@@ -146,28 +146,16 @@
         
     </div>
 </header>
-<header class="content-header tags-header">
+<header class="content-header page-header">
     <img src="/img/dawn.jpg" class="header-bg">
     <div class="container fade-scale">
-        <h1 class="title">Tags</h1>
+        <h1 class="title">about</h1>
         <h5 class="subtitle">
             
         </h5>
         
     </div>
     
-<div class="tabs-bar container">
-    <nav class="tags-list">
-        <a href="/tags" style="-webkit-order:-1;order:-1" class="tags-list-item waves-effect waves-button waves-light
-             active">全部</a>
-        
-    </nav>
-    <!-- PC show more-->
-    <div class="tags-list-more">
-        <a href="javascript:;" class="action tags-list-item waves-effect waves-circle waves-light"><i class="icon icon-ellipsis-h"></i></a>
-    </div>
-</div>
-
 
 </header>
 
@@ -184,8 +172,98 @@
     <div id="local-search-result"></div>
 </div>
 
-<div class="container body-wrap fade">
+
+<div class="container body-wrap ">
+    <article class="page-article fade" itemprop="blogPage">
+        <div class="post-content page-content" id="page-content" itemprop="pageContent">
+            
+            <h3 id="一名信息安全小白"><a href="#一名信息安全小白" class="headerlink" title="一名信息安全小白"></a>一名信息安全小白</h3><h3 id="喜欢二进制"><a href="#喜欢二进制" class="headerlink" title="喜欢二进制"></a>喜欢二进制</h3><h3 id="当然，更喜欢钱"><a href="#当然，更喜欢钱" class="headerlink" title="当然，更喜欢钱"></a>当然，更喜欢钱</h3><h3 id="欢迎交流"><a href="#欢迎交流" class="headerlink" title="欢迎交流"></a>欢迎交流</h3>
+        </div>
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+        
+        
+        <div class="card page-about-me flex-row">
+            <a href="/" class="avatar waves-effect waves-circle waves-light"><img src="/img/girl.jpg"></a>
+            <div class="content flex-col">
+                <p><strong>DaJun</strong></p>
+                <p><em></em></p>
+                <p></p>
+            </div>
+            <div class="page-share-wrap">
     
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=47.96.132.114/about/&title=《about》 — DaJun的Blog&pic=47.96.132.114/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=47.96.132.114/about/&title=《about》 — DaJun的Blog&source=我想变成大牛，很大的那种" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+        
+        <div class="card">   
+           
+
+
+        </div>
+        
+    </article>
+    
+        <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
     
 </div>
 
@@ -235,7 +313,7 @@
     <ul class="reset share-icons">
       
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=47.96.132.114/tags/&title=《tags》 — DaJun的Blog&pic=47.96.132.114/img/girl.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=47.96.132.114/about/&title=《about》 — DaJun的Blog&pic=47.96.132.114/img/girl.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -247,7 +325,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=47.96.132.114/tags/&title=《tags》 — DaJun的Blog&source=我想变成大牛，很大的那种" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=47.96.132.114/about/&title=《about》 — DaJun的Blog&source=我想变成大牛，很大的那种" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -259,7 +337,7 @@
 <div class="page-modal wx-share" id="wxShare">
     <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAABXElEQVR42u3aQQ6DMAxEUe5/abqtVBlm7BSJzM8KVRV5LOLYTo5DHqc8vv//+7x4wIK1EUufxgVVxOs3wIKVzKpW6PVkboBQ5oIFC5bOcsMBLFiw1rL0Tf3RAAEL1hasXipcprxP5vKwYG3B0rs68+e/9LdgwXo56zRHtRm7Je7NLLBghbH0BXy9rbofcP1+WLAyWb1i1S1fe0EHFqwEltv00Vu0Snu33OZhwQpjKVMquF7qLBW6sGBFsvQCVSlfe7/DgpXJ0o8w3SaRexhTVtWwYMWw9HCgQPUAIZ2+woIVyXKvIOhlrd3ZggUrjNVb/O4GP0qaYcHalDW/cDA5Ii3DCixYYay19+LmCXfzbiAsWFuw3BRZOUpxrw3dNJJgwYphucn0go1WCRCwYMGSWfaNP7eqhgULlrz4J0XvsgABC9bLWfOX6iWrfeYDC1YAy01qdXTvAhAsWGGsD0uiu5NcqkA8AAAAAElFTkSuQmCC" alt="微信分享二维码">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAABT0lEQVR42u3awQ7CIBBF0f7/T9etiSm5j6ExMJdVo1jORhgeXBdu91cj3z49L26yZB3EuodtzHrq/9uHjyVLVmcWed1Tfz5BkLFkyZJFWOSl44lGlixZq1hkaf/DBCFL1uasyjCkpH6xlpcl6wgWT3Xqz6/kW7Jkbc66w0aW23qTJasbi/+B58pivgzLkiWLHJ+kG920UJYlSxa/WEAipMqVhckfy5K1OateNPMgKYioZMlqxuLhUZr8LJirZMlqxuIL86rPgwVblqyWLBLX8mHSCDi+eSRLVgNWepmAL89BsiVLVmMWCXbrG9GgaJYl62hWJUji1+n45nZBviVL1oas+r04Pjw/KJUlqycrPQJJr/jMFd+yZPVkkWI6PVwpNVmyZBUCpjRUkiVL1ioWWYBJf1myZKXh0biYXlBwy5LVjDVXwabDv1Jey5J1AusDkmBU7OKCQocAAAAASUVORK5CYII=" alt="微信分享二维码">
 </div>
 
 
