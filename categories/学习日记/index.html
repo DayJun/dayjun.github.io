@@ -16,7 +16,7 @@
         // Data Center
         var DC = {
             reward:	false,
-            lv: JSON.parse('{"enable":false,"app_id":null,"app_key":null,"icon":true}'),
+            lv: JSON.parse('{"enable":true,"app_id":null,"app_key":null,"icon":true}'),
             v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
             g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
             d: JSON.parse('{"app_id":null}')
@@ -225,6 +225,20 @@
     </main>
     <footer class="footer ">
     
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
     <div class="bottom">
         <p>
             <span>
@@ -268,7 +282,7 @@
     <ul class="reset share-icons">
       
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=47.96.132.114/categories/学习日记/&title=DaJun的Blog&pic=47.96.132.114/img/girl.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/categories/学习日记/&title=DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -280,7 +294,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=47.96.132.114/categories/学习日记/&title=DaJun的Blog&source=" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/categories/学习日记/&title=DaJun的Blog&source=" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -292,7 +306,7 @@
 <div class="page-modal wx-share" id="wxShare">
     <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABx0lEQVR42u3aQY6DMBAEwPz/0+w1UjbQbWMvWpVPEQFccBh52rxe8TjexvuR838/j3/e87Vi4OLiTnOP03E+/fk5yT1zAy4u7n7ueaFpy1ZLKYodLi7uI7nf0GMlDxcX9z9x26L27cFwcXGfzG2XICvK3M29Gi4u7gQ3TynX/V6S7+Li4g5xj3IkQed82fo6Oy4u7hZuXlBy0HzDczEvLi7uYm7StLSfVuRNS70MwsXF3cKdiS/PQWMvopgLFxd3GTe5OLnp4KZI+xi4uLhbuPnEeURyV8waLXFwcXG3cOcj0bGN0gKKi4u7ndsuaM7ReRGs6bi4uBu5+TcPbWjSLoAuiiAuLu5ibv6BVBKS5ue02za4uLh/yx0LO9rHy8voa6wi4uLi3sptNz/ygtU2Tr9IcHFxN3LbuDNpXdrt2ChAwcXF3c7Nb5RfNbbouWh+cHFxl3GPcowFnWPnX7xXXFzcZdyxgrKizM2EL7i4uCu4M5MVcUb8CqLdYFxc3C3cNvjIN03zmLXo1XBxcR/GvatIjQW1uLi4z+S2n2eNRatTe8K4uLg3cZPFSt4O5elL3Xrh4uJu4eZNyEyo2kYqMy0TLi7uBPcHxVdxsC52XuMAAAAASUVORK5CYII=" alt="微信分享二维码">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABz0lEQVR42u3aO47DMAxFUe9/0047jZT7SFPxAFdVEDjScQqCH10XXvdi7Z/5+/3qyWtiyZUrt829t2t/5Or4/Yvtd/jyW7ly5R7k8u142LrB4ga5cuW+n8uTG5LiyJUr9/9yST3Cd5YrV+77uSQFqTU+eCB7uFaTK1dug8u7lHOfR/q7cuXKLXHvhxZpqvZPlytX7hluGnRqLY9a83T5R8iVK/cIl4xA9uGJly5po2QZCuXKlTvG5WGr8xppqzT4R+XKlTvA7RQk6YCEN1iDBopcuXIPcjvt1PRqV22sK1eu3DlubVBKEqN+EAz6N3Llyh3g8pZl+gJp4zW+JyJXrtwBLklW0uEHH6zWLnzIlSv3DDeeuoRlD9kzCGRy5cod5pKSgz/TGaKgy15y5co9wg1aErh0acVUPhmWK1fuGLf2s3Rcml7RWJ4iV67cI9x0izShqY1vvwQ+uXLlDnPvcJHQU2uePnxrTK5cuQ0uX7zs4QenjRW5cuWe5KZj1JRVC2Ry5cp9A5cHmk5qwp8JajW5cuX+lLsfuqTl03ggkytX7hFuZ9DCWej6hVy5co9wa6EnfSWeNqHbZHLlyh3j8hZGrc3BBzAoxZErV+4s9wNHeAYc5AFL+wAAAABJRU5ErkJggg==" alt="微信分享二维码">
 </div>
 
 
@@ -335,6 +349,9 @@
     
 
 
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
 
 
 
