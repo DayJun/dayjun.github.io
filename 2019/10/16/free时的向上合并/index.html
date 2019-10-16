@@ -7,7 +7,7 @@
     <title>free时的向上合并 | DaJun的Blog | 我想变成大牛，很大的那种</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="keywords" content="malloc,free,pwn">
+    <meta name="keywords" content="free,malloc,pwn">
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
     <link rel="stylesheet" href="/css/style.css?v=1.4.4">
@@ -218,6 +218,8 @@
         <div class="post-content" id="post-content" itemprop="postContent">
             
             <p>在一些pwn的题目中，有些题目最主要的漏洞点在off by null，所以就会存在一些必须触发向上合并才能进行利用的情况，在此简述一下触发向上合并所需条件</p>
+<a id="more"></a>
+
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//glibc-2.24 malloc.c:4036</span></span><br><span class="line">    <span class="keyword">if</span> (!prev_inuse(p)) &#123;</span><br><span class="line">      prevsize = p-&gt;prev_size;</span><br><span class="line">      size += prevsize;</span><br><span class="line">      p = chunk_at_offset(p, -((<span class="keyword">long</span>) prevsize));</span><br><span class="line">      unlink(av, p, bck, fwd);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nextchunk != av-&gt;top) &#123;</span><br><span class="line">      <span class="comment">/* get and clear inuse bit */</span></span><br><span class="line">      nextinuse = inuse_bit_at_offset(nextchunk, nextsize);</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* consolidate forward */</span></span><br><span class="line">      <span class="keyword">if</span> (!nextinuse) &#123;</span><br><span class="line">	unlink(av, nextchunk, bck, fwd);</span><br><span class="line">	size += nextsize;</span><br><span class="line">      &#125; <span class="keyword">else</span></span><br><span class="line">	clear_inuse_bit_at_offset(nextchunk, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
 
 <p>一般的利用方法就是，先malloc多个块，结构如下 (x86_64) ：</p>
@@ -274,7 +276,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-10-16T04:46:12.705Z" itemprop="dateUpdated">2019-10-16 12:46:12</time>
+    最后更新时间：<time datetime="2019-10-16T07:49:29.304Z" itemprop="dateUpdated">2019-10-16 15:49:29</time>
 </span><br>
 
 
@@ -320,7 +322,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/16/free时的向上合并/&title=《free时的向上合并》 — DaJun的Blog&source=" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/16/free时的向上合并/&title=《free时的向上合并》 — DaJun的Blog&source=在一些pwn的题目中，有些题目最主要的漏洞点在off by null，所以就会存在一些必须触发向上合并才能进行利用的情况，在此简述一下触发向上合并所需条件" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -463,7 +465,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/16/free时的向上合并/&title=《free时的向上合并》 — DaJun的Blog&source=" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/16/free时的向上合并/&title=《free时的向上合并》 — DaJun的Blog&source=在一些pwn的题目中，有些题目最主要的漏洞点在off by null，所以就会存在一些必须触发向上合并才能进行利用的情况，在此简述一下触发向上合并所需条件" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>

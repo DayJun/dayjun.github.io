@@ -6,6 +6,8 @@
       <title><![CDATA[free时的向上合并]]></title>
       <url>/2019/10/16/free%E6%97%B6%E7%9A%84%E5%90%91%E4%B8%8A%E5%90%88%E5%B9%B6/</url>
       <content type="html"><![CDATA[<p>在一些pwn的题目中，有些题目最主要的漏洞点在off by null，所以就会存在一些必须触发向上合并才能进行利用的情况，在此简述一下触发向上合并所需条件</p>
+<a id="more"></a>
+
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//glibc-2.24 malloc.c:4036</span></span><br><span class="line">    <span class="keyword">if</span> (!prev_inuse(p)) &#123;</span><br><span class="line">      prevsize = p-&gt;prev_size;</span><br><span class="line">      size += prevsize;</span><br><span class="line">      p = chunk_at_offset(p, -((<span class="keyword">long</span>) prevsize));</span><br><span class="line">      unlink(av, p, bck, fwd);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nextchunk != av-&gt;top) &#123;</span><br><span class="line">      <span class="comment">/* get and clear inuse bit */</span></span><br><span class="line">      nextinuse = inuse_bit_at_offset(nextchunk, nextsize);</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* consolidate forward */</span></span><br><span class="line">      <span class="keyword">if</span> (!nextinuse) &#123;</span><br><span class="line">	unlink(av, nextchunk, bck, fwd);</span><br><span class="line">	size += nextsize;</span><br><span class="line">      &#125; <span class="keyword">else</span></span><br><span class="line">	clear_inuse_bit_at_offset(nextchunk, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
 
 <p>一般的利用方法就是，先malloc多个块，结构如下 (x86_64) ：</p>
@@ -66,9 +68,9 @@
         
         <tags>
             
-            <tag> malloc </tag>
-            
             <tag> free </tag>
+            
+            <tag> malloc </tag>
             
             <tag> pwn </tag>
             
