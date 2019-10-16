@@ -66,9 +66,11 @@
         
         <tags>
             
+            <tag> malloc </tag>
+            
             <tag> free </tag>
             
-            <tag> malloc </tag>
+            <tag> pwn </tag>
             
         </tags>
         
@@ -163,9 +165,9 @@
         
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
         </tags>
         
