@@ -250,7 +250,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">……</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( v3 &lt;= <span class="number">0x7F</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"Invalid size!"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">……</span><br><span class="line"></span><br><span class="line">v5 = <span class="built_in">malloc</span>(v3); <span class="comment">//v3是size</span></span><br><span class="line"><span class="keyword">if</span> ( (<span class="keyword">unsigned</span> __int64)v5 &lt; qword_2020B0 || (<span class="keyword">unsigned</span> __int64)v5 &gt; qword_2020B0 + <span class="number">0x600</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"you are bad"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">……</span><br></pre></td></tr></table></figure>
 
 <p>它限制堆块大小必须大于0x7f，即不能申请fastbin</p>
-<p>同时它又限制申请的堆块不能离0x2020b0这个偏移存的地址相差0x600，而0x2020b0是堆块的基地址</p>
+<p>同时它又限制申请的堆块不能离0x2020b0这个偏移存的地址相差0x600，而0x2020b0存的是堆块的基地址</p>
 <hr>
 <p>在change函数中</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fread(v3, <span class="number">1u</span>LL, *v2, stream);   <span class="comment">//v3是堆地址，*v2是size</span></span><br></pre></td></tr></table></figure>
@@ -261,15 +261,40 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0x55bda3f43000 PREV_INUSE &#123;</span><br><span class="line">  prev_size = 0, </span><br><span class="line">  size = 561, </span><br><span class="line">  fd = 0xfbad248b, </span><br><span class="line">  bk = 0x55bda3f43093, </span><br><span class="line">  fd_nextsize = 0x55bda3f43093, </span><br><span class="line">  bk_nextsize = 0x55bda3f43093</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>接下来在队友的帮助下，我终于耗时半天多做出来这道题了……QAQ</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><h2 id="利用malloc-consolidate以及unsorted-attack来覆盖global-max-fast"><a href="#利用malloc-consolidate以及unsorted-attack来覆盖global-max-fast" class="headerlink" title="利用malloc_consolidate以及unsorted attack来覆盖global_max_fast"></a>利用malloc_consolidate以及unsorted attack来覆盖global_max_fast</h2><p>申请如下格式</p>
-<pre><code>|idx|size|
-|:--:|:--:|
-|0|0x90|
-|1|0x90|
-|2|0x90|
-|3|0x90|
-|7|0xf0|
-|8|0xf0|</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">0x559b8d502230:	0x00007f0472a04260	0x0000000000000091  &lt;- 0</span><br><span class="line">0x559b8d502240:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d502250:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502260:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502270:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502280:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502290:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022a0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022b0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022c0:	0x0000000000000000	0x0000000000000091  &lt;- 1</span><br><span class="line">0x559b8d5022d0:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d5022e0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022f0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502300:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502310:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502320:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502330:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502340:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502350:	0x0000000000000000	0x0000000000000091  &lt;- 2</span><br><span class="line">0x559b8d502360:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d502370:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502380:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502390:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023a0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023b0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023c0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023d0:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><h2 id="利用malloc-consolidate以及unsorted-attack来覆盖global-max-fast"><a href="#利用malloc-consolidate以及unsorted-attack来覆盖global-max-fast" class="headerlink" title="利用malloc_consolidate以及unsorted attack来覆盖global_max_fast"></a>利用malloc_consolidate以及unsorted attack来覆盖global_max_fast</h2><p>申请如下格式的块</p>
+<table>
+<thead>
+<tr>
+<th align="center">idx</th>
+<th align="center">size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">0x90</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">0x90</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">0x90</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">0x90</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">0xf0</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">0xf0</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">0x559b8d502230:	0x00007f0472a04260	0x0000000000000091  &lt;- 0</span><br><span class="line">0x559b8d502240:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d502250:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502260:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502270:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502280:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502290:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022a0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022b0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022c0:	0x0000000000000000	0x0000000000000091  &lt;- 1</span><br><span class="line">0x559b8d5022d0:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d5022e0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5022f0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502300:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502310:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502320:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502330:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502340:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502350:	0x0000000000000000	0x0000000000000091  &lt;- 2</span><br><span class="line">0x559b8d502360:	0x0000000000636261	0x0000000000000000</span><br><span class="line">0x559b8d502370:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502380:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d502390:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023a0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023b0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023c0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x559b8d5023d0:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
 
 <p>先<code>free(2)</code>，再<code>free(0)</code>，然后再<code>show(0)</code>，就可以leak出heap的地址</p>
 <p>然后再<code>free(1)</code>，此时就会触发<code>malloc_consolidate</code>，使这三个块合并成一个大块，size为0x1b0</p>
@@ -328,7 +353,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2019-10-21T06:10:43.508Z" itemprop="dateUpdated">2019-10-21 14:10:43</time>
+    最后更新时间：<time datetime="2019-10-21T06:15:19.020Z" itemprop="dateUpdated">2019-10-21 14:15:19</time>
 </span><br>
 
 
