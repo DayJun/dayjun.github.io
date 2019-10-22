@@ -3,6 +3,79 @@
   
     
     <entry>
+      <title><![CDATA[学习STL原理(1)]]></title>
+      <url>/2019/10/22/%E5%AD%A6%E4%B9%A0STL%E5%8E%9F%E7%90%86-1/</url>
+      <content type="html"><![CDATA[<p>用了这么久C++，却还不了解其下非常出名的标准模板库(STL)，实在是不该</p>
+<p>故，参照《泛型编程与STL》一书，开始学习</p>
+<p>说实话，此书在一些名词的翻译上显得云来雾去，但总体还不错</p>
+<a id="more"></a>
+
+<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>STL的算法和容器是分开的，新增算法并不需要改变容器</p>
+<p>这就意味着，STL的容器必须遵循某种规则，这种规则是被算法所通用的</p>
+<p>例如，<code>char*</code>可以是一个容器，其可以使用<code>++ -- ==</code>这样的运算符号，分别有不同的作用，那么对于另一个容器，可能是<code>class a</code>，则同样要支持这些符号</p>
+<p>STL的做法是对那些不适用一些运算符号的实例（例如类、结构体）采用重载运算符的方法来使他们支持这些运算</p>
+<h1 id="第二章节"><a href="#第二章节" class="headerlink" title="第二章节"></a>第二章节</h1><h2 id="Ranges"><a href="#Ranges" class="headerlink" title="Ranges"></a>Ranges</h2><p>STL中有一个被称为Range的概念，这一概念大致等同于python的range，都表示在两者之间的范围，且左闭右开</p>
+<p>同时，Range还具有有效性，即若Range所表示的集合为空集，则该Range无效</p>
+<h2 id="模板的使用"><a href="#模板的使用" class="headerlink" title="模板的使用"></a>模板的使用</h2><p>这一节引出了C++的<code>template</code>，其作用类似于Java的泛型，均是想用一种方法来表示全部类型</p>
+<p><code>template</code>的用法大致如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">T</span> <span class="title">add</span>(<span class="title">T</span> <span class="title">t</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">return</span> t+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码表示，<code>add</code>函数接收类型为T的参数，将其增1之后返回</p>
+<p>这里的T可以为<code>int</code>，<code>double</code>，<code>float</code>，以及其他所有支持<code>+1</code>的类型</p>
+<p>例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">double</span> a = <span class="number">1.1</span>;</span><br><span class="line">    <span class="keyword">double</span> b = add(a);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%lf\n"</span>, b);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在讲到链表的时候，链表的节点用的是<code>struct</code>，但是直接重载<code>struct</code>的操作运算符是不被允许的，因此需要对它外覆一个类，然后重载这个类的一系列操作运算符</p>
+<h2 id="Concept"><a href="#Concept" class="headerlink" title="Concept"></a>Concept</h2><p>此处开始着重讲解何为Concept</p>
+<p>首先，Concept是一组条件，如果说T是Concept c的一个模型，那么T必须满足c的所有条件</p>
+<p>其次，Concept可以想象成类型的集合，例如<code>char*, double*, float*</code>等等，如果说T是Concept c的一个模型，那么T必须是c的一个元素</p>
+<p>最后，Concept对于算法来说类似于一种规章制度，所有的算法都必须依照这一制度来运行。</p>
+<p>基本的Concept包括</p>
+<ul>
+<li>赋值</li>
+<li>复制</li>
+<li>默认构造</li>
+<li>相等或不等</li>
+<li>大于或小于</li>
+</ul>
+<h2 id="Iterators"><a href="#Iterators" class="headerlink" title="Iterators"></a>Iterators</h2><p>此处开始讲迭代器，即泛型指针，也就是用了<code>template</code>关键字的类或者结构体指针</p>
+<p>迭代器需要被一般化，即迭代器需要是Concept的一个模型</p>
+<h3 id="Input-Iterators"><a href="#Input-Iterators" class="headerlink" title="Input Iterators"></a>Input Iterators</h3><p>本质上，Input Iterators是一种类似指针的东西，它在谈到iterator range的时候有意义</p>
+<p>当它作为C指针的时候，它是可取值的，可跨越尾端的，以及可为<code>NULL</code>的，可跨越尾端的是指，它可以指向数组最后的一个元素的后一个元素</p>
+<p>它可以被比较，即比较Iterator1是否等于Iterator2</p>
+<p>它可以进行累加动作</p>
+<p>最好不要对一个Input Iterator进行赋值</p>
+<p>使用Input Iterators的正确方式是使它只单向遍历Range一次</p>
+<h3 id="Output-Iterators"><a href="#Output-Iterators" class="headerlink" title="Output Iterators"></a>Output Iterators</h3><p>Output Iterators与Input Iterators类似，当然区别也在名字上体现了出来，即它可以被赋值，但是不能从它取值</p>
+<h3 id="Forward-Iterators"><a href="#Forward-Iterators" class="headerlink" title="Forward Iterators"></a>Forward Iterators</h3><p>不同于前两者，它允许同时读和写，其他性质和前两者相同</p>
+<h3 id="Bidirectional-Iterators"><a href="#Bidirectional-Iterators" class="headerlink" title="Bidirectional Iterators"></a>Bidirectional Iterators</h3><p>不同于Forward Iterators，它允许进行自减操作，其他性质与Forward Iterators相同</p>
+<h3 id="Random-Iterators"><a href="#Random-Iterators" class="headerlink" title="Random Iterators"></a>Random Iterators</h3><p>不同于前者，它允许增n或者减n</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Input Iterator和Output Iterator是限制最多的两个Concepts， 其中一个有只读性，另一个有只写性；两者都支持对某个区间进行向前遍历的行为，而应用于单纯的single-pass算法。</p>
+<p>Forward Iterators也支持对某个区间的前向遍历操作，但它支持更一般化的算法。Forward Iterators就像普通的C指针那样可以指向某物</p>
+<p>Bidirectional Iterators是Forward Iterators的一个强化，而Random Iterators又是Bidirectional Iterators的强化，所以，Bidirectional Iterators与Random Iterators同样支持向前遍历，以及C指针模式。不同的是他们还提供其他的模式，比如前者允许逆向遍历，后者允许任意距离的跳跃</p>
+<p>这些不同的Iterator Concepts提供了泛型算法的法则，限制了迭代器的行为，使用约束来让其更加规则</p>
+<hr>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>总的来说，直到看到这里，这本书所讲的内容对我来说并没有太新的东西，让我感到有点新奇的就是Concept和Iterator，我似乎在学习Java的时候接触过类似的知识……</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 学习日记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> C++ </tag>
+            
+            <tag> STL </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[巅峰极客2019 pwn writeUp]]></title>
       <url>/2019/10/21/%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-pwn-writeUp/</url>
       <content type="html"><![CDATA[<p>巅峰极客的时间恰好和360个人赛重了，就先打了360，结果打完360之后脑袋受不了了……</p>
