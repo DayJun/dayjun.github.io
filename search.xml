@@ -3,6 +3,119 @@
   
     
     <entry>
+      <title><![CDATA[学习V8(1)]]></title>
+      <url>/2019/10/23/%E5%AD%A6%E4%B9%A0V8-1/</url>
+      <content type="html"><![CDATA[<p>从上次做starCTF的OOB之后，对v8有了非常浅显的认识，于是想回看一下数字经济线下的Chrome一题，却发现自己对于v8还是知之甚少，以至于看不懂exp</p>
+<p>故，站在前人的肩膀上，学习一下v8</p>
+<a id="more"></a>
+
+<p>文章参考：</p>
+<ul>
+<li><a href="http://www.jayconrod.com/posts/51/a-tour-of-v8-full-compiler" target="_blank" rel="noopener">http://www.jayconrod.com/posts/51/a-tour-of-v8-full-compiler</a></li>
+<li><a href="http://www.jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler" target="_blank" rel="noopener">http://www.jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler</a></li>
+<li><a href="http://www.jayconrod.com/posts/52/a-tour-of-v8-object-representation" target="_blank" rel="noopener">http://www.jayconrod.com/posts/52/a-tour-of-v8-object-representation</a></li>
+<li><a href="http://www.jayconrod.com/posts/55/a-tour-of-v8-garbage-collection" target="_blank" rel="noopener">http://www.jayconrod.com/posts/55/a-tour-of-v8-garbage-collection</a></li>
+<li><a href="https://www.cnblogs.com/floatboy/p/v8.html" target="_blank" rel="noopener">https://www.cnblogs.com/floatboy/p/v8.html</a></li>
+</ul>
+<h1 id="编译器"><a href="#编译器" class="headerlink" title="编译器"></a>编译器</h1><p>v8有两个编译器，一个是Full Compiler， 一个是CRANKSHAFT Compiler</p>
+<h2 id="FC"><a href="#FC" class="headerlink" title="FC"></a>FC</h2><p>Full Compiler的作用是尽快生成原生代码，以保持页面始终快速运转。它并不会把代码编译成为字节码，而是将其转换为IR</p>
+<p>它使用内联缓存（Inline cache，IC）来实现读取、存储、函数调用、二元运算符、一元运算符、比较运算符以及ToBoolean隐操作符。目的是为了解决“一个简单的操作却有上百种运行时情况”的情况</p>
+<h2 id="Crankshaft"><a href="#Crankshaft" class="headerlink" title="Crankshaft"></a>Crankshaft</h2><p>Crankshaft是v8的优化编译器。当FC产生的代码运行过一段时间之后，v8会挑选出那些被执行次数多的函数，重新使用Crankshaft来编译，使其执行效率提高</p>
+<h1 id="对象表示"><a href="#对象表示" class="headerlink" title="对象表示"></a>对象表示</h1><p>直接在内存里看一下</p>
+<p>用gdb运行d8后</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">d8&gt;</span> var obj = &#123;a:1,b:2&#125;</span><br><span class="line">undefined</span><br><span class="line"><span class="meta">d8&gt;</span> %DebugPrint(obj)</span><br><span class="line">0x1b9ade54dd19 &lt;Object map = 0x13de2b94ab89&gt;</span><br><span class="line">&#123;a: 1, b: 2&#125;</span><br><span class="line"><span class="meta">d8&gt;</span> %SystemBreak()</span><br></pre></td></tr></table></figure>
+
+<p>然后用job指令打印一下obj的结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job 0x1b9ade54dd19</span><br><span class="line">0x1b9ade54dd19: [JS_OBJECT_TYPE]</span><br><span class="line"> - map: 0x13de2b94ab89 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x279242542091 &lt;Object map = 0x13de2b940229&gt;</span><br><span class="line"> - elements: 0x28b52d880c71 &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]</span><br><span class="line"> - properties: 0x28b52d880c71 &lt;FixedArray[0]&gt; &#123;</span><br><span class="line">    #a: 1 (const data field 0)</span><br><span class="line">    #b: 2 (const data field 1)</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>看一下prototype的结构，发现其中是许多函数，这或许是该对象支持的一些成员函数了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job 0x279242542091</span><br><span class="line">0x279242542091: [JS_OBJECT_TYPE] in OldSpace</span><br><span class="line"> - map: 0x13de2b940229 &lt;Map(HOLEY_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x28b52d8801d9 &lt;null&gt;</span><br><span class="line"> - elements: 0x28b52d880c71 &lt;FixedArray[0]&gt; [HOLEY_ELEMENTS]</span><br><span class="line"> - properties: 0x279242542fb1 &lt;PropertyArray[9]&gt; &#123;</span><br><span class="line">    #constructor: 0x2792425420c9 &lt;JSFunction Object (sfi = 0xde2a0e457e9)&gt; (data field 0)</span><br><span class="line">    #__defineGetter__: 0x279242543191 &lt;JSFunction __defineGetter__ (sfi = 0xde2a0e460c9)&gt; (const data field 1)</span><br><span class="line">    #__defineSetter__: 0x2792425431c9 &lt;JSFunction __defineSetter__ (sfi = 0xde2a0e46121)&gt; (const data field 2)</span><br><span class="line">    #hasOwnProperty: 0x279242543201 &lt;JSFunction hasOwnProperty (sfi = 0xde2a0e46179)&gt; (const data field 3)</span><br><span class="line">    #__lookupGetter__: 0x279242543009 &lt;JSFunction __lookupGetter__ (sfi = 0xde2a0e461d1)&gt; (const data field 4) properties[0]</span><br><span class="line">    #__lookupSetter__: 0x279242543041 &lt;JSFunction __lookupSetter__ (sfi = 0xde2a0e46229)&gt; (const data field 5) properties[1]</span><br><span class="line">    #isPrototypeOf: 0x279242543079 &lt;JSFunction isPrototypeOf (sfi = 0xde2a0e46281)&gt; (const data field 6) properties[2]</span><br><span class="line">    #propertyIsEnumerable: 0x2792425430b1 &lt;JSFunction propertyIsEnumerable (sfi = 0xde2a0e462d9)&gt; (const data field 7) properties[3]</span><br><span class="line">    #toString: 0x2792425430e9 &lt;JSFunction toString (sfi = 0xde2a0e46339)&gt; (const data field 8) properties[4]</span><br><span class="line">    #valueOf: 0x279242543121 &lt;JSFunction valueOf (sfi = 0xde2a0e46371)&gt; (const data field 9) properties[5]</span><br><span class="line">    #__proto__: 0x279242542f29 &lt;AccessorPair&gt; (const accessor descriptor)</span><br><span class="line">    #toLocaleString: 0x279242543159 &lt;JSFunction toLocaleString (sfi = 0xde2a0e46459)&gt; (const data field 10) properties[6]</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于数组，它是这样的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">0x7731050f121: [JSArray]</span><br><span class="line"> - map: 0x2b3af1082d99 &lt;Map(PACKED_SMI_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x28c976451111 &lt;JSArray[0]&gt;</span><br><span class="line"> - elements: 0x07731050f0a1 &lt;FixedArray[5]&gt; [PACKED_SMI_ELEMENTS (COW)]</span><br><span class="line"> - length: 5</span><br><span class="line"> - properties: 0x362609780c71 &lt;FixedArray[0]&gt; &#123;</span><br><span class="line">    #length: 0x3453a79001a9 &lt;AccessorInfo&gt; (const accessor descriptor)</span><br><span class="line"> &#125;</span><br><span class="line"> - elements: 0x07731050f0a1 &lt;FixedArray[5]&gt; &#123;</span><br><span class="line">           0: 1</span><br><span class="line">           1: 2</span><br><span class="line">           2: 3</span><br><span class="line">           3: 4</span><br><span class="line">           4: 5</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>看一下Elements，发现是数组的成员</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job 0x07731050f0a1</span><br><span class="line">0x7731050f0a1: [FixedArray]</span><br><span class="line"> - map: 0x362609780851 &lt;Map&gt;</span><br><span class="line"> - length: 5</span><br><span class="line">           0: 1</span><br><span class="line">           1: 2</span><br><span class="line">           2: 3</span><br><span class="line">           3: 4</span><br><span class="line">           4: 5</span><br></pre></td></tr></table></figure>
+
+<p>定义对象的时候，如<code>var obj={a:1}</code>，实际上会调用a的<code>toString</code>函数，将a转换成’a’，然后当作属性名</p>
+<p>而数组就是以一系列非负连续整数命名的对象</p>
+<p>对于大型的对象类型的数组，v8会使用哈希表来存储</p>
+<h2 id="In-object-slack-tracking"><a href="#In-object-slack-tracking" class="headerlink" title="In-object slack tracking"></a>In-object slack tracking</h2><p>v8是怎么知道改为一个对象留多少空间的呢，毕竟我们不希望它频繁地realloc，也不希望为一个小的对象取分配一个大的内存</p>
+<p>v8使用了名为In-object slack tracking的过程来查明每个构造函数的实例的适当大小</p>
+<p>最初，构造函数分配的对象有大量内存。一旦从同一构造函数中分配了一定数量的对象（，V8通过从初始map遍历过渡树来检查这些初始对象的最大大小。新的对象被分配有足够的内存来存储这个最大数量的属性。最初的对象也使用一个巧妙的技巧调整大小。第一次分配初始对象时，它们的字段将被初始化，以便垃圾收集器认为它们是可用空间。垃圾收集器实际上并不将它们视为可用空间，因为map指定了对象的大小。但是，当In-object slack tracking过程结束时，新的实例大小会写入转换树中的map，因此具有这些map的对象实际上会变小。由于未使用的字段看起来已经像可用空间，因此不需要修改初始对象。</p>
+<h2 id="Methods-and-Prototypes"><a href="#Methods-and-Prototypes" class="headerlink" title="Methods and Prototypes"></a>Methods and Prototypes</h2><p>js没有类，但是它可以用如下的方式来做到类似类的效果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.x = x;</span><br><span class="line">    <span class="keyword">this</span>.y = y;</span><br><span class="line">    <span class="keyword">this</span>.xplusy = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="keyword">return</span> x + y;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> Point(<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line">p.xplusy();</span><br></pre></td></tr></table></figure>
+
+<p>这是用了匿名函数，如果把xplusy函数当作普通的对象内的字段的话，它会浪费许多的空间，因为每个对象都要花费一些空间来指向相同的东西。</p>
+<p>为了避免空间的浪费，js实现了类似于c++的虚表的技术，它用maps来当作虚表</p>
+<p>js还提供了共享字段的另一种方法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.x = x;</span><br><span class="line">    <span class="keyword">this</span>.y = y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Point.prototype.xplusy = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="keyword">return</span> <span class="keyword">this</span>.x + <span class="keyword">this</span>.y&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>根据规范，js中的所有数字都是64位浮点数，v8中使用31位有符号整数来表示数字，这将有助于垃圾回收器区分数字和指针</p>
+<p>如果索引值超过了数组的最大长度，数组会以字典模式来将其存取</p>
+<p>如果要赋值数组，应当避免从后往前赋值，因为这几乎肯定会触发字典模式（为什么？）</p>
+<p>因为命名属性和元素是分开存储的，所以即使对象进入数组的字典模式，命名属性已经可以快速地访问</p>
+<h1 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>垃圾回收器要解决的根本问题是如何找到“死”的区域。一旦识别出死的区域，这些区域就会被重新使用或者返还给操作系统。当一个对象被根对象或者其他存活的对象所引用的话，它就是活的。根对象被定义为活的，他们是一些被v8或者浏览器直接引用的对象。全局对象是根对象，因为他们总是可访问的。浏览器的对象，例如DOM元素，也是根对象，尽管他们有时候只是被弱引用了。</p>
+<h2 id="堆组织"><a href="#堆组织" class="headerlink" title="堆组织"></a>堆组织</h2><p>v8的堆由一系列区域组成</p>
+<ul>
+<li>New-space: Most objects are allocated here. New-space is small and is designed to be garbage collected very quickly, independent of other spaces.</li>
+<li>Old-pointer-space: Contains most objects which may have pointers to other objects. Most objects are moved here after surviving in new-space for a while.</li>
+<li>Old-data-space: Contains objects which just contain raw data (no pointers to other objects). Strings, boxed numbers, and arrays of unboxed doubles are moved here after surviving in new-space for a while.</li>
+<li>Large-object-space: This space contains objects which are larger than the size limits of other spaces. Each object gets its own mmap’d region of memory. Large objects are never moved by the garbage collector.</li>
+<li>Code-space: Code objects, which contain JITed instructions, are allocated here. This is the only space with executable memory (although Codes may be allocated in large-object-space, and those are executable, too).</li>
+<li>Cell-space, property-cell-space and map-space: These spaces contain Cells, PropertyCells, and Maps, respectively. Each of these spaces contains objects which are all the same size and has some constraints on what kind of objects they point to, which simplifies collection.</li>
+</ul>
+<p>每个空间都由一组页组成，通过mmap从操作系统分配。页是内存中连续的内存块，它的大小适中为1MB，且始终以1MB对齐。但在Large-object-space中，页可能会更大</p>
+<p>为了存储对象，页包含了一个头部（由各种flag和元数据）和一个标志位图（用来表明哪个对象是活的）</p>
+<p>每页都有一个槽缓冲，分配在独立的内存中，形成了一个对象列表，可以指向页上存储的对象，这通常被称为记忆集</p>
+<h2 id="发现指针"><a href="#发现指针" class="headerlink" title="发现指针"></a>发现指针</h2><p>v8采用标记指针的方法来区分数据和指针，指针的最末位必定为1，而数据的最末位必定为0</p>
+<h2 id="分代回收"><a href="#分代回收" class="headerlink" title="分代回收"></a>分代回收</h2><p>在绝大多数程序中，大部分对象的存活时间比较短，小部分对象的存活时间则更长</p>
+<p>为了利用这种现象，v8将堆分为两代，新生代和老生代</p>
+<p>新生代的对象为存活时间较短的对象，老生代中的对象为存活时间较长或常驻内存的对象。分别对新生代和老生代使用不同的垃圾回收算法来提升垃圾回收的效率。对象起初都会被分配到新生代，当新生代中的对象满足某些条件（后面会有介绍）时，会被移动到老生代（晋升）</p>
+<p>默认情况下，64位环境下的V8引擎的新生代内存大小32MB、老生代内存大小为1400MB，而32位则减半，分别为16MB和700MB。V8内存的最大保留空间分别为1464MB（64位）和732MB（32位）。具体的计算公式是4*reserved_semispace_space_ + max_old_generation_size_，新生代由两块reserved_semispace_space_组成，每块16MB（64位）或8MB（32位）</p>
+<h3 id="新生代"><a href="#新生代" class="headerlink" title="新生代"></a>新生代</h3><p>新生代的垃圾回收算法时Scavenge算法，其主要采用了Cheney算法</p>
+<p>Cheney算法将新生代空间分为两个“半空间”，一为from空间，一为to空间。分配对象时，先在from空间进行分配。当开始执行垃圾回收算法的时候，先检查from空间对象的存活情况，然后将存活的对象复制到to空间中，而死亡的对象则被直接释放。复制完成后，to空间就变成了from空间，而from空间也就变成了to空间。</p>
+<p>这种算法对于新生代来说是极好的，因为新生代很小，且新生代中的绝大多数对象都是非活跃对象，所以其时间效率十分理想。复制的过程采用的是广度优先遍历的思想，从根对象触发，广度优先遍历所有能到达的对象。</p>
+<p>很明显它是牺牲空间换取时间的算法</p>
+<p>当一个对象进行多次新生代的清理依旧存货，他就会被移动到老生代，这被称为晋升，具体移动的标准有两种：</p>
+<ol>
+<li>对象从From空间复制到To空间时，会检查它的内存地址来判断这个对象是否已经经历过一个新生代的清理，如果是，则复制到老生代中，否则复制到To空间中</li>
+<li>对象从From空间复制到To空间时，如果To空间已经被使用了超过25%，那么这个对象直接被复制到老生代</li>
+</ol>
+<h3 id="老生代"><a href="#老生代" class="headerlink" title="老生代"></a>老生代</h3><p>老生代所保存的对象大多数是生存周期很长的甚至是常驻内存的对象，而且老生代占用的内存较多</p>
+<p>老生代的垃圾回收策略采用Mark-Sweep和Mark-Compact相结合</p>
+<h4 id="Mark-Sweep（标记清除）"><a href="#Mark-Sweep（标记清除）" class="headerlink" title="Mark-Sweep（标记清除）"></a>Mark-Sweep（标记清除）</h4><p>标记清除分为标记和清除两个阶段</p>
+<p>在标记阶段，它会遍历堆中的对象，并标记存活的对象。每个页都有一个用来标记对象的位图，位图中的每一位对应内存页的一个字。这个位图需要占据一定的空间（32位下为3.1%，64位为1.6%）。另有两位用来标记对象的状态，状态有三种，黑，白，灰。</p>
+<ul>
+<li>白：表示它未被垃圾回收器发现</li>
+<li>灰：表示它已经被垃圾回收器发现，但其邻接对象尚未全部处理</li>
+<li>黑：表示它不仅被垃圾回收器发现，其临界对象也被处理完毕</li>
+</ul>
+<p>其采用深度优先搜索</p>
+<p>在清除阶段，它会清楚没有被标记的对象</p>
+<p>但是这样会产生很多内存碎片</p>
+<h4 id="Mark-Compact（标记整理）"><a href="#Mark-Compact（标记整理）" class="headerlink" title="Mark-Compact（标记整理）"></a>Mark-Compact（标记整理）</h4><p>标记整理会清楚内存碎片所带来的问题，它会整理内存碎片，讲活着的对象向内存的一段移动，移动完成后直接清理掉边界外的内存</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>东西挺多，这几天也就光看了这些东西，看了好几遍，体会比较深</p>
+<p>一来，学习了许多思想，这将对我以后开发有所帮助</p>
+<p>二来，大概学习了v8的垃圾回收机制，对CTF有帮助</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 学习日记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> v8 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[学习STL原理(1)]]></title>
       <url>/2019/10/22/%E5%AD%A6%E4%B9%A0STL%E5%8E%9F%E7%90%86-1/</url>
       <content type="html"><![CDATA[<p>用了这么久C++，却还不了解其下非常出名的标准模板库(STL)，实在是不该</p>
@@ -326,11 +439,11 @@
             
             <tag> pwn </tag>
             
+            <tag> v8 </tag>
+            
             <tag> CTF </tag>
             
             <tag> chrome </tag>
-            
-            <tag> v8 </tag>
             
         </tags>
         
