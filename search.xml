@@ -3,6 +3,31 @@
   
     
     <entry>
+      <title><![CDATA[学习v8碰壁(1) 待解决]]></title>
+      <url>/2019/10/25/%E5%AD%A6%E4%B9%A0v8%E7%A2%B0%E5%A3%81-1-%E5%BE%85%E8%A7%A3%E5%86%B3/</url>
+      <content type="html"><![CDATA[<p>刚做了数字经济线下的chrome，发现了那个问题存在于<code>Builtins_StoreFastElementIC_Standard</code>函数中</p>
+<p>似乎是因为某个分支故意触发的错误……</p>
+<p>难道是ArrayBuffer的<code>backing_store</code>不能修改两次？</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 疑难杂症 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> chrome </tag>
+            
+            <tag> v8 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[从0.01学起数字经济线下赛Chrome]]></title>
       <url>/2019/10/24/%E4%BB%8E0-01%E5%AD%A6%E8%B5%B7%E6%95%B0%E5%AD%97%E7%BB%8F%E6%B5%8E%E7%BA%BF%E4%B8%8B%E8%B5%9BChrome/</url>
       <content type="html"><![CDATA[<p>头大啊！学了*CTF的oob之后再看数字经济线下的chrome还是不会</p>
@@ -574,9 +599,9 @@
         
         <tags>
             
-            <tag> free </tag>
-            
             <tag> malloc </tag>
+            
+            <tag> free </tag>
             
             <tag> pwn </tag>
             

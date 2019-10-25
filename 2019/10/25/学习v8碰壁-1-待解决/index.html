@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     
     
-    <title>Archives | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <title>学习v8碰壁(1) 待解决 | DaJun的Blog | 我想变成大牛，很大的那种</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="keywords" content>
+    <meta name="keywords" content="chrome,v8">
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
     <link rel="stylesheet" href="/css/style.css?v=1.4.4">
@@ -15,7 +15,7 @@
     <script type="text/javascript">
         // Data Center
         var DC = {
-            reward:	false,
+            reward:	true,
             lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
             v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
             g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
@@ -110,7 +110,7 @@
               </a>
             </li>
         
-            <li class=" active">
+            <li class="">
               <a href="/archives"  >
                 <i class="icon icon-lg icon-archives"></i>
                 ARCHIVES
@@ -143,7 +143,7 @@
           <i class="icon icon-lg icon-navicon"></i>
         </a>
         <div class="flex-col header-title ellipsis">
-            <span>Archives</span>
+            <span>学习v8碰壁(1) 待解决</span>
             
         </div>
         
@@ -153,18 +153,21 @@
         
     </div>
 </header>
-<header class="content-header archives-header">
+<header class="content-header post-header">
     <img src="/img/dawn.jpg" class="header-bg">
     <div class="container fade-scale">
-        <h1 class="title">Archives</h1>
+        <h1 class="title">学习v8碰壁(1) 待解决</h1>
         <h5 class="subtitle">
             
+                <time datetime="2019-10-25T08:52:17.000Z" itemprop="datePublished" class="page-time">
+  2019-10-25
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/疑难杂症/">疑难杂症</a></li></ul>
+
+            
         </h5>
-        
-        <div class="remind">
-            <p>总计文章( <span>9</span> )篇，约( <span>66.3K</span> )字</p>
-            <p>Keep moving😎!!!</p>
-        </div>
         
     </div>
     
@@ -184,295 +187,161 @@
     <div id="local-search-result"></div>
 </div>
 
-<div class="container body-wrap fade">
-    
-                <h3 class="archive-separator">十月, 2019</h3>
-                <div class="waterfall">
-            
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-25 16:52:17" datetime="2019-10-25T08:52:17.000Z"  itemprop="datePublished">2019-10-25</time>
 
-      
+<div class="container body-wrap">
+    <article id="post-学习v8碰壁-1-待解决"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">学习v8碰壁(1) 待解决</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-10-25 16:52:17" datetime="2019-10-25T08:52:17.000Z"  itemprop="datePublished">2019-10-25</time>
+
+            
 	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/疑难杂症/">疑难杂症</a></li></ul>
 
 
 
-    </div>
-    
+            
+	<span id="/2019/10/25/学习v8碰壁-1-待解决/" class="leancloud_visitors" data-flag-title="学习v8碰壁(1) 待解决" title="学习v8碰壁(1) 待解决">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
 
 
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/25/学习v8碰壁-1-待解决/">学习v8碰壁(1) 待解决</a>
-    </h3>
-  
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>刚做了数字经济线下的chrome，发现了那个问题存在于<code>Builtins_StoreFastElementIC_Standard</code>函数中</p>
+<p>似乎是因为某个分支故意触发的错误……</p>
+<p>难道是ArrayBuffer的<code>backing_store</code>不能修改两次？</p>
 
-
-
-    
-    <div class="post-footer">
+        </div>
         
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-10-25T08:56:18.297Z" itemprop="dateUpdated">2019-10-25 16:56:18</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/10/25/学习v8碰壁-1-待解决/" target="_blank" rel="external">http://dayjun.top/2019/10/25/学习v8碰壁-1-待解决/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
 	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
 
-    </div>
+            <div class="page-share-wrap">
     
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-24 20:29:49" datetime="2019-10-24T12:29:49.000Z"  itemprop="datePublished">2019-10-24</time>
 
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
       
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/24/从0-01学起数字经济线下赛Chrome/">从0.01学起数字经济线下赛Chrome</a>
-    </h3>
-  
-
-
-
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
-
-    </div>
-    
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-23 11:09:56" datetime="2019-10-23T03:09:56.000Z"  itemprop="datePublished">2019-10-23</time>
-
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/25/学习v8碰壁-1-待解决/&title=《学习v8碰壁(1) 待解决》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
       
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/23/学习V8-1/">学习V8(1)</a>
-    </h3>
-  
-
-
-
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
-
-    </div>
-    
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-22 20:38:08" datetime="2019-10-22T12:38:08.000Z"  itemprop="datePublished">2019-10-22</time>
-
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
       
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/22/学习STL原理-1/">学习STL原理(1)</a>
-    </h3>
-  
-
-
-
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/STL/">STL</a></li></ul>
-
-    </div>
-    
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-21 10:38:39" datetime="2019-10-21T02:38:39.000Z"  itemprop="datePublished">2019-10-21</time>
-
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/25/学习v8碰壁-1-待解决/&title=《学习v8碰壁(1) 待解决》 — DaJun的Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
       
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+    </ul>
+ </div>
 
 
 
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/21/巅峰极客-pwn-writeUp/">巅峰极客2019 pwn writeUp</a>
-    </h3>
-  
-
-
-
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTF/">CTF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
-
-    </div>
-    
-  </article>
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
 </div>
+
+        </div>
         
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-18 11:47:39" datetime="2019-10-18T03:47:39.000Z"  itemprop="datePublished">2019-10-18</time>
-
-      
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
+            
 
 
-
+        
     </div>
     
-
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
 
   
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/18/starCTF-oob复现/">starCTF oob复现</a>
+    <div class="next">
+      <a href="/2019/10/24/从0-01学起数字经济线下赛Chrome/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">从0.01学起数字经济线下赛Chrome</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
     </h3>
-  
-
-
-
-    
-    <div class="post-footer">
+    <div class="reward-content">
         
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTF/">CTF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
-
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
     </div>
-    
-  </article>
 </div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-16 11:57:34" datetime="2019-10-16T03:57:34.000Z"  itemprop="datePublished">2019-10-16</time>
-
-      
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/16/free时的向上合并/">free时的向上合并</a>
-    </h3>
-  
-
-
 
     
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/free/">free</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/malloc/">malloc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
 
-    </div>
-    
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-06 16:42:40" datetime="2019-10-06T08:42:40.000Z"  itemprop="datePublished">2019-10-06</time>
-
-      
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/06/数字经济2019/">数字经济2019 pwn writeup</a>
-    </h3>
-  
-
-
-
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTF/">CTF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
-
-    </div>
-    
-  </article>
-</div>
-        
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
-      <time class="post-time" title="2019-10-03 00:47:00" datetime="2019-10-02T16:47:00.000Z"  itemprop="datePublished">2019-10-03</time>
-
-      
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
-
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title " itemprop="name">
-      <a class="post-title-link" href="/2019/10/03/hello-world/">hello-world</a>
-    </h3>
-  
-
-
-
-    
-  </article>
-</div>
-        
-    </div>
-    
 </div>
 
     </main>
@@ -543,7 +412,7 @@
     <ul class="reset share-icons">
       
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/archives/&title=DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/25/学习v8碰壁-1-待解决/&title=《学习v8碰壁(1) 待解决》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -555,7 +424,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/archives/&title=DaJun的Blog&source=" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/25/学习v8碰壁-1-待解决/&title=《学习v8碰壁(1) 待解决》 — DaJun的Blog&source=" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -567,7 +436,7 @@
 <div class="page-modal wx-share" id="wxShare">
     <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABtklEQVR42u3aQYrDQAwEwPz/01nY665NS8oIB2pOxga7kkMjaeb1itf7d13dz5++/6zXiYWLizvmvm/XFTf5ZPJjcgMuLu4+N3nd/XXyF9wHXBSguLi4D+Nexdl92PWe4uLifgs3KV/y+MPFxX0+t1qUfHZ2caRXw8XFHXCrA9MT1wfnu7i4uEXuu7UmWyZ5eP3zBlxc3BXuvHzJI2neCOHi4j6B29t2TY5ZJE8v7+Di4q5wq8PTaomTBFYec7i4uKe5eXjlx7CqZU3eOOHi4m5y8yJjvpXS+5twcXE3udWh52TcOY9FXFzcTW4eZ73DW72wiw5m4eLiLnJ7pUl1eJoEHC4u7j43OVRR3QKpDkkLPwAXF3eFm+dDEjSTJqfQCOHi4q5we5OH3lGMasBFI1pcXNxj3F6Q9QqjPPIuv4iLi7vCnR+06m2v5lu2uLi4O9xexEyip/ceXFzcTW4v+ZLWZdJK4eLiPoFb3eys4nrjj2irFRcX9zA3P3RVjaRe24OLi/td3NHHisUTLi7u87nVkceR4MPFxV3kVoekk/amF3O4uLib3EnJMml1PnXgAxcX96PcHynhBhygS0mCAAAAAElFTkSuQmCC" alt="微信分享二维码">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACKElEQVR42u3aS27DMAwFwNz/0u62QCrnkVJbWBqtjMRwNF4w4uf1itc1WN+/fb/z/pP369EnyxYGBsZjGdftGt0z2uI9bHRn8lLun4OBgXECYxTBkrCYw4abCEgf9oyBgYGx6PCXh3UMDAyM+YA7Ey6rx0oMDAyMPIktJ5bF15QkzwtycQwMjAcy8qr731//Sn8DAwPjUYyruKpNx/nwHe0KAwNja0YvQe01DKYS1CQBxsDA2JoxMwrWSzirgxdTZ14MDIwtGNViVj40lg9b9Ep+GBgYJzBWhbw8LOYNgDw9xsDA2JuRB8S1KW75PyFPgzEwMLZjVIv1+ZBErwnaLLFhYGAcz8jLZMkRs5cYf3g1GBgYxzCqqWn+CvIyXHPKCwMDY2vG/KoOTFTxq9JsDAyM5zKqY175wbHXjKwePTEwME5jVDG9cJxstNrOxMDA2JvRC6N56T8ZrchfbvRaMTAwtmNUfyYPoPlYRm+w44fGAAYGxqaMXlk/j+V5K3TmGgMD4xxGdbt5ojtTsCv8IgYGxgGMpLjfO7r1nlYeBMHAwDiMkQfNVW2DXhpcfhwGBsYDGb1R0d7wVp4Yl38XAwNja0Y1OCZJZp76JsEdAwMDI081q8Wv/P5eyC7/e2BgYGzBmEky84GwHFkuw2FgYGBMB9DqtspnWAwMDIw4aFYbltUEeHg/BgbGAYy8oDbTnlyVsmJgYJzG+K/jY17gWzbkgYGB8TzGF5UKvCoiRWdwAAAAAElFTkSuQmCC" alt="微信分享二维码">
 </div>
 
 
