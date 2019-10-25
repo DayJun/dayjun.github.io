@@ -8,7 +8,7 @@
       <content type="html"><![CDATA[<p>刚做了数字经济线下的chrome，发现了那个问题存在于<code>Builtins_StoreFastElementIC_Standard</code>函数中</p>
 <p>似乎是因为某个分支故意触发的错误……</p>
 <p>难道是ArrayBuffer的<code>backing_store</code>不能修改两次？</p>
-]]></content>
+<a id="more"></a>]]></content>
       
         <categories>
             
