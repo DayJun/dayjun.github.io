@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>学习一下去控制流平坦化的脚本 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="angr,barf">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>学习一下去控制流平坦化的脚本</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">学习一下去控制流平坦化的脚本</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-10-26T13:44:57.000Z" itemprop="datePublished" class="page-time">
+  2019-10-26
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-学习一下去控制流平坦化的脚本"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">学习一下去控制流平坦化的脚本</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-10-26 21:44:57" datetime="2019-10-26T13:44:57.000Z"  itemprop="datePublished">2019-10-26</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2019/10/26/学习一下去控制流平坦化的脚本/" class="leancloud_visitors" data-flag-title="学习一下去控制流平坦化的脚本" title="学习一下去控制流平坦化的脚本">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>早就说想写一个去控制流平坦化的脚本了，但是由于对angr，barf等框架不怎么了解，且没用下太多功夫（主要），就一直耽搁着</p>
+<p>干脆直接分析一下人家的脚本，偷个懒</p>
+<p>来源：<a href="https://github.com/SnowGirls/deflat/blob/master/deflat.py" target="_blank" rel="noopener">Github</a></p>
+<a id="more"></a>
+
+<p>就直接写注释了</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> barf.barf <span class="keyword">import</span> BARF</span><br><span class="line"><span class="keyword">import</span> angr</span><br><span class="line"><span class="keyword">import</span> simuvex</span><br><span class="line"><span class="keyword">import</span> pyvex</span><br><span class="line"><span class="keyword">import</span> claripy</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_retn_predispatcher</span><span class="params">(cfg)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> main_dispatcher</span><br><span class="line">    <span class="keyword">for</span> block <span class="keyword">in</span> cfg.basic_blocks:</span><br><span class="line">        <span class="keyword">if</span> len(block.branches) == <span class="number">0</span> <span class="keyword">and</span> block.direct_branch == <span class="literal">None</span>:</span><br><span class="line">            retn = block.start_address</span><br><span class="line">        <span class="keyword">elif</span> block.direct_branch == main_dispatcher:</span><br><span class="line">            pre_dispatcher = block.start_address</span><br><span class="line">    <span class="keyword">return</span> retn, pre_dispatcher</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_relevant_nop_blocks</span><span class="params">(cfg)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> pre_dispatcher, prologue, retn</span><br><span class="line">    relevant_blocks = []</span><br><span class="line">    nop_blocks = []</span><br><span class="line">    <span class="keyword">for</span> block <span class="keyword">in</span> cfg.basic_blocks:</span><br><span class="line">        <span class="keyword">if</span> block.direct_branch == pre_dispatcher <span class="keyword">and</span> len(block.instrs) != <span class="number">1</span>:</span><br><span class="line">            <span class="comment">#似乎是这样的，直接后继为预处理器，且汇编代码大于1行的块都是相关块</span></span><br><span class="line">            <span class="comment">#当然序言块以及返回地址块也是相关快</span></span><br><span class="line">            relevant_blocks.append(block.start_address)</span><br><span class="line">        <span class="keyword">elif</span> block.start_address != prologue <span class="keyword">and</span> block.start_address != retn:</span><br><span class="line">            nop_blocks.append(block)</span><br><span class="line">    <span class="keyword">return</span> relevant_blocks, nop_blocks</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">statement_inspect</span><span class="params">(state)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> modify_value</span><br><span class="line">    expressions = state.scratch.irsb.statements[state.inspect.statement].expressions</span><br><span class="line">    <span class="keyword">if</span> len(expressions) != <span class="number">0</span> <span class="keyword">and</span> isinstance(expressions[<span class="number">0</span>], pyvex.expr.ITE):</span><br><span class="line">        state.scratch.temps[expressions[<span class="number">0</span>].cond.tmp] = modify_value</span><br><span class="line">        state.inspect._breakpoints[<span class="string">'statement'</span>] = []</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">symbolic_execution</span><span class="params">(start_addr, hook_addr=None, modify=None, inspect=False)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> b, relevants, modify_value</span><br><span class="line">    <span class="keyword">if</span> hook_addr != <span class="literal">None</span>:</span><br><span class="line">        b.hook(hook_addr, retn_procedure, length=<span class="number">5</span>)</span><br><span class="line">        <span class="comment">#如果出现call，就把call的函数内容给hook成retn</span></span><br><span class="line">    <span class="keyword">if</span> modify != <span class="literal">None</span>:</span><br><span class="line">        modify_value = modify</span><br><span class="line">    state = b.factory.blank_state(addr=start_addr, remove_options=&#123;simuvex.o.LAZY_SOLVES&#125;)</span><br><span class="line">    <span class="keyword">if</span> inspect:</span><br><span class="line">        state.inspect.b(<span class="string">'statement'</span>, when=simuvex.BP_BEFORE, action=statement_inspect)</span><br><span class="line">    p = b.factory.path(state)</span><br><span class="line">    succ=p.step()</span><br><span class="line">    <span class="keyword">while</span> succ.successors[<span class="number">0</span>].addr <span class="keyword">not</span> <span class="keyword">in</span> relevants:</span><br><span class="line">        succ=succ.successors[<span class="number">0</span>].step()</span><br><span class="line">    <span class="keyword">return</span> succ.successors[<span class="number">0</span>].addr</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">retn_procedure</span><span class="params">(state)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> b</span><br><span class="line">    ip = state.se.eval(state.regs.ip)</span><br><span class="line">    b.unhook(ip)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fill_nop</span><span class="params">(data, start, end)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> opcode</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(start, end):</span><br><span class="line">        data[i] = opcode[<span class="string">'nop'</span>]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fill_jmp_offset</span><span class="params">(data, start, offset)</span>:</span></span><br><span class="line">    jmp_offset = struct.pack(<span class="string">'&lt;i'</span>, offset)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">        data[start + i] = jmp_offset[i]</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="keyword">if</span> len(sys.argv) != <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Usage: python deflat.py filename function_address(hex)'</span></span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    opcode = &#123;<span class="string">'a'</span>:<span class="string">'\x87'</span>, <span class="string">'ae'</span>: <span class="string">'\x83'</span>, <span class="string">'b'</span>:<span class="string">'\x82'</span>, <span class="string">'be'</span>:<span class="string">'\x86'</span>, <span class="string">'c'</span>:<span class="string">'\x82'</span>, <span class="string">'e'</span>:<span class="string">'\x84'</span>, <span class="string">'z'</span>:<span class="string">'\x84'</span>, <span class="string">'g'</span>:<span class="string">'\x8F'</span>, </span><br><span class="line">              <span class="string">'ge'</span>:<span class="string">'\x8D'</span>, <span class="string">'l'</span>:<span class="string">'\x8C'</span>, <span class="string">'le'</span>:<span class="string">'\x8E'</span>, <span class="string">'na'</span>:<span class="string">'\x86'</span>, <span class="string">'nae'</span>:<span class="string">'\x82'</span>, <span class="string">'nb'</span>:<span class="string">'\x83'</span>, <span class="string">'nbe'</span>:<span class="string">'\x87'</span>, <span class="string">'nc'</span>:<span class="string">'\x83'</span>,</span><br><span class="line">              <span class="string">'ne'</span>:<span class="string">'\x85'</span>, <span class="string">'ng'</span>:<span class="string">'\x8E'</span>, <span class="string">'nge'</span>:<span class="string">'\x8C'</span>, <span class="string">'nl'</span>:<span class="string">'\x8D'</span>, <span class="string">'nle'</span>:<span class="string">'\x8F'</span>, <span class="string">'no'</span>:<span class="string">'\x81'</span>, <span class="string">'np'</span>:<span class="string">'\x8B'</span>, <span class="string">'ns'</span>:<span class="string">'\x89'</span>,</span><br><span class="line">              <span class="string">'nz'</span>:<span class="string">'\x85'</span>, <span class="string">'o'</span>:<span class="string">'\x80'</span>, <span class="string">'p'</span>:<span class="string">'\x8A'</span>, <span class="string">'pe'</span>:<span class="string">'\x8A'</span>, <span class="string">'po'</span>:<span class="string">'\x8B'</span>, <span class="string">'s'</span>:<span class="string">'\x88'</span>, <span class="string">'nop'</span>:<span class="string">'\x90'</span>, <span class="string">'jmp'</span>:<span class="string">'\xE9'</span>, <span class="string">'j'</span>:<span class="string">'\x0F'</span>&#125;</span><br><span class="line">    <span class="comment">#定义了一些opcode，它应该是适应多平台的</span></span><br><span class="line"></span><br><span class="line">    filename = sys.argv[<span class="number">1</span>]</span><br><span class="line">    start = int(sys.argv[<span class="number">2</span>], <span class="number">16</span>)</span><br><span class="line">    barf = BARF(filename)</span><br><span class="line">    <span class="comment">#用barf打开这个文件</span></span><br><span class="line"></span><br><span class="line">    base_addr = barf.binary.entry_point &gt;&gt; <span class="number">12</span> &lt;&lt; <span class="number">12</span></span><br><span class="line">    <span class="comment">#将地址末一个半字节清零得到基地址</span></span><br><span class="line"></span><br><span class="line">    b = angr.Project(filename, load_options=&#123;<span class="string">'auto_load_libs'</span>: <span class="literal">False</span>, <span class="string">'main_opts'</span>:&#123;<span class="string">'custom_base_addr'</span>: <span class="number">0</span>&#125;&#125;)</span><br><span class="line">    <span class="comment">#用angr打开这个文件</span></span><br><span class="line"></span><br><span class="line">    cfg = barf.recover_cfg(start=start)</span><br><span class="line">    <span class="comment">#获取这个文件的流程图</span></span><br><span class="line"></span><br><span class="line">    blocks = cfg.basic_blocks</span><br><span class="line">    <span class="comment">#得到这些流程图中的块</span></span><br><span class="line"></span><br><span class="line">    prologue = start</span><br><span class="line">    main_dispatcher = cfg.find_basic_block(prologue).direct_branch</span><br><span class="line">    <span class="comment">#得到主分发器，即，获得序言那一块的直接后继块</span></span><br><span class="line"></span><br><span class="line">    retn, pre_dispatcher = get_retn_predispatcher(cfg)</span><br><span class="line">    <span class="comment">#得到预处理器以及返回地址的块的开始地址</span></span><br><span class="line"></span><br><span class="line">    relevant_blocks, nop_blocks = get_relevant_nop_blocks(cfg)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'*******************relevant blocks************************'</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">'prologue:%#x'</span> % start</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'main_dispatcher:%#x'</span> % main_dispatcher</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'pre_dispatcher:%#x'</span> % pre_dispatcher</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'retn:%#x'</span> % retn</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'relevant_blocks:'</span>, [hex(addr) <span class="keyword">for</span> addr <span class="keyword">in</span> relevant_blocks]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">print</span> <span class="string">'*******************symbolic execution*********************'</span></span><br><span class="line">    relevants = relevant_blocks</span><br><span class="line">    relevants.append(prologue)</span><br><span class="line">    relevants_without_retn = list(relevants)</span><br><span class="line">    relevants.append(retn)</span><br><span class="line">    flow = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> parent <span class="keyword">in</span> relevants:</span><br><span class="line">        flow[parent] = []</span><br><span class="line">    modify_value = <span class="literal">None</span></span><br><span class="line">    patch_instrs = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> relevant <span class="keyword">in</span> relevants_without_retn:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'-------------------dse %#x---------------------'</span> % relevant</span><br><span class="line">        block = cfg.find_basic_block(relevant)</span><br><span class="line">        <span class="comment">#找到relevant地址的块</span></span><br><span class="line"></span><br><span class="line">        has_branches = <span class="literal">False</span></span><br><span class="line">        hook_addr = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">for</span> ins <span class="keyword">in</span> block.instrs:</span><br><span class="line">            <span class="keyword">if</span> ins.mnemonic.startswith(<span class="string">'cmov'</span>):</span><br><span class="line">                patch_instrs[relevant] = ins</span><br><span class="line">                has_branches = <span class="literal">True</span></span><br><span class="line">                <span class="comment">#有cmov指令代表还有控制流平坦化的跳转</span></span><br><span class="line">            <span class="keyword">elif</span> ins.mnemonic.startswith(<span class="string">'call'</span>):</span><br><span class="line">                hook_addr = ins.address</span><br><span class="line">                <span class="comment">#有call就要将call的函数hook成retn</span></span><br><span class="line">        <span class="keyword">if</span> has_branches:</span><br><span class="line">            flow[relevant].append(symbolic_execution(relevant, hook_addr, claripy.BVV(<span class="number">1</span>, <span class="number">1</span>), <span class="literal">True</span>))</span><br><span class="line">            flow[relevant].append(symbolic_execution(relevant, hook_addr, claripy.BVV(<span class="number">0</span>, <span class="number">1</span>), <span class="literal">True</span>))</span><br><span class="line">            <span class="comment">#用符号执行，剩下看不懂，为啥执行到地址在relevant就return呢？</span></span><br><span class="line">            <span class="comment">#那些API也看不懂，初步猜测是排除一些无用块，也就是根本不会执行到的块</span></span><br><span class="line">            <span class="comment">#这个分支应该是遍历分岔口的两条分支，返回的分支的地址</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            flow[relevant].append(symbolic_execution(relevant, hook_addr))</span><br><span class="line">            </span><br><span class="line">    <span class="keyword">print</span> <span class="string">'************************flow******************************'</span></span><br><span class="line">    <span class="keyword">for</span> (k, v) <span class="keyword">in</span> flow.items():</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'%#x:'</span> % k, [hex(child) <span class="keyword">for</span> child <span class="keyword">in</span> v]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">print</span> <span class="string">'************************patch*****************************'</span></span><br><span class="line">    flow.pop(retn)</span><br><span class="line">    origin = open(filename, <span class="string">'rb'</span>)</span><br><span class="line">    origin_data = list(origin.read())</span><br><span class="line">    origin.close()</span><br><span class="line">    recovery = open(filename + <span class="string">'.recovered'</span>, <span class="string">'wb'</span>)</span><br><span class="line">    <span class="keyword">for</span> nop_block <span class="keyword">in</span> nop_blocks:</span><br><span class="line">        fill_nop(origin_data, nop_block.start_address - base_addr, nop_block.end_address - base_addr + <span class="number">1</span>)    </span><br><span class="line">        <span class="comment">#将无用块全部填充为nop</span></span><br><span class="line">    <span class="keyword">for</span> (parent, childs) <span class="keyword">in</span> flow.items():</span><br><span class="line">        <span class="keyword">if</span> len(childs) == <span class="number">1</span>:</span><br><span class="line">            last_instr = cfg.find_basic_block(parent).instrs[<span class="number">-1</span>]</span><br><span class="line">            file_offset = last_instr.address - base_addr</span><br><span class="line">            origin_data[file_offset] = opcode[<span class="string">'jmp'</span>]</span><br><span class="line">            file_offset += <span class="number">1</span></span><br><span class="line">            fill_nop(origin_data, file_offset, file_offset + last_instr.size - <span class="number">1</span>)</span><br><span class="line">            fill_jmp_offset(origin_data, file_offset, childs[<span class="number">0</span>] - last_instr.address - <span class="number">5</span>)</span><br><span class="line">            <span class="comment">#如果child中只有一条地址，我只能这么理解，应该就是执行了上面的has_branches的else分支，就直接修改指令为跳转指令</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            instr = patch_instrs[parent]</span><br><span class="line">            file_offset = instr.address - base_addr</span><br><span class="line">            fill_nop(origin_data, file_offset, cfg.find_basic_block(parent).end_address - base_addr + <span class="number">1</span>)</span><br><span class="line">            origin_data[file_offset] = opcode[<span class="string">'j'</span>]</span><br><span class="line">            origin_data[file_offset + <span class="number">1</span>] = opcode[instr.mnemonic[<span class="number">4</span>:]]</span><br><span class="line">            fill_jmp_offset(origin_data, file_offset + <span class="number">2</span>, childs[<span class="number">0</span>] - instr.address - <span class="number">6</span>)</span><br><span class="line">            file_offset += <span class="number">6</span></span><br><span class="line">            origin_data[file_offset] = opcode[<span class="string">'jmp'</span>]</span><br><span class="line">            fill_jmp_offset(origin_data, file_offset + <span class="number">1</span>, childs[<span class="number">1</span>] - (instr.address + <span class="number">6</span>) - <span class="number">5</span>)</span><br><span class="line">            <span class="comment">#如果它有分支，也就是存在条件跳转指令，就……干啥？</span></span><br><span class="line">    recovery.write(<span class="string">''</span>.join(origin_data))</span><br><span class="line">    recovery.close()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'Successful! The recovered file: %s'</span> % (filename + <span class="string">'.recovered'</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>挺失败的分析，但是大概流程基本清楚了，等再有时间了写一个能用的……</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-10-26T15:07:43.665Z" itemprop="dateUpdated">2019-10-26 23:07:43</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/10/26/学习一下去控制流平坦化的脚本/" target="_blank" rel="external">http://dayjun.top/2019/10/26/学习一下去控制流平坦化的脚本/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/angr/">angr</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/barf/">barf</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/26/学习一下去控制流平坦化的脚本/&title=《学习一下去控制流平坦化的脚本》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/26/学习一下去控制流平坦化的脚本/&title=《学习一下去控制流平坦化的脚本》 — DaJun的Blog&source=早就说想写一个去控制流平坦化的脚本了，但是由于对angr，barf等框架不怎么了解，且没用下太多功夫（主要），就一直耽搁着
+干脆直接分析一下人家的脚本，偷..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/10/25/学习v8碰壁-1-待解决/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">学习v8碰壁(1) 待解决</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">1.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/26/学习一下去控制流平坦化的脚本/&title=《学习一下去控制流平坦化的脚本》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/26/学习一下去控制流平坦化的脚本/&title=《学习一下去控制流平坦化的脚本》 — DaJun的Blog&source=早就说想写一个去控制流平坦化的脚本了，但是由于对angr，barf等框架不怎么了解，且没用下太多功夫（主要），就一直耽搁着
+干脆直接分析一下人家的脚本，偷..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACt0lEQVR42u3awW7bQAwE0Pz/T7dATwGS2jPkrpoCzyfDlrV6CiAyw/34iF+//rw+v//8+nrk68//9u3r478ec+yFh4eHN7r016fLl895sxXza8bDw8O7zcuLwetP2md1cg3t8Xh4eHg/h5dcaPJ53jTj4eHh/e+8JBTIqW1zjIeHh/fTeEk08PoBvS8k7fvDWQseHh5ezJsNwP7t++vzPTw8PLzRVD0pEknZyAddm6HXN+fHw8PDu8BLTrrZULUPc9tbXKQjeHh4eOvJfkuafbu/9CEVDw8P7xDvVAzajq/yzVXtWtF/DHh4eHhr3mwYNhv8n22mo6wFDw8P7xqvfZTnLXXbTOeFpNhNhoeHh3eI14aq9VbRYJW8pW7BeHh4eDd4swWSx3rboOek/Ld4eHh4z/A2o/1ZsLtp69/caDw8PLwLvFPRbdtGRyFsUB6icR0eHh7eBV6C3zS7SdnYjMry0BkPDw9vz2sj2s3gv40hNgUJDw8P7xle3uCeKgObwhD9kfDw8PAu85Il261R7QavfTDxTYCLh4eHd5TXBqyzRrwe+Y82KwwHYHh4eHgl72yzm0QY7a9Wozg8PDy8C7y82d3HrMl5WlLU4uPh4eEd5e2H+rMys99YcCDGxcPDw1vw2vH/bDrfbibIY983FQ8PDw/vAm/WWLcP9024MBzL4eHh4V3gtTFB3ljnGwvasHiVteDh4eGtedEA6ZHtBcmNyG8QHh4e3pO85NJnyydna8OON+fHw8PDu8DbPHxnsULeuLdJ7KrM4OHh4ZW8TYvcFpJ2lXZrAh4eHt6TvCSQ3be8eevcBsH1AAwPDw/vEV697WkRAW82e0UpLx4eHt4P4OWlJS8MbWlZtdR4eHh4JW/2sG6b43ZLQXKeY1kLHh4e3rXZeo6cXWIeQ0Rbr/Dw8PBO8n4DPnFWGqdKI6UAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
