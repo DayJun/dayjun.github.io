@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>学习《深入linux内核架构》(1) | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="linux">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>学习《深入linux内核架构》(1)</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">学习《深入linux内核架构》(1)</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-10-29T15:08:22.000Z" itemprop="datePublished" class="page-time">
+  2019-10-29
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/读书笔记/">读书笔记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-学习《深入linux内核架构》-1"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">学习《深入linux内核架构》(1)</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-10-29 23:08:22" datetime="2019-10-29T15:08:22.000Z"  itemprop="datePublished">2019-10-29</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/读书笔记/">读书笔记</a></li></ul>
+
+
+
+            
+	<span id="/2019/10/29/学习《深入linux内核架构》-1/" class="leancloud_visitors" data-flag-title="学习《深入linux内核架构》(1)" title="学习《深入linux内核架构》(1)">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <h1 id="第一章-简介和概述"><a href="#第一章-简介和概述" class="headerlink" title="第一章 简介和概述"></a>第一章 简介和概述</h1><h2 id="内核的任务"><a href="#内核的任务" class="headerlink" title="内核的任务"></a>内核的任务</h2><ul>
+<li>内核是应用程序所知道的层次结构中的最底层，时一台增强的计算机</li>
+<li>当若干程序在同一系统中并发运行时，可以将内核视为资源管理程序</li>
+<li>内核提供系统调用用于向计算机发送请求</li>
+</ul>
+<h2 id="实现策略"><a href="#实现策略" class="headerlink" title="实现策略"></a>实现策略</h2><ul>
+<li><p>微内核</p>
+<ul>
+<li>只有最基本的功能直接由中央内核实现，其他所有的功能都委托给一些独立进程，这些进程通过明确定义的通信接口与中心内核通信</li>
+</ul>
+</li>
+<li><p>宏内核</p>
+<ul>
+<li>它是构建系统内核的传统方法，即将内核的全部功能打包到一个文件中</li>
+</ul>
+</li>
+</ul>
+<h2 id="内核的组成部分"><a href="#内核的组成部分" class="headerlink" title="内核的组成部分"></a>内核的组成部分</h2><h3 id="进程、进程切换、调度"><a href="#进程、进程切换、调度" class="headerlink" title="进程、进程切换、调度"></a>进程、进程切换、调度</h3><p>传统上，UNIX操作系统下运行的应用程序、服务器以及其他程序都称为<strong>进程</strong></p>
+<p>各进程空间完全独立，进程之间并不会意识到彼此的存在</p>
+<p>Linux是多任务系统，它支持（看上去）并发执行的若干进程。系统中真正在同时运行的进程数最多不超过CPU的数量</p>
+<h3 id="UNIX进程"><a href="#UNIX进程" class="headerlink" title="UNIX进程"></a>UNIX进程</h3><p>linux对进程采用了一种层次结构，每个进程都依赖于一个父进程</p>
+<p><strong>内核启动init程序作为第一个进程</strong>，它负责进一步的系统初始化操作</p>
+<p>因此init是进程树的根</p>
+<p><code>pstree</code>程序可以输出进程树</p>
+<p>UNIX有两种创建新进程的机制：</p>
+<ul>
+<li>fork<ul>
+<li>创建当前进程的一个副本，父进程与子进程只有PID不同。父进程的内存的内容被复制给子进程。为了使fork更高效，linux使用了<strong>写时复制</strong></li>
+</ul>
+</li>
+<li>exec<ul>
+<li>将一个新程序加载到当前进程的内存中并执行。旧的内存页将被刷出，其内容将被替换成新数据。然后开始执行新程序（那么getshell应该都是用这种方式开启shell的）</li>
+</ul>
+</li>
+</ul>
+<h4 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h4><p>线程，有时又被称为轻量级进程。它与进程共享同样的地址空间</p>
+<p>linux采用clone的方法创建线程。它的工作方式类似于fork，但是会进行更加精确的检查，以确定哪些资源是共享，哪些资源是线程独享的。在一定程度上，线程和进程是可以连续转换的</p>
+<h4 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h4><p>每个命名空间可以包含一个特定的PID集合，或可以提供文件系统不同的视图，在某个命名空间中挂载的卷不会传播到其他命名空间内</p>
+<p>我的理解就是，不同命名空间就如同科幻片中不同的地球一样，虽然都是地球，但彼此是分离的</p>
+<p>docker就使用了这一技术</p>
+<h3 id="地址空间与特权级别"><a href="#地址空间与特权级别" class="headerlink" title="地址空间与特权级别"></a>地址空间与特权级别</h3><p>linux将虚拟地址划分为两个部分，分别是内核空间和用户空间：</p>
+<table>
+<thead>
+<tr>
+<th align="center">内核空间</th>
+<th align="center">TASK_SIZE - $2^{32}$ or $2^{64}$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">用户空间</td>
+<td align="center">0 - TASK_SIZE</td>
+</tr>
+</tbody></table>
+<p>TASK_SIZE是一个特定于计算机体系结构的常数，不同架构的系统有不同的划分</p>
+<h4 id="特权级别"><a href="#特权级别" class="headerlink" title="特权级别"></a>特权级别</h4><p>linux只有两个不同的状态：核心态和用户态</p>
+<p>在用户态禁止访问核心态地址空间，从用户态转到核心态的切换通过系统调用的方式来完成，且系统调用的执行因具体系统而不同</p>
+<p>除了代表用户程序执行代码之外，内核还可以由异步硬件中断激活，然后在中断上下文运行</p>
+<p>除了普通进程，系统中还有内核线程在运行。内核线程不予任何特定的用户空间进程相关联，因此无权处理用户空间</p>
+<h4 id="虚拟和物理地址空间"><a href="#虚拟和物理地址空间" class="headerlink" title="虚拟和物理地址空间"></a>虚拟和物理地址空间</h4><p>用页表来为物理内存分配虚拟地址。物理内存页常被称为页帧</p>
+<h3 id="页表"><a href="#页表" class="headerlink" title="页表"></a>页表</h3><p>用来将虚拟地址空间映射到物理地址空间的数据结构称为页表，linux下用四级页表来管理映射关系</p>
+<h3 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h3><p>系统调用是用户进程与内核交互的经典方法。传统的系统调用按不同类别分组：</p>
+<ul>
+<li>进程管理：创建新进程，查询信息，调试</li>
+<li>信号：发送信号，定时器以及相关处理机制</li>
+<li>文件：创建、打开和关闭文件，从文件读取和向文件写入，查询信息和状态</li>
+<li>目录和文件系统：创建、删除和重命名目录，查询信息，链接，变更目录</li>
+<li>保护机制：读取和变更UID/GID，命名空间的处理</li>
+<li>定时器函数：定时器函数和统计信息</li>
+</ul>
+<p>所有这些函数都对内核提出了要求。这些函数不能以普通用户库的方式实现，因为需要特别的保护机制来保证系统稳定性或安全不受危及</p>
+<h3 id="设备驱动程序、块设备和字符设备"><a href="#设备驱动程序、块设备和字符设备" class="headerlink" title="设备驱动程序、块设备和字符设备"></a>设备驱动程序、块设备和字符设备</h3><p>对外设的访问可以利用<code>/dev</code>目录下的设备文件来完成，程序对设备的处理类似于常规文件</p>
+<p>外设可分为两类：</p>
+<ul>
+<li>字符设备：提供连续的数据流，应用程序可以顺序读取，通常不支持随机存取。此类设备支持按字节/字符来读写数据</li>
+<li>块设备：应用程序可以随机访问设备数据，程序可以自行确定读取数据的位置。但是，数据的读写只能以块（通常是512B）的倍数进行。其不支持基于字符的寻址</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>许多东西上课都学过，权当复习</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-10-29T16:20:17.954Z" itemprop="dateUpdated">2019-10-30 00:20:17</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/10/29/学习《深入linux内核架构》-1/" target="_blank" rel="external">http://dayjun.top/2019/10/29/学习《深入linux内核架构》-1/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/29/学习《深入linux内核架构》-1/&title=《学习《深入linux内核架构》(1)》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/29/学习《深入linux内核架构》-1/&title=《学习《深入linux内核架构》(1)》 — DaJun的Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/10/29/学习JS引擎/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">学习JS引擎</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#第一章-简介和概述"><span class="post-toc-number">1.</span> <span class="post-toc-text">第一章 简介和概述</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#内核的任务"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">内核的任务</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#实现策略"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">实现策略</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#内核的组成部分"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">内核的组成部分</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#进程、进程切换、调度"><span class="post-toc-number">1.3.1.</span> <span class="post-toc-text">进程、进程切换、调度</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#UNIX进程"><span class="post-toc-number">1.3.2.</span> <span class="post-toc-text">UNIX进程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#线程"><span class="post-toc-number">1.3.2.1.</span> <span class="post-toc-text">线程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#命名空间"><span class="post-toc-number">1.3.2.2.</span> <span class="post-toc-text">命名空间</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#地址空间与特权级别"><span class="post-toc-number">1.3.3.</span> <span class="post-toc-text">地址空间与特权级别</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#特权级别"><span class="post-toc-number">1.3.3.1.</span> <span class="post-toc-text">特权级别</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#虚拟和物理地址空间"><span class="post-toc-number">1.3.3.2.</span> <span class="post-toc-text">虚拟和物理地址空间</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#页表"><span class="post-toc-number">1.3.4.</span> <span class="post-toc-text">页表</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#系统调用"><span class="post-toc-number">1.3.5.</span> <span class="post-toc-text">系统调用</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#设备驱动程序、块设备和字符设备"><span class="post-toc-number">1.3.6.</span> <span class="post-toc-text">设备驱动程序、块设备和字符设备</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">2.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/29/学习《深入linux内核架构》-1/&title=《学习《深入linux内核架构》(1)》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/29/学习《深入linux内核架构》-1/&title=《学习《深入linux内核架构》(1)》 — DaJun的Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACs0lEQVR42u3aQU4DMQwFUO5/6bJFop1+2/FQpDcrVME0L4s4fPvrK34eP55Xn7z6q+ST5PPr7xo9eHh4eIOl/34S3gR5/Z5kPW9WgoeHh7fGu17W9QGdb1DyLcn3Jm/Dw8PD+xxevpSkYOSLxsPDw/vvvMmik2v0HxcGPDw8vICXX4h7V+1JKHxT1oKHh4cX8/Lj/nN+Xunv4eHh4Y276nkg22uV5Rfr5mrx8PDwFnj5gVsdJpjErzk4WSceHh7eWd6pUaf5gZ5QqyEIHh4e3h4vD1LztlkvDj51rS9UGzw8PLwirxclVFv+eUssCSnyrcTDw8Pb4OUt/AQ22abeMEFz/gsPDw9vzOv929+84Lb6/vman8S4eHh4eEd5+XBVvgX5eEF+gc5LUXN2DA8PD6/Iq5LypVTLQ36lLsQWeHh4eAu86tBAcvGdtMTy4KMAw8PDwzvKq152qxfrXqmosl9ewfHw8PCO8pKotNoq65WfXhmIZiLw8PDwjvKSCGA+LnBdEvILd/Vv8fDw8DZ4vdedaoZN4uBks/Dw8PDu4VXD3N4IVBXWi4Dx8PDwNnhJjJsfx9UBgjxWSCIPPDw8vHt4j/iZbEQvhK0Gx29Sajw8PLxDvOpRPg92N1pl0fvx8PDwbuT1qNXy04tCkgYeHh4e3gavOno1GYfqYfKtKdcxPDw8vAVe7yiPWvvxevKtfLKJeHh4eGu86pjUJPyt/uYoRsHDw8M7yusttxo6VPc7KSpRGwwPDw9vgddrROXhbxIH9y7Kkys7Hh4e3pw3uRafOrjzEpKHznh4eHjbvPmcUn70JwWgeTnGw8PD+3heNVbI35OXgTcFCQ8PD+8DeKfO6nkhiYJmPDw8vDVe9aWTVla1MIwaY3h4eHgLvN5/9L2WWB5AVEcKDgcWeHh4eM8//wZJG0rftgJmOAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
