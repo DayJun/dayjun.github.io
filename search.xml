@@ -5,7 +5,9 @@
     <entry>
       <title><![CDATA[学习《深入linux内核架构》(1)]]></title>
       <url>/2019/10/29/%E5%AD%A6%E4%B9%A0%E3%80%8A%E6%B7%B1%E5%85%A5linux%E5%86%85%E6%A0%B8%E6%9E%B6%E6%9E%84%E3%80%8B-1/</url>
-      <content type="html"><![CDATA[<h1 id="第一章-简介和概述"><a href="#第一章-简介和概述" class="headerlink" title="第一章 简介和概述"></a>第一章 简介和概述</h1><h2 id="内核的任务"><a href="#内核的任务" class="headerlink" title="内核的任务"></a>内核的任务</h2><ul>
+      <content type="html"><![CDATA[<h1 id="第一章-简介和概述"><a href="#第一章-简介和概述" class="headerlink" title="第一章 简介和概述"></a>第一章 简介和概述</h1><a id="more"></a>
+
+<h2 id="内核的任务"><a href="#内核的任务" class="headerlink" title="内核的任务"></a>内核的任务</h2><ul>
 <li>内核是应用程序所知道的层次结构中的最底层，时一台增强的计算机</li>
 <li>当若干程序在同一系统中并发运行时，可以将内核视为资源管理程序</li>
 <li>内核提供系统调用用于向计算机发送请求</li>
@@ -854,9 +856,9 @@
         
         <tags>
             
-            <tag> free </tag>
-            
             <tag> malloc </tag>
+            
+            <tag> free </tag>
             
             <tag> pwn </tag>
             
