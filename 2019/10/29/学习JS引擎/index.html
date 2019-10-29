@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>学习JS引擎 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="js">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>学习JS引擎</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">学习JS引擎</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-10-29T09:58:05.000Z" itemprop="datePublished" class="page-time">
+  2019-10-29
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-学习JS引擎"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">学习JS引擎</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-10-29 17:58:05" datetime="2019-10-29T09:58:05.000Z"  itemprop="datePublished">2019-10-29</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
+
+
+
+            
+	<span id="/2019/10/29/学习JS引擎/" class="leancloud_visitors" data-flag-title="学习JS引擎" title="学习JS引擎">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>参考：</p>
+<ul>
+<li><a href="http://www.phrack.org/papers/attacking_javascript_engines.html（英文）" target="_blank" rel="noopener">http://www.phrack.org/papers/attacking_javascript_engines.html（英文）</a></li>
+<li><a href="https://paper.seebug.org/207/#11-vmnan-boxing（翻译）" target="_blank" rel="noopener">https://paper.seebug.org/207/#11-vmnan-boxing（翻译）</a></li>
+</ul>
+<p>阅读这种英文文献，我感觉是必须边读边写的</p>
+<p>如果读翻译的话……可能是我理解力不够，反正我看不懂</p>
+<a id="more"></a>
+
+<h1 id="JS引擎回顾"><a href="#JS引擎回顾" class="headerlink" title="JS引擎回顾"></a>JS引擎回顾</h1><h2 id="VM"><a href="#VM" class="headerlink" title="VM"></a>VM</h2><p>js的VM具有可以直接执行发出的字节码的解释器。它的VM通常被实现为一个基于栈的机器，它的各种操作都是围绕着栈来实现的。这对我来说已经在wasm的反编译和v8字节码的反编译上见识过了</p>
+<h2 id="对象和数组"><a href="#对象和数组" class="headerlink" title="对象和数组"></a>对象和数组</h2><p>js的对象基本上是基于键值对存储的，可以用点运算符或者方括号来访问属性</p>
+<p>数组就是一个特殊的对象，它的键是连续的从0开始到比length小1的连续整型。比如声明一个数组<code>var a = [1,2,3]</code>，用<code>a[1]</code>访问会得到2，用<code>a[&#39;1&#39;]</code>访问也会得到2，但是用<code>a.1</code>来访问就会报错了</p>
+<p>在内部，js内核将属性和元素存储在通过一个内存区域中，并在对象本身中存储指向该区域的指针。这个指针指向区域的中间，区域的左边（低地址）是属性，右边（高地址）是元素，长度在指针的刚刚左边(?<em>?)，这看起来就像是蝴蝶(??</em>??)。程序员的奇妙思想，为什么不叫麻雀呢</p>
+<p>剩下的看不懂</p>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>函数执行的时候，会有两个特殊的变量，一个是<code>arguments</code>，用来访问函数的参数，另一个就是<code>this</code>，指向函数的调用者：</p>
+<ul>
+<li>如果函数以<code>new func()</code>的方式调用的话，this就指向一个新创建的对象，或者函数本身返回一个对象的话，this就指向这个对象，它具有<code>.prototype</code>属性</li>
+<li>如果函数以<code>obj.func()</code>的方式调用的话，this就指向的是obj</li>
+<li>如果函数以<code>func()</code>的方式效用的话，this就指向当前的全局对象，大概就是根对象吧</li>
+</ul>
+<p>函数还有两个有趣的属性，<code>.call</code>和<code>.apply</code>，它们可以让你用指定的this来调用函数。<code>call()</code>方法的作用和<code>apply()</code>方法类似，区别就是<code>call()</code>方法接受的是参数列表，而<code>apply()</code>方法接受的是一个参数数组。</p>
+<p>装饰器：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decorate</span>(<span class="params">func</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="built_in">arguments</span>.length; i++) &#123;</span><br><span class="line">            <span class="comment">// do something with arguments[i]</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> func.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内置函数和方法通常由两种方式之一实现：C++或者js本身</p>
+<p>例如，<code>Math.pow()</code>就是用c++实现的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">EncodedJSValue JSC_HOST_CALL mathProtoFuncPow(ExecState* exec)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ECMA 15.8.2.1.13</span></span><br><span class="line">    double arg = exec-&gt;argument(<span class="number">0</span>).toNumber(exec);</span><br><span class="line">    double arg2 = exec-&gt;argument(<span class="number">1</span>).toNumber(exec);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> JSValue::encode(JSValue(operationMathPow(arg, arg2)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>能看出来：</p>
+<ul>
+<li>本地js的特色</li>
+<li>参数是如何用<code>argument</code>函数提取的（若参数不存在则返回<code>undefined</code>）</li>
+<li>参数是如何转化为它们所需要的类型的</li>
+<li>实际的操作是如何本地数据类型来操作的</li>
+<li>结果是如何返回给<code>caller</code>的</li>
+</ul>
+<p>不同操作的核心实现都是被移入了分别的函数中，所以它们能直接被JIT编译的代码调用</p>
+<h1 id="CVE-2016-4622"><a href="#CVE-2016-4622" class="headerlink" title="CVE-2016-4622"></a><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4622" target="_blank" rel="noopener">CVE-2016-4622</a></h1><p>该漏洞是WebKit中JSC的一个漏洞</p>
+<p>问题出现在<code>Array.prototype.slice</code>函数（或者说，方法），它的用法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>];</span><br><span class="line"><span class="keyword">var</span> s = a.slice(<span class="number">1</span>,<span class="number">3</span>);</span><br><span class="line"><span class="comment">//是就是索引为[1,3)的所有元素，即[2,3]</span></span><br></pre></td></tr></table></figure>
+
+<p>为了可读性，原作者将ArrayPrototype.cpp的代码格式化之后精简了一下</p>
+<p>JSC中它的代码如下：</p>
+<p>照例写注释</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EncodedJSValue JSC_HOST_CALL <span class="title">arrayProtoFuncSlice</span><span class="params">(ExecState* exec)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* [[ 1 ]] */</span></span><br><span class="line">    JSObject* thisObj = exec-&gt;thisValue();</span><br><span class="line">    <span class="comment">//获取this指针，即调用它的数组</span></span><br><span class="line">    .toThis(exec, StrictMode)</span><br><span class="line">    .toObject(exec);</span><br><span class="line">    <span class="keyword">if</span> (!thisObj)</span><br><span class="line">        <span class="keyword">return</span> JSValue::encode(JSValue());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* [[ 2 ]] */</span></span><br><span class="line">    <span class="keyword">unsigned</span> length = getLength(exec, thisObj);</span><br><span class="line">    <span class="comment">//获取数组的长度</span></span><br><span class="line">    <span class="keyword">if</span> (exec-&gt;hadException())</span><br><span class="line">        <span class="keyword">return</span> JSValue::encode(jsUndefined());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* [[ 3 ]] */</span></span><br><span class="line">    <span class="keyword">unsigned</span> begin = argumentClampedIndexFromStartOrEnd(exec, <span class="number">0</span>, length);</span><br><span class="line">    <span class="keyword">unsigned</span> end =</span><br><span class="line">    argumentClampedIndexFromStartOrEnd(exec, <span class="number">1</span>, length, length);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* [[ 4 ]] */</span></span><br><span class="line">    <span class="comment">//检查是否使用了构造函数  (why?)</span></span><br><span class="line">    <span class="built_in">std</span>::pair&lt;SpeciesConstructResult, JSObject*&gt; speciesResult =</span><br><span class="line">    speciesConstructArray(exec, thisObj, end - begin);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// We can only get an exception if we call some user function.</span></span><br><span class="line">    <span class="keyword">if</span> (UNLIKELY(speciesResult.first ==</span><br><span class="line">                 SpeciesConstructResult::Exception))</span><br><span class="line">        <span class="keyword">return</span> JSValue::encode(jsUndefined());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* [[ 5 ]] */</span></span><br><span class="line">    <span class="comment">//如果数组是具有密集存储的本地数据，则使用fastslice进行切片</span></span><br><span class="line">    <span class="keyword">if</span> (LIKELY(speciesResult.first == SpeciesConstructResult::FastPath &amp;&amp;</span><br><span class="line">               isJSArray(thisObj))) &#123;</span><br><span class="line">        <span class="keyword">if</span> (JSArray* result =</span><br><span class="line">            asArray(thisObj)-&gt;fastSlice(*exec, begin, end - begin))</span><br><span class="line">            <span class="keyword">return</span> JSValue::encode(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//或者使用简单循环来切片</span></span><br><span class="line">    JSObject* result;</span><br><span class="line">    <span class="keyword">if</span> (speciesResult.first == SpeciesConstructResult::CreatedObject)</span><br><span class="line">        result = speciesResult.second;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        result = constructEmptyArray(exec, <span class="literal">nullptr</span>, end - begin);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unsigned</span> n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">unsigned</span> k = begin; k &lt; end; k++, n++) &#123;</span><br><span class="line">        JSValue v = getProperty(exec, thisObj, k);</span><br><span class="line">        <span class="keyword">if</span> (exec-&gt;hadException())</span><br><span class="line">            <span class="keyword">return</span> JSValue::encode(jsUndefined());</span><br><span class="line">        <span class="keyword">if</span> (v)</span><br><span class="line">            result-&gt;putDirectIndex(exec, n, v);</span><br><span class="line">    &#125;</span><br><span class="line">    setLength(exec, result, n);</span><br><span class="line">    <span class="keyword">return</span> JSValue::encode(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么，这个漏洞就和plaidCTF那个很像了</p>
+<p>由于获取length位于获取begin和end之前，而如果在获取了begin和end的时候修改了数组长度，那么就会因为实际数组长度比程序以为的数组长度小，就会导致数组越界</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-10-29T12:42:03.559Z" itemprop="dateUpdated">2019-10-29 20:42:03</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/10/29/学习JS引擎/" target="_blank" rel="external">http://dayjun.top/2019/10/29/学习JS引擎/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/29/学习JS引擎/&title=《学习JS引擎》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/29/学习JS引擎/&title=《学习JS引擎》 — DaJun的Blog&source=参考：
+
+http://www.phrack.org/papers/attacking_javascript_engines.html（英文）
+https..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/10/27/学习-Plaid-CTF-s-roll-a-d8/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">学习 Plaid CTF&#39;s roll a d8</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#JS引擎回顾"><span class="post-toc-number">1.</span> <span class="post-toc-text">JS引擎回顾</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#VM"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">VM</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#对象和数组"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">对象和数组</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#函数"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">函数</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#CVE-2016-4622"><span class="post-toc-number">2.</span> <span class="post-toc-text">CVE-2016-4622</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/29/学习JS引擎/&title=《学习JS引擎》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/29/学习JS引擎/&title=《学习JS引擎》 — DaJun的Blog&source=参考：
+
+http://www.phrack.org/papers/attacking_javascript_engines.html（英文）
+https..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACNElEQVR42u3aW24kIRAEQN//0rMHsKAzabzSQPA18rQx0ZZK9eDnJ16fwZo/+fvno91GT25eGBgYX8v4TNfocKPP858kO8zBw5eIgYFxAWMUwfJn5gE3Cdxz6sOZMTAwMOKA2CaCu14fBgYGxlpROg/H+SvAwMDAaLfOW2y7AvfmWhwDA+MLGXnX/f9//pP5BgYGxlcxPuVqi9K1RLA+FQYGxtGMPMC9GUBuaKUlySgGBsahjHyImJSR7ZP5y3qAYWBgHM3Ig93a5Yl58pckmouFLgYGxkGMtdZ8O+bcG6yHqSEGBsbRjPmma5ctkpfSlsfDbzEwMC5grF132NDnK+vQh9siGBgYhzLao8y32xVG80Hpw38GAwPjCMb7qw95ayx5oxvujGBgYFzDyIvbPH3Mk786BGNgYBzNaIeXbwYJ7e/mYAwMjBsYSanZhuA87cuba0WjDQMD4yBGe62hDZH5nu0gYZjhYmBgHMdor1a0RW9RfMZreE4MDIwrGe1IoL0Elpe7STMOAwPjTkbesl8Lke2A4aHphoGBcQ3jr5PCtQFnVCRjYGBcwIjmnGVT7E3wzYesGBgYZzM+5Vobea6lnvnfxcDAOJvRFqJ54tgmeWuXPzAwMO5htEF214WMfLfFdhsGBsZxjDcNrzwpnCeCbRkcfYGBgXElY1cAbY/7sA8GBgbG0pCyDbivRqEYGBgXMNpCNClr2yfzMSoGBsZtjDeJ2loi2AboxVskGBgYJzD+ARvBiYd20PZGAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
