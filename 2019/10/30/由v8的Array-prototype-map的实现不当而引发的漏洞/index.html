@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>由v8的Array.prototype.map的实现不当而引发的漏洞 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="chrome,v8,漏洞复现">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":false,"appid":null,"appkey":null,"notify":true,"verify":true,"placeholder":"give me some sugers plz...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>由v8的Array.prototype.map的实现不当而引发的漏洞</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">由v8的Array.prototype.map的实现不当而引发的漏洞</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-10-30T08:20:39.000Z" itemprop="datePublished" class="page-time">
+  2019-10-30
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-由v8的Array-prototype-map的实现不当而引发的漏洞"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">由v8的Array.prototype.map的实现不当而引发的漏洞</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-10-30 16:20:39" datetime="2019-10-30T08:20:39.000Z"  itemprop="datePublished">2019-10-30</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/browser/">browser</a></li></ul>
+
+
+
+            
+	<span id="/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/" class="leancloud_visitors" data-flag-title="由v8的Array.prototype.map的实现不当而引发的漏洞" title="由v8的Array.prototype.map的实现不当而引发的漏洞">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>参考链接：</p>
+<ul>
+<li><a href="https://halbecaf.com/2017/05/24/exploiting-a-v8-oob-write/" target="_blank" rel="noopener">https://halbecaf.com/2017/05/24/exploiting-a-v8-oob-write/</a></li>
+</ul>
+<a id="more"></a>
+
+<h1 id="查看commit"><a href="#查看commit" class="headerlink" title="查看commit"></a>查看commit</h1><p>commit: <a href="https://chromium.googlesource.com/v8/v8.git/+/192984ea88badc0c02e22e528b1243a9efa46f90" target="_blank" rel="noopener">https://chromium.googlesource.com/v8/v8.git/+/192984ea88badc0c02e22e528b1243a9efa46f90</a></p>
+<h1 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h1><p>结合漏洞发现者的博客，知道漏洞函数是<code>GenerateIteratingArrayBuiltinBody</code></p>
+<p>照例写注释</p>
+<p>src/builtins/builtins-array-gen.cc</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">GenerateIteratingArrayBuiltinBody</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">char</span>* name, <span class="keyword">const</span> BuiltinResultGenerator&amp; generator,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> CallResultProcessor&amp; processor, <span class="keyword">const</span> PostLoopAction&amp; action,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> Callable&amp; slow_case_continuation,</span></span></span><br><span class="line"><span class="function"><span class="params">    ForEachDirection direction = ForEachDirection::kForward)</span> </span>&#123;</span><br><span class="line">  Label non_array(this), slow(this, &#123;&amp;k_, &amp;a_, &amp;to_&#125;),</span><br><span class="line">      array_changes(<span class="keyword">this</span>, &#123;&amp;k_, &amp;a_, &amp;to_&#125;);</span><br><span class="line">  <span class="comment">// TODO(danno): Seriously? Do we really need to throw the exact error</span></span><br><span class="line">  <span class="comment">// message on null and undefined so that the webkit tests pass?</span></span><br><span class="line">  <span class="function">Label <span class="title">throw_null_undefined_exception</span><span class="params">(<span class="keyword">this</span>, Label::kDeferred)</span></span>;</span><br><span class="line">  GotoIf(WordEqual(receiver(), NullConstant()),</span><br><span class="line">         &amp;throw_null_undefined_exception);</span><br><span class="line">  GotoIf(WordEqual(receiver(), UndefinedConstant()),</span><br><span class="line">         &amp;throw_null_undefined_exception);</span><br><span class="line">  <span class="comment">// By the book: taken directly from the ECMAScript 2015 specification</span></span><br><span class="line">  <span class="comment">// 1. Let O be ToObject(this value).</span></span><br><span class="line">  <span class="comment">// 2. ReturnIfAbrupt(O)</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 原本的注释也写出来了，就是让 o_ = this</span></span><br><span class="line"></span><br><span class="line">  o_ = CallStub(CodeFactory::ToObject(isolate()), context(), receiver());</span><br><span class="line">  <span class="comment">// 3. Let len be ToLength(Get(O, "length")).</span></span><br><span class="line">  <span class="comment">// 4. ReturnIfAbrupt(len).</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 创建了一个Tagged变量，也就是标记指针变量，作用是存储数组的长度</span></span><br><span class="line"></span><br><span class="line">  VARIABLE(merged_length, MachineRepresentation::kTagged);</span><br><span class="line">  Label has_length(this, &amp;merged_length), not_js_array(this);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果o_不是JS的Array，则跳到not_js_array分支</span></span><br><span class="line"></span><br><span class="line">  GotoIf(DoesntHaveInstanceType(o(), JS_ARRAY_TYPE), &amp;not_js_array);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将数组的长度给与marge_length</span></span><br><span class="line"></span><br><span class="line">  merged_length.Bind(LoadJSArrayLength(o()));</span><br><span class="line">  Goto(&amp;has_length);</span><br><span class="line">  BIND(&amp;not_js_array);</span><br><span class="line">  Node* len_property =</span><br><span class="line">      GetProperty(context(), o(), isolate()-&gt;factory()-&gt;length_string());</span><br><span class="line">  merged_length.Bind(</span><br><span class="line">      CallStub(CodeFactory::ToLength(isolate()), context(), len_property));</span><br><span class="line">  Goto(&amp;has_length);</span><br><span class="line">  BIND(&amp;has_length);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// len_就是数组的长度</span></span><br><span class="line">  len_ = merged_length.value();</span><br><span class="line">  <span class="comment">// 5. If IsCallable(callbackfn) is false, throw a TypeError exception.</span></span><br><span class="line">  <span class="function">Label <span class="title">type_exception</span><span class="params">(<span class="keyword">this</span>, Label::kDeferred)</span></span>;</span><br><span class="line">  <span class="function">Label <span class="title">done</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 并不知道这个callbackfn是做什么的</span></span><br><span class="line"></span><br><span class="line">  GotoIf(TaggedIsSmi(callbackfn()), &amp;type_exception);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这一步看名字是在获取map，根据callbackfn()的返回值</span></span><br><span class="line">  <span class="comment">// 有点混淆，究竟是对象结构的那个map，还是成员函数的那个map</span></span><br><span class="line"></span><br><span class="line">  Branch(IsCallableMap(LoadMap(callbackfn())), &amp;done, &amp;type_exception);</span><br><span class="line">  BIND(&amp;throw_null_undefined_exception);</span><br><span class="line">  &#123;</span><br><span class="line">    CallRuntime(</span><br><span class="line">        Runtime::kThrowTypeError, context(),</span><br><span class="line">        SmiConstant(MessageTemplate::kCalledOnNullOrUndefined),</span><br><span class="line">        HeapConstant(isolate()-&gt;factory()-&gt;NewStringFromAsciiChecked(name)));</span><br><span class="line">    Unreachable();</span><br><span class="line">  &#125;</span><br><span class="line">  BIND(&amp;type_exception);</span><br><span class="line">  &#123;</span><br><span class="line">    CallRuntime(Runtime::kThrowTypeError, context(),</span><br><span class="line">                SmiConstant(MessageTemplate::kCalledNonCallable),</span><br><span class="line">                callbackfn());</span><br><span class="line">    Unreachable();</span><br><span class="line">  &#125;</span><br><span class="line">  BIND(&amp;done);</span><br><span class="line">  <span class="comment">// 6. If thisArg was supplied, let T be thisArg; else let T be undefined.</span></span><br><span class="line">  <span class="comment">// [Already done by the arguments adapter]</span></span><br><span class="line">  <span class="keyword">if</span> (direction == ForEachDirection::kForward) &#123;</span><br><span class="line">    <span class="comment">// 7. Let k be 0.</span></span><br><span class="line">    k_.Bind(SmiConstant(<span class="number">0</span>));</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    k_.Bind(NumberDec(len()));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 漏洞发现者说generator是map的那个参数，等会看一下</span></span><br><span class="line"></span><br><span class="line">  a_.Bind(generator(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 漏洞发现者解释说，这个函数是用来使用o_的迭代器来做映射操作，对数组的每个值调用处理器然后将结果写入a_</span></span><br><span class="line"></span><br><span class="line">  HandleFastElements(processor, action, &amp;slow, direction);</span><br><span class="line">  BIND(&amp;slow);</span><br><span class="line">  Node* result =</span><br><span class="line">      CallStub(slow_case_continuation, context(), receiver(), callbackfn(),</span><br><span class="line">               this_arg(), a_.value(), o(), k_.value(), len(), to_.value());</span><br><span class="line">  ReturnFromBuiltin(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>src/builtins/builtins-array-gen.cc</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">TF_BUILTIN(ArrayMap, ArrayBuiltinCodeStubAssembler) &#123;</span><br><span class="line">  Node* argc =</span><br><span class="line">      ChangeInt32ToIntPtr(Parameter(BuiltinDescriptor::kArgumentsCount));</span><br><span class="line">  <span class="function">CodeStubArguments <span class="title">args</span><span class="params">(<span class="keyword">this</span>, argc)</span></span>;</span><br><span class="line">  Node* context = Parameter(BuiltinDescriptor::kContext);</span><br><span class="line">  Node* new_target = Parameter(BuiltinDescriptor::kNewTarget);</span><br><span class="line">  Node* receiver = args.GetReceiver();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 原来callbackfn就是callback function，即map的第一个参数</span></span><br><span class="line">  <span class="comment">// this_arg就是map函数的可选参数</span></span><br><span class="line"></span><br><span class="line">  Node* callbackfn = args.GetOptionalArgumentValue(<span class="number">0</span>, UndefinedConstant());</span><br><span class="line">  Node* this_arg = args.GetOptionalArgumentValue(<span class="number">1</span>, UndefinedConstant());</span><br><span class="line">  InitIteratingArrayBuiltinBody(context, receiver, callbackfn, this_arg,</span><br><span class="line">                                new_target, argc);</span><br><span class="line">  GenerateIteratingArrayBuiltinBody(</span><br><span class="line">      <span class="string">"Array.prototype.map"</span>, &amp;ArrayBuiltinCodeStubAssembler::MapResultGenerator,</span><br><span class="line">      &amp;ArrayBuiltinCodeStubAssembler::MapProcessor,</span><br><span class="line">      &amp;ArrayBuiltinCodeStubAssembler::NullPostLoopAction,</span><br><span class="line">      Builtins::CallableFor(isolate(), Builtins::kArrayMapLoopContinuation));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后重点就应该是这个<code>&amp;ArrayBuiltinCodeStubAssembler::MapResultGenerator</code>，我们来看看它是啥</p>
+<p>src/builtins/builtins-array-gen.cc</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Node* <span class="title">MapResultGenerator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 5. Let A be ? ArraySpeciesCreate(O, len).</span></span><br><span class="line">    <span class="keyword">return</span> ArraySpeciesCreate(context(), o(), len_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>src/code-stub-assembler.cc</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Node* CodeStubAssembler::ArraySpeciesCreate(Node* context, Node* originalArray,</span><br><span class="line">                                            Node* len) &#123;</span><br><span class="line">  <span class="comment">// TODO(mvstanton): Install a fast path as well, which avoids the runtime</span></span><br><span class="line">  <span class="comment">// call.</span></span><br><span class="line">  Node* constructor =</span><br><span class="line">      CallRuntime(Runtime::kArraySpeciesConstructor, context, originalArray);</span><br><span class="line">  <span class="keyword">return</span> ConstructJS(CodeFactory::Construct(isolate()), context, constructor,</span><br><span class="line">                     len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我已经有点看不懂了，但是也似乎有点懂了</p>
+<h2 id="Poc"><a href="#Poc" class="headerlink" title="Poc"></a>Poc</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Copyright 2017 the V8 project authors. All rights reserved.</span></span><br><span class="line"><span class="comment">// Use of this source code is governed by a BSD-style license that can be</span></span><br><span class="line"><span class="comment">// found in the LICENSE file.</span></span><br><span class="line"><span class="comment">// Flags: --verify-heap</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Array1</span> <span class="keyword">extends</span> <span class="title">Array</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(len) &#123;</span><br><span class="line">      <span class="keyword">super</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyArray</span> <span class="keyword">extends</span> <span class="title">Array</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> <span class="keyword">get</span> [Symbol.species]() &#123;</span><br><span class="line">      <span class="keyword">return</span> Array1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">a = <span class="keyword">new</span> MyArray();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; i++) &#123;</span><br><span class="line">  a.push(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line">a.map(<span class="function"><span class="keyword">function</span>(<span class="params">x</span>) </span>&#123; <span class="keyword">return</span> <span class="number">42</span>; &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>看起来就是，自定了一个数组的构造函数，不管长度是多少都只会生成长度为1的数组</p>
+<p>for循环将数组的长度增长到了100000，然后调用map函数的时候，由于它会再次调用构造函数，但是程序以为的长度却是现在数组的长度，就会造成，生成了一个程序以为是100000长度但实际上是1长度的数组，就造成了oob</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>v8的代码真难读，各种调用各种跳转，太难了……</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-10-30T11:46:48.832Z" itemprop="dateUpdated">2019-10-30 19:46:48</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/" target="_blank" rel="external">http://dayjun.top/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞复现/">漏洞复现</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/&title=《由v8的Array.prototype.map的实现不当而引发的漏洞》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/&title=《由v8的Array.prototype.map的实现不当而引发的漏洞》 — DaJun的Blog&source=参考链接：
+
+https://halbecaf.com/2017/05/24/exploiting-a-v8-oob-write/
+" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/10/29/学习《深入linux内核架构》-1/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">学习《深入linux内核架构》(1)</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#查看commit"><span class="post-toc-number">1.</span> <span class="post-toc-text">查看commit</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#漏洞原理"><span class="post-toc-number">2.</span> <span class="post-toc-text">漏洞原理</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Poc"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">Poc</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">3.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/&title=《由v8的Array.prototype.map的实现不当而引发的漏洞》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/10/30/由v8的Array-prototype-map的实现不当而引发的漏洞/&title=《由v8的Array.prototype.map的实现不当而引发的漏洞》 — DaJun的Blog&source=参考链接：
+
+https://halbecaf.com/2017/05/24/exploiting-a-v8-oob-write/
+" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADN0lEQVR42u3aQW7jMBAEQP//097rHiK5eygDEl08BYFisRggk+nh6xWv93/r6DtHz7fPHH3nfG+vbyxsbGzsh7Dfp+v8mfNN5E8m+0k+P7FgY2Nj78pOAEfPzw4rgbXHVxwxNjY29g+zk0Zl1lS0xRIbGxsbe6WArR9KXhrP94CNjY2NnYdKbcQ/2/r6wV2cpWFjY2Pfnp1PRe//9Vfm29jY2Ng3Zr/LNWtX2tLY7qRWYGNjY2/EXonsZ4OE2RhgdnnoQzODjY2NvRH7PEZPqPlGV0KiNt7K34iNjY39dPYsi2qHsrPWJW9X6vKGjY2NvQV7do2mHffOmpP2Cs4FpQsbGxv7gez8j34+ZM0/IWlv2itExa6wsbGxt2DnA9QV0qwgrQRVUSuCjY2NvRG7Df1XLtPM4qS2fH74ZGxsbOyN2PnY9Rulq72s0wZV2NjY2L/DnkVCs6Fv/sZZmNWOGbCxsbH3YL/jNYt48lHueSOxMoTAxsbG3pWdvLKN6fNwfzY2bvf8x/PY2NjYm7LzLdb9TTnQnV0GKkodNjY29kbsq8L62Ri4DfFng+QPh46NjY29Bbsd1q40EpeNZmf52cqMGhsbG/v27KtKV1Ja2qFs3oTk78XGxsbej50Dkis4K6R3ufKLRK+V3xs2Njb2LdntP/HtADhvNtqjzPdzmJ9hY2Njb8Fug/5vJDNJ5vPFn8LGxsZ+ODsKXxYKz+xo2qs5+W6xsbGxd2W3A9drx7dL94yCwvbHe7GxsbG3Y6/ESbO4J7/u0+4hutyDjY2NvRF7/TpO23hcNcRtj+aV/zA2Njb2Y9nrI4G8JWh/DbP46cPbsbGxsbdjz9qJlXBnPU5aGQBjY2Nj783Oh6l5c9IGSW3k1IZW2NjY2HuwZxFPvpLh7vkRJ01F/hZsbGzs/dgzQLKJpNjMrniuDJtrPDY2NvZD2O3L2jFAW8byuD8vVIcdGDY2NvZG7DYMmoXy7QhhNiquszRsbGzsH2Pnh9KWlnYMkJTYD4kaNjY29k+yZ61LUpbarGt2SQgbGxt7V3bCyEOfq0bC+ZWg5OCwsbGxd2WvlIrkmK6KnFaQw4s72NjY2Hdn/wOJ785KTPC/PwAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
