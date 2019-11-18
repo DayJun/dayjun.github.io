@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>关于patch elf文件的一些思考 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="ELF">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>关于patch elf文件的一些思考</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">关于patch elf文件的一些思考</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-11-18T04:56:00.000Z" itemprop="datePublished" class="page-time">
+  2019-11-18
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-关于patch-elf文件的一些思考"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">关于patch elf文件的一些思考</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-11-18 12:56:00" datetime="2019-11-18T04:56:00.000Z"  itemprop="datePublished">2019-11-18</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2019/11/18/关于patch-elf文件的一些思考/" class="leancloud_visitors" data-flag-title="关于patch elf文件的一些思考" title="关于patch elf文件的一些思考">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2019/11/18/关于patch-elf文件的一些思考/#comment">
+            <span class="valine-comment-count" data-xid="/2019/11/18/关于patch-elf文件的一些思考/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>近日，为了能在AWD中对二进制文件进行patch，特意研究了一下elf文件结构，并找寻patch新代码的方法</p>
+<a id="more"></a>
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>新增一个<code>Segment</code>到文件最末尾</p>
+<p>需要做的有以下几点：</p>
+<ol>
+<li>分析原文件，得到<code>Program Header</code></li>
+<li>在文件最末尾添加新的<code>Program Header</code>，原<code>Program Header</code>废置，并再添加一个<code>LOAD Segment</code></li>
+<li>此<code>LOAD Segment</code>的<code>p_offset</code>字段为此时文件最末尾，将其它字段设置妥当</li>
+<li>修改<code>ELF Header</code>中的<code>e_phoffset</code>和<code>e_phnum</code>，使它适应新的<code>Program Header</code></li>
+<li>在文件最末尾也就是新添加的<code>LOAD Segment</code>的<code>p_offset</code>所指添加code</li>
+</ol>
+<p>这样就基本可以做到添加一个<code>LOAD Segment</code>来加载新patch的代码到内存了</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>尽管<code>readelf</code>和<code>objdump</code>都正常加载并输出了，但是如果想要执行文件却会报错。原因是加载elf文件过程中，<code>dl_main</code>或者其之前的某个函数想要载入一个并未被映射到虚拟内存空间的内存，就导致了报错</p>
+<p>具体原因我并未查明，我只知道这个地址是<code>.text</code>段的地址</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> capstone <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> capstone.x86 <span class="keyword">import</span> X86_INS_PUSH</span><br><span class="line"><span class="keyword">from</span> ctypes <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf32_Ehdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"e_ident"</span>, c_ubyte * <span class="number">16</span>),</span><br><span class="line">        (<span class="string">"e_type"</span>, c_ushort), </span><br><span class="line">        (<span class="string">"e_machine"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_version"</span>, c_uint),</span><br><span class="line">        (<span class="string">"e_entry"</span>, c_uint),</span><br><span class="line">        (<span class="string">"e_phoff"</span>, c_uint),    <span class="comment"># program header offset</span></span><br><span class="line">        (<span class="string">"e_shoff"</span>, c_uint),    <span class="comment"># section header offset</span></span><br><span class="line">        (<span class="string">"e_flags"</span>, c_uint),</span><br><span class="line">        (<span class="string">"e_ehsize"</span>, c_ushort), <span class="comment"># elf header's size</span></span><br><span class="line">        (<span class="string">"e_phentsize"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_phnum"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_shentsize"</span>, c_ushort),  <span class="comment"># a section header's size</span></span><br><span class="line">        (<span class="string">"e_shnum"</span>, c_ushort),  <span class="comment"># section header's num</span></span><br><span class="line">        (<span class="string">"e_shstrndx"</span>, c_ushort)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf64_Ehdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"e_ident"</span>, c_ubyte * <span class="number">16</span>),</span><br><span class="line">        (<span class="string">"e_type"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_machine"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_version"</span>, c_uint),</span><br><span class="line">        (<span class="string">"e_entry"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"e_phoff"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"e_shoff"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"e_flags"</span>, c_uint),</span><br><span class="line">        (<span class="string">"e_ehsize"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_phentsize"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_phnum"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_shentsize"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_shnum"</span>, c_ushort),</span><br><span class="line">        (<span class="string">"e_shstrndx"</span>, c_ushort)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf32_Phdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"p_type"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_flags"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_offset"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_vaddr"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_paddr"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_filesz"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_memsz"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_align"</span>, c_uint)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf64_Phdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"p_type"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_flags"</span>, c_uint),</span><br><span class="line">        (<span class="string">"p_offset"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"p_vaddr"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"p_paddr"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"p_filesz"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"p_memsz"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"p_align"</span>, c_ulonglong)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf32_Shdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"sh_name"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_type"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_flags"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_addr"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_offset"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_size"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_link"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_info"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_addralign"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_entsize"</span>, c_uint)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf64_Shdr</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"sh_name"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_type"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_flags"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"sh_addr"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"sh_offset"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"sh_size"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"sh_link"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_info"</span>, c_uint),</span><br><span class="line">        (<span class="string">"sh_addralign"</span>, c_ulonglong),</span><br><span class="line">        (<span class="string">"sh_entsize"</span>, c_ulonglong)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Elf32_rel</span><span class="params">(LittleEndianStructure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"r_offset"</span>, c_uint),</span><br><span class="line">        (<span class="string">"r_info"</span>, c_uint)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Plt_struct</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, plt_address, got_address, name)</span>:</span></span><br><span class="line">        self.plt_address = plt_address</span><br><span class="line">        self.got_address = got_address</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ELF</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, binary)</span>:</span></span><br><span class="line">        self.bin = bytearray(binary)</span><br><span class="line">        self.modifiedBin = []</span><br><span class="line">        self.elfHeader = <span class="literal">None</span></span><br><span class="line">        self.mode = <span class="literal">None</span></span><br><span class="line">        self.arch = <span class="literal">None</span></span><br><span class="line">        self.entry = <span class="literal">None</span></span><br><span class="line">        self.modifiedPos = <span class="number">0</span></span><br><span class="line">        self.programHeaders = []</span><br><span class="line">        self.sectionHeaders = []</span><br><span class="line">        self.sortSectionHeaders = []</span><br><span class="line">        self.plt = []</span><br><span class="line">        self.judgeClass()</span><br><span class="line">        self.judgeMachine()</span><br><span class="line">        self.judgeMagic()</span><br><span class="line">        self.setEentry()</span><br><span class="line">        self.getPlt()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86 elf header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set32HeaderElf</span><span class="params">(self)</span>:</span></span><br><span class="line">        elf32_ehdr = self.bin[<span class="number">0</span>:]</span><br><span class="line">        self.elfHeader = Elf32_Ehdr.from_buffer_copy(elf32_ehdr)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86_64 header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set64HeaderElf</span><span class="params">(self)</span>:</span></span><br><span class="line">        elf64_ehdr = self.bin[<span class="number">0</span>:]</span><br><span class="line">        self.elfHeader = Elf64_Ehdr.from_buffer_copy(elf64_ehdr)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># judge magic</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">judgeMagic</span><span class="params">(self)</span>:</span></span><br><span class="line">        magic = bytearray(self.elfHeader.e_ident[<span class="number">0</span>:<span class="number">4</span>])</span><br><span class="line">        <span class="keyword">if</span> magic != <span class="string">'\x7fELF'</span>:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">"only support ELF"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># jugge it is x86 or x86_64</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">judgeClass</span><span class="params">(self)</span>:</span></span><br><span class="line">        ei_class = self.bin[<span class="number">4</span>]</span><br><span class="line">        <span class="keyword">if</span> ei_class == <span class="number">0x1</span>:</span><br><span class="line">            self.mode = CS_MODE_32</span><br><span class="line">            self.set32HeaderElf()</span><br><span class="line">            self.set32HeaderProgram()</span><br><span class="line">            self.set32HeaderSection()</span><br><span class="line">        <span class="keyword">elif</span> ei_class == <span class="number">0x2</span>:</span><br><span class="line">            self.mode = CS_MODE_64</span><br><span class="line">            self.set64HeaderElf()</span><br><span class="line">            self.set64HeaderProgram()</span><br><span class="line">            self.set64HeaderSection()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">"unknown class whitch is not x86 or x86-64"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># just only support x86 or x86_64</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">judgeMachine</span><span class="params">(self)</span>:</span></span><br><span class="line">        e_machine = self.elfHeader.e_machine</span><br><span class="line">        <span class="keyword">if</span> e_machine == <span class="number">3</span> <span class="keyword">or</span> e_machine == <span class="number">62</span>:</span><br><span class="line">            self.arch = CS_ARCH_X86</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">"just only support EM_386 or EM_X86_64"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set the entry of the program</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setEentry</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.entry = self.elfHeader.e_entry</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86 program header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set32HeaderProgram</span><span class="params">(self)</span>:</span></span><br><span class="line">        e_phnum = self.elfHeader.e_phnum</span><br><span class="line">        e_phoff = self.elfHeader.e_phoff</span><br><span class="line">        elf32_phdr = self.bin[e_phoff:]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(e_phnum):</span><br><span class="line">            self.programHeaders.append(Elf32_Phdr.from_buffer_copy(elf32_phdr))</span><br><span class="line">            elf32_phdr = elf32_phdr[self.elfHeader.e_phentsize:]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86_64 program header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set64HeaderProgram</span><span class="params">(self)</span>:</span></span><br><span class="line">        e_phnum = self.elfHeader.e_phnum</span><br><span class="line">        e_phoff = self.elfHeader.e_phoff</span><br><span class="line">        elf64_phdr = self.bin[e_phoff:]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(e_phnum):</span><br><span class="line">            self.programHeaders.append(Elf64_Phdr.from_buffer_copy(elf64_phdr))</span><br><span class="line">            elf64_phdr = elf64_phdr[self.elfHeader.e_phentsize:]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86 section header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set32HeaderSection</span><span class="params">(self)</span>:</span></span><br><span class="line">        e_shnum = self.elfHeader.e_shnum</span><br><span class="line">        e_shoff = self.elfHeader.e_shoff</span><br><span class="line">        elf32_shdr = self.bin[e_shoff:]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(e_shnum):</span><br><span class="line">            self.sectionHeaders.append(Elf32_Shdr.from_buffer_copy(elf32_shdr))</span><br><span class="line">            elf32_shdr = elf32_shdr[self.elfHeader.e_shentsize:]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set x86_64 section header</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set64HeaderSection</span><span class="params">(self)</span>:</span></span><br><span class="line">        e_shnum = self.elfHeader.e_shnum</span><br><span class="line">        e_shoff = self.elfHeader.e_shoff</span><br><span class="line">        elf64_shdr = self.bin[e_shoff:]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(e_shnum):</span><br><span class="line">            self.sectionHeaders.append(Elf64_Shdr.from_buffer_copy(elf64_shdr))</span><br><span class="line">            elf64_shdr = elf64_shdr[self.elfHeader.e_shentsize:]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># find section by it's name</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">findSectionByName</span><span class="params">(self, section_name)</span>:</span></span><br><span class="line">        e_shstrndx = self.elfHeader.e_shstrndx</span><br><span class="line">        shstrtab = self.sectionHeaders[e_shstrndx]</span><br><span class="line">        offset = shstrtab.sh_offset</span><br><span class="line">        shstrtab_bytes = self.bin[offset:]</span><br><span class="line">        <span class="keyword">for</span> section <span class="keyword">in</span> self.sectionHeaders:</span><br><span class="line">            idx = section.sh_name</span><br><span class="line">            <span class="keyword">while</span> shstrtab_bytes[idx] != <span class="number">0</span>:</span><br><span class="line">                idx += <span class="number">1</span></span><br><span class="line">            shstr = shstrtab_bytes[section.sh_name:idx]</span><br><span class="line">            <span class="keyword">if</span> shstr == section_name:</span><br><span class="line">                <span class="keyword">return</span> section</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">"no such section called "</span> + section_name)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># get the content of the section</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getSectionContent</span><span class="params">(self, section)</span>:</span></span><br><span class="line">        offset = section.sh_offset</span><br><span class="line">        size = section.sh_size</span><br><span class="line">        content = self.bin[offset:offset+size]</span><br><span class="line">        <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getLOADSegment</span><span class="params">(self)</span>:</span></span><br><span class="line">        LOAD = []</span><br><span class="line">        ph = self.programHeaders</span><br><span class="line">        <span class="keyword">for</span> segment <span class="keyword">in</span> ph:</span><br><span class="line">            <span class="keyword">if</span> segment.p_type == <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> segment</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">pack</span><span class="params">(self, d)</span>:</span></span><br><span class="line">        res = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> field_name, field_type <span class="keyword">in</span> d._fields_:</span><br><span class="line">            t = field_type</span><br><span class="line">            i = getattr(d, field_name)</span><br><span class="line">            <span class="keyword">if</span> t == c_uint:</span><br><span class="line">                res += struct.pack(<span class="string">'I'</span>, i)</span><br><span class="line">            <span class="keyword">elif</span> t == c_ubyte:</span><br><span class="line">                res += struct.pack(<span class="string">'B'</span>, i)</span><br><span class="line">            <span class="keyword">elif</span> t == c_ulonglong:</span><br><span class="line">                res += struct.pack(<span class="string">'Q'</span>, i)</span><br><span class="line">            <span class="keyword">elif</span> t == c_ushort:</span><br><span class="line">                res += struct.pack(<span class="string">'H'</span>, i)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    length = field_type._length_</span><br><span class="line">                    <span class="keyword">for</span> item <span class="keyword">in</span> i:</span><br><span class="line">                        res += struct.pack(<span class="string">'b'</span>, item)</span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    <span class="keyword">print</span> e</span><br><span class="line">        <span class="keyword">return</span> bytearray(res)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">align</span><span class="params">(self, res)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (len(res)+<span class="number">15</span>) &amp; ~<span class="number">15</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">modifyProgramHeader</span><span class="params">(self, p, l, sz=False)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> sz == <span class="literal">False</span>:</span><br><span class="line">            p.p_offset += l</span><br><span class="line">            p.p_paddr += l</span><br><span class="line">            p.p_vaddr += l</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            p.p_memsz += l</span><br><span class="line">            p.p_filesz += l</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">modifySectionHeader</span><span class="params">(self, s, l, sz=False)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> sz == <span class="literal">False</span>:</span><br><span class="line">            s.sh_offset += l</span><br><span class="line">            <span class="keyword">if</span> s.sh_addr != <span class="number">0</span>:</span><br><span class="line">                s.sh_addr += l</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            s.sh_size += l</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(self, res, c, f, r = None)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> r == <span class="literal">None</span>:</span><br><span class="line">            l = len(c)</span><br><span class="line">            res[f:f+l] = c</span><br><span class="line">            self.modifiedPos = f+l</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            c += r</span><br><span class="line">            self.add(res, c, f)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getPlt</span><span class="params">(self)</span>:</span></span><br><span class="line">        dynstrSection = self.findSectionByName(<span class="string">'.dynstr'</span>)</span><br><span class="line">        dynstr_offset = dynstrSection.sh_offset</span><br><span class="line">        dynsymSection = self.findSectionByName(<span class="string">'.dynsym'</span>)</span><br><span class="line">        dynsym_offset = dynsymSection.sh_offset</span><br><span class="line">        pltSection = self.findSectionByName(<span class="string">'.plt'</span>)</span><br><span class="line">        plt_offset = pltSection.sh_offset</span><br><span class="line">        plt_entSize = pltSection.sh_entsize</span><br><span class="line">        rel_pltSection = self.findSectionByName(<span class="string">'.rela.plt'</span>)</span><br><span class="line">        rel_plt_offset = rel_pltSection.sh_offset</span><br><span class="line">        rel_plt_size = rel_pltSection.sh_size</span><br><span class="line">        rel_plt_entSize = rel_pltSection.sh_entsize</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(rel_plt_offset, rel_plt_offset+rel_plt_size, rel_plt_entSize):</span><br><span class="line">            itemSize = rel_plt_entSize // <span class="number">3</span></span><br><span class="line">            data = self.bin[i:i+rel_plt_size][:itemSize*<span class="number">2</span>]</span><br><span class="line">            got_address = struct.unpack(<span class="string">"Q"</span>, data[:itemSize])[<span class="number">0</span>]</span><br><span class="line">            r_info = struct.unpack(<span class="string">"Q"</span>, data[itemSize:])[<span class="number">0</span>] &gt;&gt; <span class="number">32</span></span><br><span class="line">            sectionDynsym_offset = dynsym_offset + r_info * <span class="number">0x18</span></span><br><span class="line">            st_name = struct.unpack(<span class="string">"I"</span>, self.bin[sectionDynsym_offset:sectionDynsym_offset+<span class="number">4</span>])[<span class="number">0</span>]</span><br><span class="line">            idx = dynstr_offset + st_name</span><br><span class="line">            <span class="keyword">while</span> self.bin[idx] != <span class="number">0</span>:</span><br><span class="line">                idx += <span class="number">1</span></span><br><span class="line">            name = self.bin[dynstr_offset+st_name:idx]</span><br><span class="line">            plt_address_offset = plt_offset + ((i - rel_plt_offset) // rel_plt_entSize + <span class="number">1</span>) * plt_entSize</span><br><span class="line">            plt_address = (self.entry&amp;~<span class="number">0xfffff</span>)+plt_address_offset</span><br><span class="line">            md = Cs(self.arch, self.mode)</span><br><span class="line">            code = self.bin[plt_address_offset:plt_address_offset+plt_entSize]</span><br><span class="line">            <span class="keyword">for</span> disasm <span class="keyword">in</span> md.disasm(code, plt_address):</span><br><span class="line">                <span class="keyword">if</span> disasm.id == X86_INS_PUSH:</span><br><span class="line">                    opstr = disasm.op_str</span><br><span class="line">                    <span class="keyword">if</span> self.mode == CS_MODE_64:</span><br><span class="line">                        <span class="keyword">if</span> int(opstr, <span class="number">16</span>) != (i - rel_plt_offset) // rel_plt_entSize:</span><br><span class="line">                            <span class="keyword">raise</span> Exception(<span class="string">"Error when find plt!"</span>)</span><br><span class="line">                    <span class="keyword">elif</span> self.mode == CS_MODE_32:</span><br><span class="line">                        <span class="keyword">if</span> int(opstr, <span class="number">16</span>) != i - rel_plt_offset:</span><br><span class="line">                            <span class="keyword">raise</span> Exception(<span class="string">"Error when find plt!"</span>)</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            plt = Plt_struct(plt_address, got_address, name)</span><br><span class="line">            self.plt.append(plt)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">InsertOpcode</span><span class="params">(self, opcode)</span>:</span></span><br><span class="line">        <span class="comment"># make the length align to 0x10</span></span><br><span class="line">        code_length = self.align(opcode)</span><br><span class="line">        <span class="comment"># I will add a section at the end of the file, and then add program header to the end</span></span><br><span class="line">        <span class="comment"># and then add a LOAD segment</span></span><br><span class="line">        modifiedSize = len(self.bin) + \</span><br><span class="line">            (len(self.programHeaders)+<span class="number">1</span>)*self.elfHeader.e_phentsize + \</span><br><span class="line">            code_length + self.elfHeader.e_shentsize</span><br><span class="line">        self.modifiedBin = []        <span class="comment"># pack function is to change ctypes struct into bytearray</span></span><br><span class="line">        <span class="keyword">if</span> self.mode == CS_MODE_64:</span><br><span class="line">            tmpElfHeader = Elf64_Ehdr.from_buffer_copy(self.pack(self.elfHeader))</span><br><span class="line">            addedSegment = Elf64_Phdr.from_buffer_copy(self.pack(self.getLOADSegment()))</span><br><span class="line">        <span class="keyword">elif</span> self.mode == CS_MODE_32:</span><br><span class="line">            tmpElfHeader = Elf32_Ehdr.from_buffer_copy(self.pack(self.elfHeader))</span><br><span class="line">            addedSegment = Elf32_Phdr.from_buffer_copy(self.pack(self.getLOADSegment()))</span><br><span class="line"></span><br><span class="line">        tmpElfHeader.e_phoff = len(self.bin)</span><br><span class="line">        <span class="comment"># add function is to add the bytearray of string into the third arg's point</span></span><br><span class="line">        self.add(self.modifiedBin, self.pack(tmpElfHeader), <span class="number">0</span>)</span><br><span class="line">        elfHeaderLength = len(self.pack(tmpElfHeader))</span><br><span class="line">        self.add(self.modifiedBin, self.bin[elfHeaderLength:], self.modifiedPos)</span><br><span class="line">        code_offset = self.modifiedPos + tmpElfHeader.e_phnum * tmpElfHeader.e_phentsize</span><br><span class="line">        code_offset = code_offset + (<span class="number">0x1000</span> - code_offset % <span class="number">0x1000</span>)</span><br><span class="line">        code_address = <span class="number">0x10000</span> + code_offset</span><br><span class="line">        <span class="comment"># add the added section</span></span><br><span class="line">        <span class="comment"># add program headers</span></span><br><span class="line">        <span class="keyword">for</span> segment <span class="keyword">in</span> self.programHeaders:</span><br><span class="line">            <span class="keyword">if</span> segment.p_type != <span class="number">4</span>:</span><br><span class="line">                self.add(self.modifiedBin, self.pack(segment), self.modifiedPos)</span><br><span class="line">        addedSegment.p_offset = code_offset</span><br><span class="line">        addedSegment.p_vaddr = code_address</span><br><span class="line">        addedSegment.p_paddr = code_address</span><br><span class="line">        addedSegment.p_filesz = code_length</span><br><span class="line">        addedSegment.p_memsz = <span class="number">0x1000</span></span><br><span class="line">        addedSegment.p_align = <span class="number">8</span></span><br><span class="line">        addedSegment.p_flags = <span class="number">7</span></span><br><span class="line">        <span class="comment"># add the added segment</span></span><br><span class="line">        self.add(self.modifiedBin, self.pack(addedSegment), self.modifiedPos)</span><br><span class="line">        <span class="comment"># add code</span></span><br><span class="line">        self.add(self.modifiedBin, <span class="string">'\x00'</span>*(code_offset-self.modifiedPos), self.modifiedPos)</span><br><span class="line">        self.add(self.modifiedBin, opcode.ljust(code_length, <span class="string">'\x00'</span>), self.modifiedPos)</span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">'patch'</span>, <span class="string">'wb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(bytearray(self.modifiedBin))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">'./a'</span>, <span class="string">'rb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    elf = ELF(f.read())</span><br><span class="line">    opcode = <span class="string">'\xe8\x0b\xf9\xff\xff\xe9\xbd\xfb\xff\xff'</span></span><br><span class="line">    elf.InsertOpcode(opcode)</span><br></pre></td></tr></table></figure>
+
+<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1>
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-11-18T05:12:56.389Z" itemprop="dateUpdated">2019-11-18 13:12:56</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/11/18/关于patch-elf文件的一些思考/" target="_blank" rel="external">http://dayjun.top/2019/11/18/关于patch-elf文件的一些思考/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ELF/">ELF</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/11/18/关于patch-elf文件的一些思考/&title=《关于patch elf文件的一些思考》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/11/18/关于patch-elf文件的一些思考/&title=《关于patch elf文件的一些思考》 — DaJun的Blog&source=近日，为了能在AWD中对二进制文件进行patch，特意研究了一下elf文件结构，并找寻patch新代码的方法" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/11/03/PwnHub万圣节公开赛pwn的writeup/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">PwnHub万圣节公开赛pwn的writeup</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#思路"><span class="post-toc-number">1.</span> <span class="post-toc-text">思路</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#问题"><span class="post-toc-number">2.</span> <span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#代码"><span class="post-toc-number">3.</span> <span class="post-toc-text">代码</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#未完待续"><span class="post-toc-number">4.</span> <span class="post-toc-text">未完待续</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/11/18/关于patch-elf文件的一些思考/&title=《关于patch elf文件的一些思考》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/11/18/关于patch-elf文件的一些思考/&title=《关于patch elf文件的一些思考》 — DaJun的Blog&source=近日，为了能在AWD中对二进制文件进行patch，特意研究了一下elf文件结构，并找寻patch新代码的方法" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACs0lEQVR42u3aQWrDQAwF0Nz/0i10FWjtfkmjNIXnVRbBnjcBj/KlxyO+Pr6u58/P1/dvXn0/ecr9nR8bFx4eHl5r6VfX1a3vH3ZPmm9QsmY8PDy8bV5yGPRe6Pmd7zcxWQ8eHh7eu/GSK79PdUPx8PDw/iNv/q8/L77vy3o8PDy8d+AlYUR1EdVgNwkgFrMWPDw8vM5behQfvPLzen8PDw8Pr1UEVw+MSRmdjCaUV4iHh4e3wKsORUV//oPGWDWizUvt8hQDHh4eXpF3HxzkY1jVZtjo18gbaXh4eHgLvGo522t3JaFtNfBNjhA8PDy8bV7+oq+2ss6mrEnJjoeHh7fHywcFqkV2NZKYHC2Xa8DDw8Nb4OUv6+qIVX7PXnB84AzEw8PDa/GSA2BSOvfC32oE/EtKjYeHh/dCXv5aP3UYVIvyX7YADw8Pb4FXBZwNXpOhq0nEjIeHh7fH67Xt8yOht6xCOJsMY+Hh4eEd4k2aWEnQMC+dJ0cIHh4e3h7v/vG9gjvH5F3+HImHh4e3zau286uPrBbNk/GCy5IaDw8Pb4GXR6jJQXJqfKq3rXh4eHh7vEkQ0GtW9Y6EEQwPDw/vKC9vVlVbYhPMqVAYDw8P75W8JMytfnPSEkuacD88Fw8PD2+Bl4cF+ZjUvDSfDCvg4eHhvZJ3atQpjyeqQwOTQh8PDw/vLK/a8k8K4iqyGl7keDw8PLxt3ryfVo0w5pv76O09Hh4e3gBWDUbn25EzeiX1ZUqNh4eHN+b1Do8quxcN52V3IXHBw8PDO8TrtZqqMe486h3FuHh4eHgLvLxz1HtlJ4nBJIDAw8PDe2de9eWeTHtVeYVQAw8PD+9PeckS89b+ZFygHEbg4eHhLfD2FtcbF8jjhmNZCx4eHt6h1tekuVWNZfNCuVqy4+Hh4R3ifQIQaIi9C8GDZAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
