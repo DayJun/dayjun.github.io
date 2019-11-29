@@ -241,11 +241,8 @@
     <div class="post-content" id="post-content" itemprop="postContent">
     
     
-        修改_fileno来让stdin从fd中读数据
-文件都在：Github
-概览最开始它获取了flag文件的文件描述符，并把它用dup2映射到0x233，这样我们就知道0x233是flag的文件描述符
-然后定义了沙盒规则，不允许execve和write，且虚拟机本身只能输入0x40道指令
-漏洞点它在处理指令的时候，有使用寄存器中的值作为index来存取它定的内存区的数据的操作，但是它却没有对寄存...
+        <p>修改<code>_fileno</code>来让<code>stdin</code>从<code>fd</code>中读数据</p>
+<p>文件都在：<a href="[https://github.com/DayJun/Blogs/tree/master/Articles/2019-%E7%BA%A2%E5%B8%BD%E6%9D%AF-%E7%B2%A4%E6%B5%B7%E4%B8%AD%E5%BF%83-pwn1](https://github.com/DayJun/Blogs/tree/master/Articles/2019-红帽杯-粤海中心-pwn1)">Github</a></p>
     
     <a href="/2019/11/29/红帽杯线下pwn1/" class="post-more waves-effect waves-button">
         more
