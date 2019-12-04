@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>重合指数求维吉尼亚密码 | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="密码学">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>重合指数求维吉尼亚密码</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">重合指数求维吉尼亚密码</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-12-04T15:01:02.000Z" itemprop="datePublished" class="page-time">
+  2019-12-04
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/密码学/">密码学</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-重合指数求维吉尼亚密码"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">重合指数求维吉尼亚密码</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-12-04 23:01:02" datetime="2019-12-04T15:01:02.000Z"  itemprop="datePublished">2019-12-04</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/密码学/">密码学</a></li></ul>
+
+
+
+            
+	<span id="/2019/12/04/重合指数求维吉尼亚密码/" class="leancloud_visitors" data-flag-title="重合指数求维吉尼亚密码" title="重合指数求维吉尼亚密码">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2019/12/04/重合指数求维吉尼亚密码/#comment">
+            <span class="valine-comment-count" data-xid="/2019/12/04/重合指数求维吉尼亚密码/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>维吉尼亚密码是使用一系列凯撒密码组成密码字母表的加密算法，属于多表密码的一种简单形式。</p>
+<p>其相当于对明文不同偏移的字符进行不同的凯撒加密</p>
+<a id="more"></a>
+
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="生成字母表"><a href="#生成字母表" class="headerlink" title="生成字母表"></a>生成字母表</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> x[] = <span class="string">"abcdefghijklmnopqrstuvwxyz"</span>;</span><br><span class="line"><span class="keyword">char</span> box[<span class="number">26</span>][<span class="number">26</span>];</span><br><span class="line"><span class="keyword">int</span> Xlength = <span class="number">26</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generateBox</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">26</span>; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			box[i][j] = x[(j+i)%Xlength];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样便生成了这样的字母表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">a b c d e f g h i j k l m n o p q r s t u v w x y z</span><br><span class="line">b c d e f g h i j k l m n o p q r s t u v w x y z a</span><br><span class="line">c d e f g h i j k l m n o p q r s t u v w x y z a b</span><br><span class="line">d e f g h i j k l m n o p q r s t u v w x y z a b c</span><br><span class="line">e f g h i j k l m n o p q r s t u v w x y z a b c d</span><br><span class="line">f g h i j k l m n o p q r s t u v w x y z a b c d e</span><br><span class="line">g h i j k l m n o p q r s t u v w x y z a b c d e f</span><br><span class="line">h i j k l m n o p q r s t u v w x y z a b c d e f g</span><br><span class="line">i j k l m n o p q r s t u v w x y z a b c d e f g h</span><br><span class="line">j k l m n o p q r s t u v w x y z a b c d e f g h i</span><br><span class="line">k l m n o p q r s t u v w x y z a b c d e f g h i j</span><br><span class="line">l m n o p q r s t u v w x y z a b c d e f g h i j k</span><br><span class="line">m n o p q r s t u v w x y z a b c d e f g h i j k l</span><br><span class="line">n o p q r s t u v w x y z a b c d e f g h i j k l m</span><br><span class="line">o p q r s t u v w x y z a b c d e f g h i j k l m n</span><br><span class="line">p q r s t u v w x y z a b c d e f g h i j k l m n o</span><br><span class="line">q r s t u v w x y z a b c d e f g h i j k l m n o p</span><br><span class="line">r s t u v w x y z a b c d e f g h i j k l m n o p q</span><br><span class="line">s t u v w x y z a b c d e f g h i j k l m n o p q r</span><br><span class="line">t u v w x y z a b c d e f g h i j k l m n o p q r s</span><br><span class="line">u v w x y z a b c d e f g h i j k l m n o p q r s t</span><br><span class="line">v w x y z a b c d e f g h i j k l m n o p q r s t u</span><br><span class="line">w x y z a b c d e f g h i j k l m n o p q r s t u v</span><br><span class="line">x y z a b c d e f g h i j k l m n o p q r s t u v w</span><br><span class="line">y z a b c d e f g h i j k l m n o p q r s t u v w x</span><br><span class="line">z a b c d e f g h i j k l m n o p q r s t u v w x y</span><br></pre></td></tr></table></figure>
+
+<h2 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h2><p>加密的时候以<code>key</code>在子母集中的位置为行号，以明文在子母集中的位置为列号，此行号列号所定位的字母就是加密的对应字母</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">inp: 密文字符串</span></span><br><span class="line"><span class="comment">x: 要查询的字符</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(<span class="keyword">char</span> *inp, <span class="keyword">char</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> tmp = inp[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">int</span> offset = x &gt;= tmp ? x - tmp : x - tmp + <span class="number">26</span>;</span><br><span class="line">	<span class="keyword">if</span> (inp[offset] != x)</span><br><span class="line">		offset -= <span class="number">6</span>;</span><br><span class="line">	<span class="keyword">return</span> offset;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">buf: 明文字符串</span></span><br><span class="line"><span class="comment">key: key字符串</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Vencrypt</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">char</span>* key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Clength = <span class="built_in">strlen</span>(buf);</span><br><span class="line">	<span class="keyword">int</span> Klength = <span class="built_in">strlen</span>(key);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>; i &lt; Clength; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">char</span> c = buf[i];</span><br><span class="line">		<span class="keyword">if</span> (c == <span class="string">' '</span>)</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		<span class="keyword">char</span> k = key[j++];</span><br><span class="line">		<span class="keyword">if</span> (j == Klength)</span><br><span class="line">			j = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">int</span> Cidx = indexOf(x, c);</span><br><span class="line">		<span class="keyword">int</span> Kidx = indexOf(x, k);</span><br><span class="line">		<span class="keyword">char</span> b = box[Kidx][Cidx];</span><br><span class="line">		buf[i] = b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="解密"><a href="#解密" class="headerlink" title="解密"></a>解密</h2><p>解密也很简单，依旧根据<code>key</code>的位置定位行号，然后再根据密文的位置定位到列号，该列号在子母集中对应的字母就是明文的字母</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">inp: 密文字符串</span></span><br><span class="line"><span class="comment">x: 要查询的字符</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">invertIndexOf</span><span class="params">(<span class="keyword">char</span> *inp, <span class="keyword">char</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> indexOf(inp, x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">buf: 密文字符串</span></span><br><span class="line"><span class="comment">key: key字符串</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Vdecrypt</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">char</span>* key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Clength = <span class="built_in">strlen</span>(buf);</span><br><span class="line">	<span class="keyword">int</span> Klength = <span class="built_in">strlen</span>(key);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>; i &lt; Clength; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">char</span> c = buf[i];</span><br><span class="line">		<span class="keyword">if</span> (c == <span class="string">' '</span>)</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		<span class="keyword">char</span> k = key[j++];</span><br><span class="line">		<span class="keyword">if</span> (j == Klength)</span><br><span class="line">			j = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">int</span> Kidx = indexOf(x, k);</span><br><span class="line">		<span class="keyword">char</span> b = x[invertIndexOf(box[Kidx], c)];</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		for (int j = 0; j &lt; Xlength; j++)</span></span><br><span class="line"><span class="comment">		&#123;</span></span><br><span class="line"><span class="comment">			if (box[Kidx][j] == c)</span></span><br><span class="line"><span class="comment">				b = x[j];</span></span><br><span class="line"><span class="comment">		&#125;</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line">		buf[i] = b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="破解"><a href="#破解" class="headerlink" title="破解"></a>破解</h1><p>有时候我们会遇到给了一串密文，但是没有给<code>key</code>的情况，这种情况下如果要暴力猜解将会是非常困难的，因此我们用统计学的方法来解决这个问题</p>
+<blockquote>
+<p>弗里德曼试验由威廉·F·弗里德曼（William F. Friedman）于1920年代发明。他使用了<a href="https://zh.wikipedia.org/w/index.php?title=重合指数&action=edit&redlink=1" target="_blank" rel="noopener">重合指数</a>（index of coincidence）来描述密文字母频率的不匀性，从而破译密码。<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" title="kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" alt="kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}" title class></a>
+                <p>kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}</p>
+            </figure>指字母表中这种情况出现的概率（英文中为1/26=0.0385），从而密钥长度可以估计为：</p>
+<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" alt title class></a>
+                <p></p>
+            </figure>
+
+<p>其中，观察概率为</p>
+<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" alt title class></a>
+                <p></p>
+            </figure>
+
+<p>其中，<em>c</em>是指字母表的长度（英文为26），<em>N</em>指文本的长度，<em>n</em>1到<em>nc</em>是指密文的字母频率，为整数。</p>
+<p>此方法只是一种估计，会随着文本长度的增加而更为精确。在实践中，会尝试接近此估计的多个密钥长度。 一种更好的方法是将密文写成矩阵形式，其中列数与假定的密钥长度一致，将每一列的重合指数单独计算，并求得平均重合指数。对于所有可能的密钥长度，平均重合指数最高的最有可能是真正的密钥长度。这样的试验可以作为卡西斯基试验的补充。</p>
+</blockquote>
+<p>根据第二个公式来实现重合指数的计算</p>
+<h2 id="重合指数确定key长度"><a href="#重合指数确定key长度" class="headerlink" title="重合指数确定key长度"></a>重合指数确定key长度</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">这个数组用来存储密文字符出现的次数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">int</span> N[<span class="number">26</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">得到密文不带空格的版本</span></span><br><span class="line"><span class="comment">inp: 密文字符串</span></span><br><span class="line"><span class="comment">buf: 存放不带空格版本的密文的buffer</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getNoAlpha</span><span class="params">(<span class="keyword">char</span> *inp, <span class="keyword">char</span> *buf)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">do</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (inp[i] == <span class="string">' '</span>)</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		buf[j++] = inp[i];</span><br><span class="line">	&#125; while (inp[i++] != '\x00');</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">维吉尼亚是根据key中字符在子母集中的位置来选择对应的表进行凯撒加密的</span></span><br><span class="line"><span class="comment">所以我们需要将使用相同key的字符所加密，即使用相同的密码表进行凯撒加密的密文字符当作一串密文</span></span><br><span class="line"><span class="comment">然后计算这串密文的重合指数，所以for循环要这样写</span></span><br><span class="line"><span class="comment">inp: 密文字符串</span></span><br><span class="line"><span class="comment">l: 开始偏移</span></span><br><span class="line"><span class="comment">n: key的长度</span></span><br><span class="line"><span class="comment">return: 字符串长度</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calcN</span><span class="params">(<span class="keyword">char</span> *inp, <span class="keyword">int</span> l, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; Xlength; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		N[i] = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> Ilength = <span class="built_in">strlen</span>(inp);</span><br><span class="line">	<span class="keyword">char</span> *buff = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(Ilength);</span><br><span class="line">	getNoAlpha(inp, buff);</span><br><span class="line">	Ilength = <span class="built_in">strlen</span>(buff);</span><br><span class="line">	<span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = l; i &lt; Ilength; i+=n, len++)</span><br><span class="line">	&#123;</span><br><span class="line">		N[indexOf(x, buff[i])]++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">free</span>(buff);</span><br><span class="line">	<span class="keyword">return</span> len;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">这就是计算重合指数的关键函数，返回值越接近0.067，就代表</span></span><br><span class="line"><span class="comment">inp: 密文字符串</span></span><br><span class="line"><span class="comment">l: key长度</span></span><br><span class="line"><span class="comment">return: 重合指数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">IC</span><span class="params">(<span class="keyword">char</span> *inp, <span class="keyword">int</span> l)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">double</span> ICNUM = <span class="number">0.0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; l; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> len = calcN(inp, i, l);</span><br><span class="line">		<span class="keyword">double</span> sum = <span class="number">0.0</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; Xlength; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			sum = sum + N[j] * (N[j] - <span class="number">1</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		ICNUM += sum / (len*(len - <span class="number">1</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ICNUM / l;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//假设key的最大长度</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_KEY_LENGTH 100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">用来生成假设的不同key的长度所计算出的重合指数，并根据谁最接近0.067进行排序</span></span><br><span class="line"><span class="comment">str: 密文字符串</span></span><br><span class="line"><span class="comment">ICS: 存放字符串的重合指数</span></span><br><span class="line"><span class="comment">ICSIdx: 存放ICS存的重合指数对应的key的长度</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genICS</span><span class="params">(<span class="keyword">char</span> *str, <span class="keyword">double</span> *ICS, <span class="keyword">char</span>*ICSIdx)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> pos = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; MAX_KEY_LENGTH; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">double</span> ic = IC(str, i);</span><br><span class="line">		<span class="keyword">if</span> (ic &gt; <span class="number">0.06</span> &amp;&amp; ic &lt; <span class="number">0.07</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			ICSIdx[pos] = i;</span><br><span class="line">			ICS[pos++] = ic;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pos - <span class="number">1</span>; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; pos - <span class="number">1</span>; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">double</span> t1 = ICS[j];</span><br><span class="line">			<span class="keyword">double</span> t2 = ICS[j + <span class="number">1</span>];</span><br><span class="line">			<span class="keyword">if</span> (<span class="built_in">fabs</span>(t1 - <span class="number">0.067</span>) &gt; <span class="built_in">fabs</span>(t2 - <span class="number">0.067</span>))</span><br><span class="line">			&#123;</span><br><span class="line">				ICS[j] = t2;</span><br><span class="line">				ICS[j + <span class="number">1</span>] = t1;</span><br><span class="line">				<span class="keyword">char</span> t1 = ICSIdx[j];</span><br><span class="line">				ICSIdx[j] = ICSIdx[j + <span class="number">1</span>];</span><br><span class="line">				ICSIdx[j + <span class="number">1</span>] = t1;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="频度分析确定key"><a href="#频度分析确定key" class="headerlink" title="频度分析确定key"></a>频度分析确定key</h2><p>上述步骤可以得到key的可能的长度，我保存了所有位于区间<code>(0.06, 0.07)</code>的重合指数以及它所对应的key的长度</p>
+<p>接下来就要分别根据这些key的长度来求key的内容</p>
+<p>首先，如果key只有一个字符，那么维吉尼亚加密就变成了凯撒加密</p>
+<p>如果key有两个字符，可以把明文分称两部分，两个两个一组，一部分全部取左边，一部分全部取右边，然后对这两部分进行不同字母表的凯撒加密：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">假设key:ab</span><br><span class="line">假设明文:this is easy</span><br><span class="line">对应关系:abab ab abab</span><br><span class="line">组a:tiies	字母表:abcdefghijklmnopqrstuvwxyz</span><br><span class="line">组b:hssay	字母表:bcdefghijklmnopqrstuvwxyza</span><br><span class="line">加密结果a:tiies</span><br><span class="line">加密结果b:ittbz</span><br><span class="line">加密结果:tiit it ebsz</span><br></pre></td></tr></table></figure>
+
+<p>因此可以分别对组a和组b，假设他们所对应的key的字符，进行解密，解密结果进行频度分析</p>
+<p><a href="https://wenku.baidu.com/view/cb1c1a406edb6f1aff001f85.html" target="_blank" rel="noopener">字母表频率</a></p>
+<p>正常的文本中，字母出现的频率是符合上表的。</p>
+<p>字符是哪种情况与频度表所计算出的内积最大，则这一位的key就最有可能是什么</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">得到key的某一位所加密过的全部字符所组成的字符串</span></span><br><span class="line"><span class="comment">str: 密文字符串</span></span><br><span class="line"><span class="comment">buf: key的某一位所加密过的全部字符所组成的字符串</span></span><br><span class="line"><span class="comment">l: 开始偏移</span></span><br><span class="line"><span class="comment">n: key的长度</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genStr</span><span class="params">(<span class="keyword">char</span> *str, <span class="keyword">char</span> *buf, <span class="keyword">int</span> l, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Ilength = <span class="built_in">strlen</span>(str);</span><br><span class="line">	<span class="keyword">char</span> *unAlpha = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(Ilength);</span><br><span class="line">	getNoAlpha(str, unAlpha);</span><br><span class="line">	Ilength = <span class="built_in">strlen</span>(unAlpha);</span><br><span class="line">	<span class="keyword">int</span> pos = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = l; i &lt; Ilength; i += n)</span><br><span class="line">	&#123;</span><br><span class="line">		buf[pos++] = unAlpha[i];</span><br><span class="line">	&#125;</span><br><span class="line">	buf[pos] = '\x00';</span><br><span class="line">	<span class="built_in">free</span>(unAlpha);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">频度表，从头到尾分别对应a,b,......,z</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">double</span> g[] = &#123; <span class="number">0.08167</span>, <span class="number">0.01492</span>, <span class="number">0.02782</span>, <span class="number">0.04253</span>, <span class="number">0.12702</span>, <span class="number">0.02228</span>, <span class="number">0.02015</span>, <span class="number">0.06094</span>, <span class="number">0.06966</span>, <span class="number">0.00153</span>, <span class="number">0.00772</span>, <span class="number">0.04025</span>,<span class="number">0.02406</span>, <span class="number">0.06749</span>, <span class="number">0.07507</span>, <span class="number">0.01929</span>, <span class="number">0.00095</span>, <span class="number">0.05987</span>, <span class="number">0.06327</span>, <span class="number">0.09056</span>, <span class="number">0.02758</span>, <span class="number">0.00978</span>, <span class="number">0.02360</span>, <span class="number">0.00150</span>,<span class="number">0.01974</span>, <span class="number">0.00074</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">对上一个函数所得到的字符串用假定的key的字符所对应的字母表表进行解密</span></span><br><span class="line"><span class="comment">buf: 上一个函数得到的buf</span></span><br><span class="line"><span class="comment">o: 加密时字母表的偏移</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genBuf</span><span class="params">(<span class="keyword">char</span> *buf, <span class="keyword">int</span> o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	while (buf[i] != '\x00')</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> idx = indexOf(x, buf[i]);</span><br><span class="line">		idx -= o;</span><br><span class="line">		idx = idx &lt; <span class="number">0</span> ? idx + Xlength : idx;</span><br><span class="line">		buf[i++] = x[idx];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">上一个calcN函数的重载</span></span><br><span class="line"><span class="comment">buf: 上上个函数的结果</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">calcN</span><span class="params">(<span class="keyword">char</span> *buf)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; Xlength; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		N[i] = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> Ilength = <span class="built_in">strlen</span>(buf);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; Ilength; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		N[indexOf(x, buf[i])]++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">频度分析的关键函数，计算内积</span></span><br><span class="line"><span class="comment">buf: genStr所得到的buf</span></span><br><span class="line"><span class="comment">o: 加密时字母表的偏移</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">getqp</span><span class="params">(<span class="keyword">char</span> *buf, <span class="keyword">int</span> o)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> *bufCopy = (<span class="keyword">char</span>*)<span class="built_in">calloc</span>(<span class="built_in">strlen</span>(buf)+<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">strcpy</span>(bufCopy, buf);</span><br><span class="line">	genBuf(bufCopy, o);</span><br><span class="line">	<span class="keyword">double</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> Blength = <span class="built_in">strlen</span>(bufCopy);</span><br><span class="line">	calcN(bufCopy);</span><br><span class="line">	while (bufCopy[i] != '\x00')</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> idx = indexOf(x, bufCopy[i]);</span><br><span class="line">		sum += ((<span class="keyword">double</span>)N[idx]/Blength) * g[idx];</span><br><span class="line">		i++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">free</span>(bufCopy);</span><br><span class="line">	<span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">根据计算出的最大内积来生成key值</span></span><br><span class="line"><span class="comment">str: 密文字符串</span></span><br><span class="line"><span class="comment">KL: key的长度</span></span><br><span class="line"><span class="comment">preKey: 求出的可能的key</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genKey</span><span class="params">(<span class="keyword">char</span> *str, <span class="keyword">int</span> KL, <span class="keyword">char</span>* preKey)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Ilength = <span class="built_in">strlen</span>(str);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; KL; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">char</span> *buf = (<span class="keyword">char</span>*)<span class="built_in">calloc</span>(Ilength, <span class="number">1</span>);</span><br><span class="line">		genStr(str, buf, i, KL);</span><br><span class="line">		<span class="keyword">double</span> *avg = (<span class="keyword">double</span>*)<span class="built_in">calloc</span>(KL, <span class="number">8</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; Xlength; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">double</span> s = getqp(buf, j);</span><br><span class="line">			<span class="keyword">if</span> (avg[i] &lt; s)</span><br><span class="line">			&#123;</span><br><span class="line">				avg[i] = s;</span><br><span class="line">				preKey[i] = x[j];</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">free</span>(avg);</span><br><span class="line">		<span class="built_in">free</span>(buf);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	generateBox();</span><br><span class="line">	<span class="keyword">char</span> str[] = <span class="string">"this is easy there is a river in front of me aunt cow said it was not deep but the little squirrel said it was deep what shall i do the old horse says my child you should try to cross the river by yourself if you donot try how do you know the river is deep or not the little horse carries the wheat and returns to the riverside at last he succeeds incrossing the river now he knows how deep the river is bosses used to use labour monitoring technologies to control over how workers do their jobs in februday amazon received patents for a wristband and it intended to force labourers to do their jobs with maximum efficiency it is a good option for firms seeking to maximise productivity  but to labours it may not technology creates new opportunities for oversight but text book economics suggests that in a competitive labour market any attempt to coerce people into working harder than they want will fail"</span>;</span><br><span class="line">	<span class="keyword">char</span> key[] = <span class="string">"thisisatest"</span>;</span><br><span class="line">	Vencrypt(str, key);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Encrypted: %s\n"</span>, str);</span><br><span class="line">	<span class="keyword">double</span> *ICS = (<span class="keyword">double</span>*)<span class="built_in">calloc</span>(MAX_KEY_LENGTH, <span class="number">8</span>);</span><br><span class="line">	<span class="keyword">char</span> *ICSIdx = (<span class="keyword">char</span>*)<span class="built_in">calloc</span>(MAX_KEY_LENGTH, <span class="number">1</span>);</span><br><span class="line">	genICS(str, ICS, ICSIdx);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"-----------------------\n"</span>);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MAX_KEY_LENGTH; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (ICSIdx[i] != <span class="number">0</span> || ICS[i] != <span class="number">0</span>)</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">"%d  %f\n"</span>, ICSIdx[i], ICS[i]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"-----------------------\n\n"</span>);</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (ICSIdx[i] != <span class="number">0</span> || ICS[i] != <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> KL = ICSIdx[i];</span><br><span class="line">		<span class="keyword">char</span> *preKey = (<span class="keyword">char</span>*)<span class="built_in">calloc</span>(KL + <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">		genKey(str, KL, preKey);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Key: %s\n\n"</span>, preKey);</span><br><span class="line">		<span class="keyword">char</span> *strCopy = (<span class="keyword">char</span>*)<span class="built_in">calloc</span>(<span class="built_in">strlen</span>(str) + <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">		<span class="built_in">strcpy</span>(strCopy, str);</span><br><span class="line">		Vdecrypt(strCopy, preKey);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Decrypt: %s\n"</span>, strCopy);</span><br><span class="line">		<span class="built_in">free</span>(strCopy);</span><br><span class="line">		<span class="built_in">free</span>(preKey);</span><br><span class="line">		i++;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"-----------------------\n\n"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">free</span>(ICS);</span><br><span class="line">	<span class="built_in">free</span>(ICSIdx);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行出现多个结果，但是同样也出现了正确的key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Encrypted: moqk qk etwq malzw qk a kmnxk pv xzgnm sx fx hcfb uop wsbw pb oik nhx vxxw jmb lhx pammsm kymikvwe lhqv ql wtw vxxw ezil saede b kw lpw oeh zhkzm kiqs fc uabsl qwm sasmew azq bg ckskl mom jqnek fq rhbzkmdf bj qhn kwfwl tkc zhp kw qwm kgso mal zadwr bw vxxw wj vgt mlw ebabdm zokww vtyzamk tai oaxhb svv rxxmkgz bg bze kmnxkzqvm st eekm al amkuexhk bgjzgakigk lax yqnmj nha zx duwoa zop hwxi apw zavxv al uvakmk uliv mh baw tsbhyj fhuqlwjigk lxvovgtggbik mh jwfbjoe snxk owo egrdijl wv bzmar cstl bu nwjjuweq tfhhgv jeviaoxk xsbwnmw xhk h ejqktuefw tul ab anmifwxk bg ngrvi dtuvcjmjs ms vh momaz bouw obmo usfamnq wyypkamfcr ml bl h ogwv oixahg mwj narfw kxxrqfo lo fepbfpaw xjowyumbcqlg  tum xg etiwmzk im qsr gvb lmuhgsdhzf kjmstxw fxp vxhwjtnrambla xwj ooijlbnpl jmt mipm uvwc muogsebvz amoyelxk mahb av s chqhxmpbadw ltfgnk tijswt trq tmamexl th ggxkjm hmgpei agmv egzcigk ztkkmj bzag xzxr difb oiep xtbs</span><br><span class="line">-----------------------</span><br><span class="line">11  0.066778</span><br><span class="line">22  0.066718</span><br><span class="line">33  0.067964</span><br><span class="line">55  0.065468</span><br><span class="line">44  0.064895</span><br><span class="line">77  0.063709</span><br><span class="line">99  0.062650</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">Key: thisisatest</span><br><span class="line"></span><br><span class="line">Decrypt: this is easy there is a river in front of me aunt cow said it was not deep but the little squirrel said it was deep what shall i do the old horse says my child you should try to cross the river by yourself if you donot try how do you know the river is deep or not the little horse carries the wheat and returns to the riverside at last he succeeds incrossing the river now he knows how deep the river is bosses used to use labour monitoring technologies to control over how workers do their jobs in februday amazon received patents for a wristband and it intended to force labourers to do their jobs with maximum efficiency it is a good option for firms seeking to maximise productivity  but to labours it may not technology creates new opportunities for oversight but text book economics suggests that in a competitive labour market any attempt to coerce people into working harder than they want will fail</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">Key: thisisatewttdifiskgest</span><br><span class="line"></span><br><span class="line">Decrypt: this is easu thirr is q eiver in front ob me euat cej said it was not zeet bht txr little squirral seiq it mns deep what shahl i ho ghe eyd horse says my yhipd lou iuould try to croos tle eivue by yourself if uou hoaot jey how do you knos thi rvveh vs deep or not tha lixtye heese carries the sheet nnd hrturns to the rirerwiqe aj yast he succeedo ingrbssyag the river now de krojs hej deep the river es bssfes kfed to use laboun morigoryag technologieo to goatrey over how workens ds tueih wobs in februdau amezbn rupeived patents bor e weisjoand and it intejdeh tb fohpe labourers to zo tlevr jeos with maximum affmcvensl it is a good opteon joe fihzs seeking to matimmsr prequctivity  but tk lafohrs yg may not technohogc ceeajrs new opportunetiis sor eiersight but tett bsox eceaomics suggesto thet vn a sbmpetitive labkur qaekej nny attempt to ckerge ceofye into working darhee thqa they want will baip</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">..........</span><br></pre></td></tr></table></figure>
+
+<p>但是有时会得不到正确结果，只能得到部分正确的key，这也就是利用统计分析的局限性了</p>
+<p>比如这种情况：<code>char key[] = &quot;abcdefghijklmnopqrstuvwxyz&quot;;</code></p>
+<p>会求出错误的key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Encrypted: tikv mx khah dsqes xi r jbpzn fl erppw sk sl idxe obk hqzv bn rwp lnt eght gaa bqo wughau jincmnbj rajf lx bgz lnoa iuoi iysef d zl rge png ltxzm bkje zm rxzdw sjq pfnumf wvd zv kayde gvt hznxl wu vmtrtgoj nl fwd nzzbh ihp zhq yk vmt koqz xmk yqeoc uf rtug gk hjp qfd ljvwpj nvzbo nmefxuj lay rdbys aof uiyayvb dz fus gymwkmdzb ys lbuw lj ybkloppf wcsiglmdjd rge skyiw tve qo vzbkh xfo wyzl qfd rjxhv ny iwbcpe hgtt kg nmz hxznus orrnzvzrxr frqwdfdhadap rn cppwvtr vdnb saj kdhbwkm yk qfdis lrfx ou nnlcgqon qdssii nbadiwgg tfzlvcc qae o lhzkmvvja ymd jv lrykulnn ea scgsv dtvjqocqs uq gs ynlqa tznf kxjy etrdirk dfgkfmjtjg rd te n udeu gindkk dnr gkuqx ylmtsys gc bqoafcna mpndvewmaoag  kee fb zprfmkm dp jyx npv wihnuwuyrk pftqkwl hzs lnoosvxrnzpmb pzd bjthjazbo xrr seyv estq lkxxzyvqh ilyzynpp rgau kq e hutxndtfvjt brthom ixpjeu cqc fzamvze fb qduiux jzkmjd iovr atxrqwq smerth kzth odbw vaov zmqr mirv</span><br><span class="line">-----------------------</span><br><span class="line">26  0.065404</span><br><span class="line">78  0.062892</span><br><span class="line">52  0.061496</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">Key: abrsefghijklmxgpdrstuzwxyz</span><br><span class="line"></span><br><span class="line">Decrypt: thtd is easy thehm if a rivar in froye of me aunt cee snid it sas not dppp but the lijblr squinrel saio tt was deep wxit fhall e do the owo horse says cg cuild yku shoulo ery to cross jpe eiver xy yourspwf if you doneb tey how zo you knzh the river ii lerp or nkt the lieele horse cahzirs the sheat ano ceturns to txm rvversede at lade he succeedi qnprosseng the rtger now he knees uow deap the rigpr is bosses kaeq to usa labour xznitoring tukhaologees to coyerol over hom eoekers zo their uzbs in februtiy nmazoj receivpo patents foh i weistbwnd and ie tntended to vwrpe labkurers tz oo their jobi eigh maxemum efftniency it is q oobd opteon for ftcms seeking jw mnximioe produneivity  but te taoours et may noe eechnology szentes naw opporefnities for edeesighp but texe mook economyks fuggeots that ty a competityde yaboun market lyy attempt te korrce paople inez working hahlee than phey wane hill fail</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">Key: avrnefkhsjzvmqopeksgizvxyzwlcsefghenkpbbmpmvcdzzflnjafrsrfvrijkamncpqfwtyvgifz</span><br><span class="line"></span><br><span class="line">Decrypt: tnti is aaiy exeoe ie h rvhas in fvene of me eqnp nay seet yo sre yet zppc bfj the witfle emuerhte saoo yt wws tepf weat eoayx e eo thi elo horsi oaud ya clebt tkl eseuho eey ee crods tte ruren bo nhurypbf ib yeu oenlt tdf hbi zp you odoh the rmren te feil eh ikk fsu leeeye serse nardiee pha wxttt ato hetqrds ee tee ruceeeeee at pqse he sugyeaoe kngneinees exe ntgrr yew he vnois has daef iae rogur io besdus rsep ao hea maboyh mznitovenc eqehrkbebeve ee ckyeeow ever sow iorwaro de iaeix uebs en vemhuaay mtamaj secemleo paterps bzd c wveijwwep ldd ee tatpdded eo farcq haxokgxrs zz to tdeyr uebp wifo mnjenum ejviniencc et ed m iosz efoefz qer btczs duekiyg ta majemesu ekodanjiveto  bfj tl lanvuee eu may ret eechnshocj oteepui ian aafonefaieyes fzr ohereegdt rjm tede roog esoyemfcs ebgtqous thej iy a comtateeuxe pwrepn dmcaep lyl aejempe to ooedye leeeee itee wonkynr xaoded ahnz piey wedt hill feel</span><br><span class="line">-----------------------</span><br><span class="line"></span><br><span class="line">Key: abcsifuhixklwndtqvstyvgifzwordeugrcjkabxgpdbzguzlxyz</span><br><span class="line"></span><br><span class="line">Decrypt: thid es qask thurp es w rireh xg fvbyt oq mu gune nee snyw vt sls not depl bgt tte lytehe oquerhte sevo it hai jeea hxit fxtyl e oo the olo dodse eayi mj yheld uok haoyyo trj te irodd jpe eyorr xj yoursewb ir yog dodoe pru hos de nhu oazw tse hovec ti lerf he nke the litehe toree cqrceeo tha wxttt eao reeuhts tz exm rvlxeseoe at lase de eucoeets tjcnosoidv mhi etvec nec he vyees uep qeaa the rivpn ie boesei udad po uoe bpuoye xonttexinr eukhaeebgeps to conenox ovqr hew hkrgero de iaeme uobd id lebcftiy nctmoj ceceiveo lafenfs fer l srestxads tnh ve ineedjed ez vwrpu enbkfrers to ok tteid jors hetd maticjf ejstcipnse it td q oobt hctezn for ficis eeewinw tz iatimesu ekohhntigije  bue ee taoenes ee may not eactnoxogo ccaapes jem dipseeunttyks fzc edeeibthp mut text mkow ecanocino sqggasjh mheg tn a nocvetteyde yqubun xarket ayu afteypt jo nkence leeeee maeo wzraong slhlee jann psey want helx faul</span><br><span class="line">-----------------------</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-12-04T15:02:31.724Z" itemprop="dateUpdated">2019-12-04 23:02:31</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/12/04/重合指数求维吉尼亚密码/" target="_blank" rel="external">http://dayjun.top/2019/12/04/重合指数求维吉尼亚密码/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/密码学/">密码学</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/12/04/重合指数求维吉尼亚密码/&title=《重合指数求维吉尼亚密码》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/12/04/重合指数求维吉尼亚密码/&title=《重合指数求维吉尼亚密码》 — DaJun的Blog&source=维吉尼亚密码是使用一系列凯撒密码组成密码字母表的加密算法，属于多表密码的一种简单形式。
+其相当于对明文不同偏移的字符进行不同的凯撒加密" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/11/29/红帽杯线下pwn1/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">红帽杯线下pwn1遇到IO_File新利用方法</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#实现"><span class="post-toc-number">1.</span> <span class="post-toc-text">实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#生成字母表"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">生成字母表</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#加密"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">加密</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#解密"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">解密</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#破解"><span class="post-toc-number">2.</span> <span class="post-toc-text">破解</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#重合指数确定key长度"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">重合指数确定key长度</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#频度分析确定key"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">频度分析确定key</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#测试"><span class="post-toc-number">3.</span> <span class="post-toc-text">测试</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/12/04/重合指数求维吉尼亚密码/&title=《重合指数求维吉尼亚密码》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/12/04/重合指数求维吉尼亚密码/&title=《重合指数求维吉尼亚密码》 — DaJun的Blog&source=维吉尼亚密码是使用一系列凯撒密码组成密码字母表的加密算法，属于多表密码的一种简单形式。
+其相当于对明文不同偏移的字符进行不同的凯撒加密" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACs0lEQVR42u3aMXLDMAwEQP//08lM2kTKHUHKLlZVJpI5WBYUBOD1iq+vnyu5+3Vx3a/z+/9Xa75OXHh4eHhLoedhXYWSPJNvXA6+ihkPDw/vNC8/7vNXyP0K+fqTFwweHh7ee3n53Xz9+2N9nprj4eHhvZeXJ9xXzySA+yfx8PDwPoeXACYF2YSXJOUHay14eHh4Ma9tgH3C3wf7e3h4eHiDrnpbCGgLEGsljyJaPDw8vAO8XW3+ljQfWSg2HQ8PD28rb614OilSTK46Bjw8PLwDvCSI/G5beG1Xzl9OeHh4eM/z8rx0V/sq3+i6GIGHh4e3lZf8eK0l1obVtrvqBBoPDw9vEy/5WZ7+Js9PtnWSauPh4eHt4iXBtZ/9k9fJWtMr+j7Aw8PD28TLyxBtwbcdSsiHrtrhAzw8PLy9vHlSu5b+zpteUZx4eHh4x3hrI03Jkd0WNZLybvExgIeHh3eAN2k7tQNPu4ax6mIEHh4e3lbeWjt/Mg7Vjhe0K1+m1Hh4eHhbeUmivJZStwFNBgj++BUeHh7eAV7bnl8rEEyKxWsvLTw8PLwneW3hdRJ0Xhxp48HDw8N7krdGbQuvecV1bc1/vhvw8PDwBry1oz8/6HNeftwXVDw8PLxjvEkC3Y4jJOvkz/yzcXh4eHjHeHl7KX9mrWUVDQTEaT0eHh7eCd6krLCWOudNrPbCw8PDe4bXJs15eSIfikoS9KR4URQj8PDw8LbyksM3L2GslRgmg1xRVw0PDw9vwFs7fCeFhnxoYFfLDQ8PD+8Er1167dTNh6U2N+Tw8PDwjvGSj/y2kJqn4/nK9UsIDw8P7628NmnO0+KEulhQxsPDw/sAXrL0JB2fbCUeHh7ek7y26dWWEpKw8s0tYsPDw8M7wJsMNuUHdDs60G7EttEBPDw8vLvVvgFjaEEFc3c7XAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
