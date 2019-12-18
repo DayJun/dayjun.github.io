@@ -7,6 +7,7 @@
       <url>/2019/12/18/%E5%AD%A6%E4%B9%A0IO-FILE%E7%9A%84%E4%BB%BB%E6%84%8F%E8%AF%BB%E5%92%8C%E4%BB%BB%E6%84%8F%E5%86%99/</url>
       <content type="html"><![CDATA[<p>首先要参考：<a href="https://www.anquanke.com/post/id/194577" target="_blank" rel="noopener">https://www.anquanke.com/post/id/194577</a></p>
 <p>这里就照着ciscn2018的<code>task_magic</code>来写一写</p>
+<p>文件都在：[Github]([<a href="https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018%20task_magic]" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018%20task_magic]</a>(<a href="https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018</a> task_magic))</p>
 <a id="more"></a>
 
 <h1 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] '/home/dajun/binary/pwn_question/heap/ciscn2018 task_magic/task_magic'</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
@@ -1355,9 +1356,9 @@
         
         <tags>
             
-            <tag> free </tag>
-            
             <tag> malloc </tag>
+            
+            <tag> free </tag>
             
             <tag> pwn </tag>
             
