@@ -3,6 +3,62 @@
   
     
     <entry>
+      <title><![CDATA[pwnable.kr rootkit 未完全解]]></title>
+      <url>/2020/01/27/pwnable-kr-rootkit-%E6%9C%AA%E5%AE%8C%E5%85%A8%E8%A7%A3/</url>
+      <content type="html"><![CDATA[<p>偏向简单的一题</p>
+<a id="more"></a>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://turbochaos.blogspot.com/2013/09/linux-rootkits-101-1-of-3.html" target="_blank" rel="noopener">http://turbochaos.blogspot.com/2013/09/linux-rootkits-101-1-of-3.html</a></p>
+<p><a href="https://github.com/DoubleLabyrinth/pwnable.kr/tree/master/Grotesque/rootkit" target="_blank" rel="noopener">https://github.com/DoubleLabyrinth/pwnable.kr/tree/master/Grotesque/rootkit</a></p>
+<p><a href="https://habr.com/en/post/437182/" target="_blank" rel="noopener">https://habr.com/en/post/437182/</a></p>
+<h2 id="rootkit-ko"><a href="#rootkit-ko" class="headerlink" title="rootkit.ko"></a>rootkit.ko</h2><h3 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h3><p>首先查看<code>initmodule</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">initmodule</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  _DWORD *v0; <span class="comment">// eax</span></span><br><span class="line">  _DWORD *v1; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">int</span> v2; <span class="comment">// edx</span></span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  sct = <span class="number">0xC15FA020</span>;</span><br><span class="line">  sys_open = MEMORY[<span class="number">0xC15FA034</span>];</span><br><span class="line">  sys_openat = MEMORY[<span class="number">0xC15FA4BC</span>];</span><br><span class="line">  sys_symlink = MEMORY[<span class="number">0xC15FA16C</span>];</span><br><span class="line">  sys_symlinkat = MEMORY[<span class="number">0xC15FA4E0</span>];</span><br><span class="line">  sys_link = MEMORY[<span class="number">0xC15FA044</span>];</span><br><span class="line">  sys_linkat = MEMORY[<span class="number">0xC15FA4DC</span>];</span><br><span class="line">  sys_rename = MEMORY[<span class="number">0xC15FA0B8</span>];</span><br><span class="line">  sys_renameat = (<span class="keyword">int</span> (__cdecl *)(_DWORD, _DWORD, _DWORD))MEMORY[<span class="number">0xC15FA4D8</span>];</span><br><span class="line">  wp();</span><br><span class="line">  v0 = (_DWORD *)sct;</span><br><span class="line">  *(_DWORD *)(sct + <span class="number">20</span>) = sys_open_hooked;</span><br><span class="line">  v0[<span class="number">295</span>] = sys_openat_hooked;</span><br><span class="line">  v0[<span class="number">83</span>] = sys_symlink_hooked;</span><br><span class="line">  v0[<span class="number">304</span>] = sys_symlinkat_hooked;</span><br><span class="line">  v0[<span class="number">9</span>] = sys_link_hooked;</span><br><span class="line">  v0[<span class="number">303</span>] = sys_linkat_hooked;</span><br><span class="line">  v0[<span class="number">38</span>] = sys_rename_hooked;</span><br><span class="line">  v0[<span class="number">302</span>] = sys_renameat_hooked;</span><br><span class="line">  wp();</span><br><span class="line">  v1 = (_DWORD *)_this_module[<span class="number">2</span>];</span><br><span class="line">  v2 = _this_module[<span class="number">1</span>];</span><br><span class="line">  *(_DWORD *)(v2 + <span class="number">4</span>) = v1;</span><br><span class="line">  *v1 = v2;</span><br><span class="line">  result = <span class="number">0</span>;</span><br><span class="line">  _this_module[<span class="number">1</span>] = &amp;_this_module[<span class="number">1</span>];</span><br><span class="line">  _this_module[<span class="number">2</span>] = &amp;_this_module[<span class="number">1</span>];</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所谓的<code>sct</code>就是<code>sys_call_table</code>，然后剩下的那些也不难理解</p>
+<p>系统调用在<code>sct</code>中存储的顺序应该和他们的调用号是一致的</p>
+<p>这里的意思就是它将原本的系统调用更换为了hook函数</p>
+<p>最下面的几个指针的操作，上面的那个是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __list_del(struct list_head * prev, struct list_head * next)</span><br><span class="line">&#123;</span><br><span class="line"> next-&gt;prev = prev;</span><br><span class="line"> prev-&gt;next = next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面这个是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">INIT_LIST_HEAD</span><span class="params">(struct list_head *<span class="built_in">list</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="built_in">list</span>-&gt;next = <span class="built_in">list</span>;</span><br><span class="line"> <span class="built_in">list</span>-&gt;prev = <span class="built_in">list</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>目的是为了让我们不能用<code>lsmod</code>或者<code>/proc/modules</code>，<code>/sys/module/</code>等方式找出其加载了哪些模块</p>
+<p>至于<code>wp</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">signed</span> <span class="keyword">int</span> <span class="title">wp</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> v0; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">int</span> v1; <span class="comment">// ST00_4</span></span><br><span class="line">  <span class="keyword">unsigned</span> __int32 v2; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">signed</span> <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">unsigned</span> __int32 v4; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  v0 = mcount();</span><br><span class="line">  <span class="keyword">if</span> ( v0 == <span class="number">1</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v4 = __readcr0();</span><br><span class="line">    __writecr0(v4 | <span class="number">0x10000</span>);</span><br><span class="line">    result = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    v1 = v0;</span><br><span class="line">    v2 = __readcr0();</span><br><span class="line">    __writecr0(v2 &amp; <span class="number">0xFFFEFFFF</span>);</span><br><span class="line">    result = v1;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>cr0</code>寄存器或<code>0x10000</code>是为了开启写保护</p>
+<p><code>cr0</code>寄存去与<code>0xffeffff</code>就是为了关闭写保护</p>
+<p>关闭了写保护才能往<code>sct</code>里面写</p>
+<p>至于<code>mcount</code>，我估测其作用就是一个全局的计数第一次返回0，随后递增</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>我用<code>objdump</code>的时候发现好多的call以及变量是0，随后才研究出来，其有多个<code>rel.xxxx</code>的<code>section</code>，其中就有某偏移的一个<code>Dword</code>所对应的<code>symtab</code>的项，理论上来说修改这个<code>section</code>就可以修改程序了</p>
+<p>但是我尝试了一次把所有的hook函数变回原来的函数的之后，<code>insmod</code>会让系统崩溃，咱也菜，也不知道啥原因</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat ./t.sh</span><br><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">sed -i $<span class="string">'s/\x01\x1f/\x01\x1b/g'</span> <span class="variable">$1</span></span><br><span class="line">sed -i $<span class="string">'s/\x01\x1c/\x01\x1d/g'</span> <span class="variable">$1</span></span><br><span class="line">sed -i <span class="string">'s/rootkit/hhacked/g'</span> <span class="variable">$1</span></span><br><span class="line">sed -i $<span class="string">'s/\x02\x20/\x02\x04/g'</span> <span class="variable">$1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="别人的解决方法"><a href="#别人的解决方法" class="headerlink" title="别人的解决方法"></a>别人的解决方法</h3><p>重写一个.ko，然后重新编译，压缩加密之后传过去</p>
+<p>但是由于墙的原因，这样的方法对于我们来说有些不合适，因为你复制粘贴的过程你必须分段传，一次还不能粘贴太多，因为太多的话中间可能会断导致数据丢失……</p>
+<p>这道题也没开nc的端口，所以这条道因为太麻烦我就不试了……</p>
+<p>ps: scanf的缓冲区是4096个字节</p>
+]]></content>
+      
+        <categories>
+            
+            <category> writeup </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> pwn </tag>
+            
+            <tag> pwnable.kr </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[需要读取maps和mem文件的pwn]]></title>
       <url>/2019/12/19/%E9%9C%80%E8%A6%81%E8%AF%BB%E5%8F%96maps%E5%92%8Cmem%E6%96%87%E4%BB%B6%E7%9A%84pwn/</url>
       <content type="html"><![CDATA[<p>这道题是ciscn2018的一道pwn，其中需要读取<code>/proc/self/maps</code>文件和<code>/proc/self/mem</code>文件和<code>/proc/self/mem</code>文件</p>
