@@ -18,8 +18,8 @@
 <h1 id="闲来无事"><a href="#闲来无事" class="headerlink" title="闲来无事"></a>闲来无事</h1><p>这几天闲来无事，决定刷一刷题，于是就选择了<code>pwnable.tw</code></p>
 <p>赫然发现<code>challange list</code>里面出现了一个CVE，着实提起了我的兴趣，便下载下来分析一番</p>
 <figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMGVg.png" alt="image-20200128215335026" title class>
-                <p>image-20200128215335026</p>
+                <img src="https://s2.ax1x.com/2020/01/28/1MMGVg.png" alt="题目描述" title class>
+                <p>题目描述</p>
             </figure>
 
 <p>乍一看，加粗的<code>remote code execution</code>着实很显眼，明显是在暗示说这一题中具有远程代码执行的漏洞</p>
@@ -35,15 +35,15 @@
 <p>那这patch到底啥意思……</p>
 <h1 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h1><p>直到我于某一刻看见了程序反汇编的这一句代码</p>
 <figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMJaQ.png" alt="image-20200128220548684" title class>
-                <p>image-20200128220548684</p>
+                <img src="https://s2.ax1x.com/2020/01/28/1MMJaQ.png" alt="IDA" title class>
+                <p>IDA</p>
             </figure>
 
 <p>位于<code>processNew</code>函数中，且不管前面是什么意思，程序在按照<code>tftp</code>协议中的<code>get</code>执行的时候，绝对会执行到这里，<code>a1+48</code>是<code>req-&gt;path</code>，其中存储的是即将open的文件的完整路径（当然，这个路径是在<code>tftp Server</code>设置的根路径之下的），<code>a1+312</code>是<code>req-&gt;filename</code>，也就是我们<code>get</code>的文件名</p>
 <p>而我根据源代码进行编译之后，找到的这一处的代码是这样的</p>
 <figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMY5j.png" alt="image-20200128221038684" title class>
-                <p>image-20200128221038684</p>
+                <img src="https://s2.ax1x.com/2020/01/28/1MMY5j.png" alt="IDA" title class>
+                <p>IDA</p>
             </figure>
 
 <p>很明显与题目的代码不同</p>
@@ -54,8 +54,8 @@
 <p>这么一句话，其中端口是个随机数</p>
 <p>再加上在<code>processNew</code>这句代码中，有这一句</p>
 <figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MM3qS.png" alt="image-20200128221515971" title class>
-                <p>image-20200128221515971</p>
+                <img src="https://s2.ax1x.com/2020/01/28/1MM3qS.png" alt="RECV" title class>
+                <p>RECV</p>
             </figure>
 
 <p>意思是如果<code>req-&gt;filename</code>的第一个字母是<code>/</code>，则跳过它</p>
