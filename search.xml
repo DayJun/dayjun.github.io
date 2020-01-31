@@ -17,11 +17,7 @@
 
 <h1 id="闲来无事"><a href="#闲来无事" class="headerlink" title="闲来无事"></a>闲来无事</h1><p>这几天闲来无事，决定刷一刷题，于是就选择了<code>pwnable.tw</code></p>
 <p>赫然发现<code>challange list</code>里面出现了一个CVE，着实提起了我的兴趣，便下载下来分析一番</p>
-<figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMGVg.png" alt="题目描述" title class>
-                <p>题目描述</p>
-            </figure>
-
+<p><img src="https://s2.ax1x.com/2020/01/28/1MMGVg.png" alt="题目描述"></p>
 <p>乍一看，加粗的<code>remote code execution</code>着实很显眼，明显是在暗示说这一题中具有远程代码执行的漏洞</p>
 <h1 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h1><h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dajun @ dajun-pc in ~/zoneOfDajun/pwndocker [22:00:15] </span></span><br><span class="line">$ checksec ./opentftpd </span><br><span class="line">[*] <span class="string">'/home/dajun/zoneOfDajun/pwndocker/opentftpd'</span></span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 
@@ -34,18 +30,10 @@
 <p>随后经过动态调试后发现，原来在这条patch的上方已经有检测<code>datain-&gt;buffer</code>的长度的代码，这就表示在这里进行溢出是不可能的……</p>
 <p>那这patch到底啥意思……</p>
 <h1 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h1><p>直到我于某一刻看见了程序反汇编的这一句代码</p>
-<figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMJaQ.png" alt="IDA" title class>
-                <p>IDA</p>
-            </figure>
-
+<p><img src="https://s2.ax1x.com/2020/01/28/1MMJaQ.png" alt="IDA"></p>
 <p>位于<code>processNew</code>函数中，且不管前面是什么意思，程序在按照<code>tftp</code>协议中的<code>get</code>执行的时候，绝对会执行到这里，<code>a1+48</code>是<code>req-&gt;path</code>，其中存储的是即将open的文件的完整路径（当然，这个路径是在<code>tftp Server</code>设置的根路径之下的），<code>a1+312</code>是<code>req-&gt;filename</code>，也就是我们<code>get</code>的文件名</p>
 <p>而我根据源代码进行编译之后，找到的这一处的代码是这样的</p>
-<figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MMY5j.png" alt="IDA" title class>
-                <p>IDA</p>
-            </figure>
-
+<p><img src="https://s2.ax1x.com/2020/01/28/1MMY5j.png" alt="IDA"></p>
 <p>很明显与题目的代码不同</p>
 <p>在这里，<code>a1+48</code>和<code>a1+312</code>和上面的一样，<code>::dest</code>是<code>tftp Server</code>配置文件中所设置的根目录，比如我的根目录设置的是<code>/tmp</code>，那么理论上你<code>get</code>的所有请求只能在<code>/tmp</code>目录之下，且有代码专门检测<code>../</code>这样的不合法操作</p>
 <p>到这里其实漏洞点就很清晰了</p>
@@ -53,11 +41,7 @@
 <p><code>start challenge on udp port: 61196</code></p>
 <p>这么一句话，其中端口是个随机数</p>
 <p>再加上在<code>processNew</code>这句代码中，有这一句</p>
-<figure class="image-box">
-                <img src="https://s2.ax1x.com/2020/01/28/1MM3qS.png" alt="RECV" title class>
-                <p>RECV</p>
-            </figure>
-
+<p><img src="https://s2.ax1x.com/2020/01/28/1MM3qS.png" alt="RECV"></p>
 <p>意思是如果<code>req-&gt;filename</code>的第一个字母是<code>/</code>，则跳过它</p>
 <p>那么如果我们构造一个类似于<code>//home</code>这样的，跳过之后就得到了<code>/home</code>，经过<code>strcpy</code>之后<code>req-&gt;path</code>就成了<code>/home</code>，我们就实现了目录穿越</p>
 <p>先用连接过去一次，尝试请求flag</p>
@@ -421,21 +405,10 @@
 
 <h1 id="破解"><a href="#破解" class="headerlink" title="破解"></a>破解</h1><p>有时候我们会遇到给了一串密文，但是没有给<code>key</code>的情况，这种情况下如果要暴力猜解将会是非常困难的，因此我们用统计学的方法来解决这个问题</p>
 <blockquote>
-<p>弗里德曼试验由威廉·F·弗里德曼（William F. Friedman）于1920年代发明。他使用了<a href="https://zh.wikipedia.org/w/index.php?title=重合指数&action=edit&redlink=1" target="_blank" rel="noopener">重合指数</a>（index of coincidence）来描述密文字母频率的不匀性，从而破译密码。<figure class="image-box">
-                <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" alt="kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}" title class>
-                <p>kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}</p>
-            </figure>指字母表中这种情况出现的概率（英文中为1/26=0.0385），从而密钥长度可以估计为：</p>
-<figure class="image-box">
-                <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" alt title class>
-                <p></p>
-            </figure>
-
+<p>弗里德曼试验由威廉·F·弗里德曼（William F. Friedman）于1920年代发明。他使用了<a href="https://zh.wikipedia.org/w/index.php?title=重合指数&action=edit&redlink=1" target="_blank" rel="noopener">重合指数</a>（index of coincidence）来描述密文字母频率的不匀性，从而破译密码。<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c" alt="\kappa _{p}">指目标语言中两个任意字母相同的概率（英文中为0.067），<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" alt="\kappa _{r}">指字母表中这种情况出现的概率（英文中为1/26=0.0385），从而密钥长度可以估计为：</p>
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" alt></p>
 <p>其中，观察概率为</p>
-<figure class="image-box">
-                <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" alt title class>
-                <p></p>
-            </figure>
-
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" alt></p>
 <p>其中，<em>c</em>是指字母表的长度（英文为26），<em>N</em>指文本的长度，<em>n</em>1到<em>nc</em>是指密文的字母频率，为整数。</p>
 <p>此方法只是一种估计，会随着文本长度的增加而更为精确。在实践中，会尝试接近此估计的多个密钥长度。 一种更好的方法是将密文写成矩阵形式，其中列数与假定的密钥长度一致，将每一列的重合指数单独计算，并求得平均重合指数。对于所有可能的密钥长度，平均重合指数最高的最有可能是真正的密钥长度。这样的试验可以作为卡西斯基试验的补充。</p>
 </blockquote>
@@ -1547,9 +1520,9 @@
         
         <tags>
             
-            <tag> malloc </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> malloc </tag>
             
             <tag> free </tag>
             
