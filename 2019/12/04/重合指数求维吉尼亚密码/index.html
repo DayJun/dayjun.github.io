@@ -241,10 +241,21 @@
 
 <h1 id="破解"><a href="#破解" class="headerlink" title="破解"></a>破解</h1><p>有时候我们会遇到给了一串密文，但是没有给<code>key</code>的情况，这种情况下如果要暴力猜解将会是非常困难的，因此我们用统计学的方法来解决这个问题</p>
 <blockquote>
-<p>弗里德曼试验由威廉·F·弗里德曼（William F. Friedman）于1920年代发明。他使用了<a href="https://zh.wikipedia.org/w/index.php?title=重合指数&action=edit&redlink=1" target="_blank" rel="noopener">重合指数</a>（index of coincidence）来描述密文字母频率的不匀性，从而破译密码。<a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c" title="\kappa _{p}" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c" alt="\kappa _{p}"></a>指目标语言中两个任意字母相同的概率（英文中为0.067），<a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" title="\kappa _{r}" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" alt="\kappa _{r}"></a>指字母表中这种情况出现的概率（英文中为1/26=0.0385），从而密钥长度可以估计为：</p>
-<p><a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" alt></a></p>
+<p>弗里德曼试验由威廉·F·弗里德曼（William F. Friedman）于1920年代发明。他使用了<a href="https://zh.wikipedia.org/w/index.php?title=重合指数&action=edit&redlink=1" target="_blank" rel="noopener">重合指数</a>（index of coincidence）来描述密文字母频率的不匀性，从而破译密码。<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" title="kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130f514d470da5eb59911fd9c4d00e7f5275e710" alt="kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}" title class></a>
+                <p>kappa _{p}](https://wikimedia.org/api/rest_v1/media/math/render/svg/dca34d1a0228682daff98ed2767294435e07cb4c)指目标语言中两个任意字母相同的概率（英文中为0.067），![kappa _{r}</p>
+            </figure>指字母表中这种情况出现的概率（英文中为1/26=0.0385），从而密钥长度可以估计为：</p>
+<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9aa12a27559142ed5a4bd388e9bc11a4909d8fbb" alt title class></a>
+                <p></p>
+            </figure>
+
 <p>其中，观察概率为</p>
-<p><a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" alt></a></p>
+<figure class="image-box">
+                <a rel=重合指数求维吉尼亚密码 href="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" title="" data-fancybox="images"><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c33432649ee77f4cb1bbbbaefb67cf0ebdb0df" alt title class></a>
+                <p></p>
+            </figure>
+
 <p>其中，<em>c</em>是指字母表的长度（英文为26），<em>N</em>指文本的长度，<em>n</em>1到<em>nc</em>是指密文的字母频率，为整数。</p>
 <p>此方法只是一种估计，会随着文本长度的增加而更为精确。在实践中，会尝试接近此估计的多个密钥长度。 一种更好的方法是将密文写成矩阵形式，其中列数与假定的密钥长度一致，将每一列的重合指数单独计算，并求得平均重合指数。对于所有可能的密钥长度，平均重合指数最高的最有可能是真正的密钥长度。这样的试验可以作为卡西斯基试验的补充。</p>
 </blockquote>
