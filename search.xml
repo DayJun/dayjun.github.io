@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>smallbin在unlink的时候存在的漏洞</title>
+    <url>/2020/02/07/smallbin%E5%9C%A8unlink%E7%9A%84%E6%97%B6%E5%80%99%E5%AD%98%E5%9C%A8%E7%9A%84%E6%BC%8F%E6%B4%9E/</url>
+    <content><![CDATA[<p>遇到一题，需要此法，特分析源码，在此记录</p>
+<p>版本：libc-2.29</p>
+<a id="more"></a>
+
+<p>众所周知，libc-2.29版本中，<code>unsorted bin attack</code>已经被防御了</p>
+<p>但经过buuctf的新年红包题，原来大佬发现了新的类似于<code>unsorted bin attack</code>的方法</p>
+<p>可利用之处在于，如果<code>small bin</code>中有空闲块，且该大小的<code>tcache bin</code>未满的时候，就会遍历<code>small bin</code>，把<code>small bin</code>从其最后的一个块开始，沿着bk，将块一个一个地放入<code>tcache bin</code></p>
+<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// glibc2.29/malloc/malloc.c 3560</span></span><br><span class="line">	<span class="keyword">if</span> (in_smallbin_range(nb))		<span class="comment">//所有小于large bin的大小的块都in_smallbin_range</span></span><br><span class="line">    &#123;</span><br><span class="line">        idx = smallbin_index(nb);	<span class="comment">//得到请求大小的块对应的small bin的index</span></span><br><span class="line">        bin = bin_at(av, idx);		<span class="comment">//得到该bin</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((victim = last(bin)) != bin)	<span class="comment">//last函数取的是bin-&gt;bk，此处的victim就是small bin链表的最后一个，如果此时victim==bin，就代表说small bin中没有块</span></span><br><span class="line">        &#123;</span><br><span class="line">            bck = victim-&gt;bk;	<span class="comment">//bck指向的是该块所指的前一项</span></span><br><span class="line">            <span class="keyword">if</span> (__glibc_unlikely(bck-&gt;fd != victim))	<span class="comment">//这里的检查和unsorted bin那里添加的检查是一样的</span></span><br><span class="line">                malloc_printerr(<span class="string">"malloc(): smallbin double linked list corrupted"</span>);</span><br><span class="line">            set_inuse_bit_at_offset(victim, nb);</span><br><span class="line">            bin-&gt;bk = bck;</span><br><span class="line">            bck-&gt;fd = bin;	<span class="comment">//直到这里就相当于说victim从small bin的最后一项中取出来了，因为small bin是一个双链表，所以进行了这两步操作进行unlink</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (av != &amp;main_arena)</span><br><span class="line">                set_non_main_arena(victim);</span><br><span class="line">            check_malloced_chunk(av, victim, nb);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> USE_TCACHE</span></span><br><span class="line">            <span class="comment">/* While we're here, if we see other chunks of the same size,</span></span><br><span class="line"><span class="comment">	     stash them in the tcache.  */</span></span><br><span class="line">            <span class="keyword">size_t</span> tc_idx = csize2tidx(nb);		<span class="comment">//得到该大小相对于tcache bin的index</span></span><br><span class="line">            <span class="keyword">if</span> (tcache &amp;&amp; tc_idx &lt; mp_.tcache_bins)</span><br><span class="line">            &#123;</span><br><span class="line">                mchunkptr tc_victim;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/* While bin not empty and tcache not full, copy chunks over.  */</span></span><br><span class="line">                <span class="keyword">while</span> (tcache-&gt;counts[tc_idx] &lt; mp_.tcache_count &amp;&amp; (tc_victim = last(bin)) != bin)	<span class="comment">//这里测试tc_idx对应的tcache bin中块的数目是否小于mp_.tcache_count即一般来说为7，&amp;&amp;之后的一句与上面所说的一样</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">if</span> (tc_victim != <span class="number">0</span>)	<span class="comment">//这里的判断tc_victim != 0我认为是不恰当的，因为最正常的情况而言，tc_victim到最后应该为bin，即while循环中的!=判断是应该成立的</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        bck = tc_victim-&gt;bk;	</span><br><span class="line">                        set_inuse_bit_at_offset(tc_victim, nb);</span><br><span class="line">                        <span class="keyword">if</span> (av != &amp;main_arena)</span><br><span class="line">                            set_non_main_arena(tc_victim);</span><br><span class="line">                        bin-&gt;bk = bck;</span><br><span class="line">                        bck-&gt;fd = bin;	<span class="comment">//这里将块unlink取出</span></span><br><span class="line"></span><br><span class="line">                        tcache_put(tc_victim, tc_idx);	<span class="comment">//将取出的块放入tcache</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">            <span class="keyword">void</span> *p = chunk2mem(victim);</span><br><span class="line">            alloc_perturb(p, bytes);</span><br><span class="line">            <span class="keyword">return</span> p;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="利用方式"><a href="#利用方式" class="headerlink" title="利用方式"></a>利用方式</h1><p>主要利用的点就在while循环中</p>
+<p>以下假设所有块的size都是0x101</p>
+<p>要利用，需要<code>tcache bin</code>中有5个块，且<code>small bin</code>中有3个块</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">void</span> *ptr[<span class="number">0x20</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		ptr[i] = <span class="built_in">malloc</span>(<span class="number">0xf0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">free</span>(ptr[i]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">5</span>;i&lt;<span class="number">12</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		ptr[i] = <span class="built_in">malloc</span>(<span class="number">0x400</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">void</span> *p1 = <span class="built_in">malloc</span>(<span class="number">0x400</span>);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">	<span class="keyword">void</span> *p2 = <span class="built_in">malloc</span>(<span class="number">0x400</span>);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">	<span class="keyword">void</span> *p3 = <span class="built_in">malloc</span>(<span class="number">0x400</span>);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">	<span class="keyword">void</span> *p4 = <span class="built_in">malloc</span>(<span class="number">0x400</span>);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">5</span>;i&lt;<span class="number">12</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">free</span>(ptr[i]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x10</span>);</span><br><span class="line">	<span class="keyword">int</span> a;</span><br><span class="line">	<span class="built_in">free</span>(p1);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x300</span>);</span><br><span class="line">	<span class="built_in">free</span>(p2);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x300</span>);</span><br><span class="line">	<span class="built_in">free</span>(p3);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x300</span>);</span><br><span class="line">	<span class="built_in">free</span>(p4);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x300</span>);</span><br><span class="line">	<span class="built_in">malloc</span>(<span class="number">0x300</span>);</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;a);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就得到了3个0x100的<code>small bin</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pwndbg&gt; heapinfo</span><br><span class="line">(0x20)     fastbin[0]: 0x0</span><br><span class="line">(0x30)     fastbin[1]: 0x0</span><br><span class="line">(0x40)     fastbin[2]: 0x0</span><br><span class="line">(0x50)     fastbin[3]: 0x0</span><br><span class="line">(0x60)     fastbin[4]: 0x0</span><br><span class="line">(0x70)     fastbin[5]: 0x0</span><br><span class="line">(0x80)     fastbin[6]: 0x0</span><br><span class="line">(0x90)     fastbin[7]: 0x0</span><br><span class="line">(0xa0)     fastbin[8]: 0x0</span><br><span class="line">(0xb0)     fastbin[9]: 0x0</span><br><span class="line">                  top: 0x55fed16d7ac0 (size : 0x1d540) </span><br><span class="line">       last_remainder: 0x55fed16d7360 (size : 0x100) </span><br><span class="line">            unsortbin: 0x0</span><br><span class="line">(0x100)  smallbin[14]: 0x55fed16d7360  &lt;--&gt; 0x55fed16d6b00  &lt;--&gt; 0x55fed16d66d0</span><br><span class="line">(0x100)   tcache_entry[14](5): 0x55fed16d4660 --&gt; 0x55fed16d4560 --&gt; 0x55fed16d4460 --&gt; 0x55fed16d4360 --&gt; 0x55fed16d4260</span><br><span class="line">(0x410)   tcache_entry[63](7): 0x55fed16d6c30 --&gt; 0x55fed16d5bb0 --&gt; 0x55fed16d57a0 --&gt; 0x55fed16d5390 --&gt; 0x55fed16d4f80 --&gt; 0x55fed16d4b70 --&gt; 0x55fed16d4760</span><br></pre></td></tr></table></figure>
+
+<p>利用的话，只需要将<code>small bin</code>中第一项的<code>bk</code>改为我们想要覆写的地址<code>-0x10</code>的地方，然后<code>malloc(0x100)</code>即可完成利用</p>
+<p>前面源码中，<code>last(bin)</code>所取的就是最右边那一块，这一块作为<code>victim</code>取出，最后返回，<code>bin-&gt;bk</code>变成链表中的中间项</p>
+<p>然后执行到while循环的地方</p>
+<ul>
+<li>通过<code>tc_victim = last(bin)</code>取到<code>small bin</code>中间那一块</li>
+<li>取<code>bck = tc_victim-&gt;bk</code>，这里<code>bck</code>指的就是<code>small bin</code>的第一块</li>
+<li>设置<code>bin-&gt;bk = bck</code></li>
+<li>设置<code>bck-&gt;fd = bin</code></li>
+<li>将<code>tc_victim</code>放入<code>tcache</code></li>
+<li>取<code>tc_victim = last(bin)</code>取到<code>small bin</code>的第一块</li>
+<li><code>bck = tc_victim-&gt;bk</code>，此时<code>tcache</code>中有6个块，如果之前已经将<code>bk</code>改编成我们需要的地址，现在<code>bck</code>就是我们所需要的地址</li>
+<li>之后<code>bin-&gt;bk = bck</code></li>
+<li><code>bck-&gt;fd = bin</code>就将我们所需要的地址<code>+0x10</code>的地方写成了<code>bin</code>的地址，即<code>small bin</code>的地址</li>
+</ul>
+<p>至此就完成了利用，挺麻烦的 : ) </p>
+]]></content>
+      <categories>
+        <category>学习日记</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>pwnable.tw CVE-2018-10387(标题党)</title>
     <url>/2020/01/28/pwnable-tw-CVE-2018-10387-%E6%A0%87%E9%A2%98%E5%85%9A/</url>
     <content><![CDATA[<blockquote>
@@ -1175,8 +1218,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
@@ -1270,8 +1313,8 @@
         <category>browser</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
         <tag>chrome</tag>
         <tag>v8</tag>
       </tags>
@@ -1333,8 +1376,8 @@
         <category>学习日记</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>malloc</tag>
+        <tag>pwn</tag>
         <tag>free</tag>
       </tags>
   </entry>
@@ -1419,8 +1462,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
