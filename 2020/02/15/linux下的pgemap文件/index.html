@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>linux下的pgemap文件（翻译） | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content>
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>linux下的pgemap文件（翻译）</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">linux下的pgemap文件（翻译）</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-02-15T05:41:38.000Z" itemprop="datePublished" class="page-time">
+  2020-02-15
+</time>
+
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-linux下的pgemap文件"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">linux下的pgemap文件（翻译）</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-02-15 13:41:38" datetime="2020-02-15T05:41:38.000Z"  itemprop="datePublished">2020-02-15</time>
+
+            
+
+
+            
+	<span id="/2020/02/15/linux下的pgemap文件/" class="leancloud_visitors" data-flag-title="linux下的pgemap文件（翻译）" title="linux下的pgemap文件（翻译）">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/02/15/linux下的pgemap文件/#comment">
+            <span class="valine-comment-count" data-xid="/2020/02/15/linux下的pgemap文件/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>原文：<a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt" target="_blank" rel="noopener">https://www.kernel.org/doc/Documentation/vm/pagemap.txt</a></p>
+<a id="more"></a>
+<h1 id="用户空间角度下的pagemap"><a href="#用户空间角度下的pagemap" class="headerlink" title="用户空间角度下的pagemap"></a>用户空间角度下的pagemap</h1><p><code>pagemap</code>是内核中的一组新的接口，允许用户空间的程序通过读取<code>/proc</code>下的文件来检查页表及相关信息</p>
+<p><code>pagemap</code>文件包括四个组件：</p>
+<ul>
+<li><p><code>/proc/pid/pagemap</code>  该文件可以使一个用户空间的进程找到每一个虚拟页面映射到哪个物理帧。它为每一个物理页面包含一个64位的值，该值包含以下数据：</p>
+<ul>
+<li><code>0-54</code>位是页帧号<code>(page frame number aka PFN)</code> if present<ul>
+<li><code>0-4</code>位是交换类型<code>(swap type)</code> if swapped</li>
+<li><code>5-54</code>位是交换偏移<code>(swap offset)</code> if swapped</li>
+</ul>
+</li>
+<li><code>55</code>位表示<code>pte is soft-dirty</code></li>
+<li><code>56</code>位表示完全映射页<code>(page exclusively mapped)</code>（从linux4.2开始）</li>
+<li><code>57-60</code>位为0</li>
+<li><code>61</code>位表示页是文件页<code>(file-page)</code>还是匿名共享<code>(shared-anon)</code>（从linux3.5开始）</li>
+<li><code>62</code>位表示页被交换<code>(swapped)</code></li>
+<li><code>63</code>位表示页存在<code>(present)</code></li>
+</ul>
+<p>从linux4.0开始，只有拥有<code>CAP_SYS_ADMIN</code>特权的用户才能得到<code>PFN</code>这些数据。在4.0和4.1版本如果无此特权打开该文件，会失败并返回<code>-EPERM</code>。从linux4.2开始，如果用户没有此特权的话，读取<code>PFN</code>会得到0。原因就是<code>PFn</code>等数据的信息会帮助漏洞的利用</p>
+<p>如果页不存在但是在交换区，<code>PFN</code>就会包含编码后的交换文件号以及该页在交换区的偏移。未被映射的页返回空的<code>PFN</code>，这样就能精确地确定映射（或交换）了哪些页面，并在进程之间比较映射的页面</p>
+<p>高效的用户使用这个接口的话，会先用<code>/proc/pid/maps</code>来确定内存的哪些区域被映射了，然后使用<code>lseek</code>去跳过未被映射的区域</p>
+</li>
+<li><p><code>/proc/kpagecount</code>  该文件包含每个页被映射的次数，该次数是一个64位的数字，以<code>PFN</code>作为索引</p>
+</li>
+<li><p><code>/proc/kpageflags</code>  该文件包含每个页的一组64位的flags，以<code>PFN</code>作为索引</p>
+<p>flags为：</p>
+<pre><code>0. LOCKED
+ 1. ERROR
+ 2. REFERENCED
+ 3. UPTODATE
+ 4. DIRTY
+ 5. LRU
+ 6. ACTIVE
+ 7. SLAB
+ 8. WRITEBACK
+ 9. RECLAIM
+ 10. BUDDY
+ 11. MMAP
+ 12. ANON
+ 13. SWAPCACHE
+ 14. SWAPBACKED
+ 15. COMPOUND_HEAD
+ 16. COMPOUND_TAIL
+ 17. HUGE
+ 18. UNEVICTABLE
+ 19. HWPOISON
+ 20. NOPAGE
+ 21. KSM
+ 22. THP
+ 23. BALLOON
+ 24. ZERO_PAGE
+ 25. IDLE</code></pre></li>
+<li><p><code>/proc/kpagecgrope</code>  该文件包含每个页面管理的内存的cgroup的64位inode编号，以<code>PFN</code>为索引，只在<code>CONFIG_MEMCG</code>被设置后才可用</p>
+</li>
+</ul>
+<p>对页标志的简短介绍：</p>
+<ol start="0">
+<li><p><code>LOCKED</code>页被锁定为独占访问，例如，正在经受<code>read/write IO</code></p>
+</li>
+<li><p>当连续页<code>(compound page)</code>被使用的时候，<code>SLAB</code>页被<code>SLAB/SLOB/SLUB/SLQB</code>内核内存分配器管理</p>
+</li>
+<li><p><code>BUDDY</code>一个空闲的内存锁，由伙伴系统分配器管理。伙伴系统以各种顺序组织空闲内存。一个次序为N的块有$2^N$个物理上连续的页面，其中只有第一个页面设置了<code>BUDDY</code>标志</p>
+</li>
+<li><p><code>COMPOUND_HEAD</code></p>
+</li>
+<li><p><code>COMPOUND_TAIL</code>一个次序为N的连续页<code>(compound page)</code>包含$2^N$个物理连续页。一个次序为2的连续页的形式为“HTTT”，H指它是头页，T表示它（它们）是尾页。连续页的只要消耗着是<code>hugeTLB page</code>，<code>SLUB</code>，例如，内存分配器不同的设备驱动器。然而在这个接口中，只有<code>huge/giga pages</code>能被<code>end users</code>看到。</p>
+</li>
+<li><p><code>HUGE</code>这是<code>HugeTLB page</code>的组成页面</p>
+</li>
+<li><p><code>HWPOISON</code>硬件在此页上检测内存损坏：不要触碰这里的数据！</p>
+</li>
+<li><p><code>NOPAGE</code>在请求的地址没有页帧存在</p>
+</li>
+<li><p><code>KSM</code>在一个或多个进程之间动态共享的相同内存页</p>
+</li>
+<li><p><code>THP</code>相连的用来构造透明的大页面的页面</p>
+</li>
+<li><p><code>BALLOON</code>  ballon compaction page  涨大的压缩页面？？？</p>
+</li>
+<li><p><code>ZERO_PAGE</code>  zero page for pfn_zero or huge_zero page</p>
+</li>
+<li><p><code>IDLE</code>页面从被标记为<code>idle</code>开始就没有被访问。需要注意的是，如果通过<code>PTE</code>访问该页面，此标志可能会过时。要确保该标志是最新的，必须先读取<code>/sys/kernel/mm/page_idle/bitmap</code></p>
+<p>[ IO相关的页标志 ]</p>
+<ol>
+<li><p><code>ERROR</code>  IO错误已发生</p>
+</li>
+<li><p><code>UPTODATE</code>页面有最新数据</p>
+<blockquote>
+<p>   ie. for file backed page: (in-memory data revision &gt;= on-disk one)</p>
+</blockquote>
+</li>
+<li><p><code>DIRTY</code>页以及被写入，因此包含新数据</p>
+<blockquote>
+<p>   ie. for file backed page: (in-memory data revision &gt;  on-disk one)</p>
+</blockquote>
+</li>
+<li><p><code>WRITEBACK</code>页已经被同步到硬盘</p>
+</li>
+<li><p><code>LRU</code>页在<code>LRU lists</code>之一之内</p>
+</li>
+<li><p><code>ACTIVE</code>页在<code>active LRU list</code>之内</p>
+</li>
+</ol>
+</li>
+<li><p><code>UNEVICTABLE</code>页在<code>unevictable (non-)LRU list</code>之内</p>
+<blockquote>
+<p>它以某种方式固定，而不是LRU页面回收的候选</p>
+</blockquote>
+<ol start="2">
+<li><code>REFERENCED</code>自从上次<code>LRU list</code>入队/重新入对以来已经重新引用该页面</li>
+<li><code>RECLAIM</code>页面输出IO完成后将立即回收该页面</li>
+</ol>
+</li>
+<li><p><code>MMAP</code>一个内存映射页</p>
+</li>
+<li><p><code>ANON</code>一个非文件的一部分的内存映射页</p>
+</li>
+<li><p><code>SWAPCACHE</code>页被映射到交换空间，例如，有一个相关的交换入口</p>
+</li>
+<li><p><code>SWAPBACKED</code>页由swap/RAM支持</p>
+</li>
+</ol>
+<blockquote>
+<p>The page-types tool in the tools/vm directory can be used to query the above flags.</p>
+</blockquote>
+<p>用<code>pagemap</code>做一些有用的事情：</p>
+<p>使用<code>pagemap</code>查找进程的内存使用情况像是如下这样：</p>
+<ol>
+<li>读取<code>/proc/pid/maps</code>来确定内存空间中的哪一部分映射到了什么</li>
+<li>选择你需要的部分</li>
+<li>打开<code>/proc/pid/pagemap</code>并找到想要检查的页面</li>
+<li>从<code>pagemap</code>为每一页读取一个<code>uint64</code></li>
+<li>打开<code>/proc/kpagecount</code>和/或<code>/proc/kpageflags</code>。你所读取的每一个<code>PFN</code>,查找文件中的那个条目，并读取所需的数据</li>
+</ol>
+<p>例如，为了找到<code>&quot;unique set size&quot; (USS)</code>，即只被一个内存独享的内存的数量。你可以遍历进程中的每个映射，超导<code>PFN</code>，然后在<code>kpagecount</code>中查找他们，并计算仅被引用一次的页面的个数</p>
+<p>注意事项：</p>
+<p>如果没有从8字节的边界开始读取，或者读取的大小不是8的倍数，读任何文件都会返回<code>-EINVAL</code></p>
+<p>在linux3.11之前，<code>pagemap</code>的<code>55-60</code>位被用作表示<code>page-shift</code>（在某些架构里总是12）。从Linux 3.11开始，它们的含义在先清除<code>soft-dirty bits</code>后才改变。 从Linux 4.2开始，它们无条件地用于标志。</p>
+<h1 id="soft-dirty"><a href="#soft-dirty" class="headerlink" title="soft-dirty"></a>soft-dirty</h1><p>原文：<a href="https://www.kernel.org/doc/Documentation/vm/soft-dirty.txt" target="_blank" rel="noopener">https://www.kernel.org/doc/Documentation/vm/soft-dirty.txt</a></p>
+<p><code>soft-dirty</code>是<code>PTE</code>的一位，用来帮助跟踪任务写入的页面。为了完成跟踪，页面应该：</p>
+<ol>
+<li><p>从任务的<code>PTEs</code>清除<code>soft-dirty</code>位</p>
+</li>
+<li><p>wait some time</p>
+</li>
+<li><p>从<code>PTEs</code>读取<code>soft-dirty</code>位</p>
+<p>读取<code>/proc/pid/pagemap</code>来完成此任务，第55位就是<code>soft-dirty</code>位。如果设置此位，就从步骤1开始写入相应的<code>PTE</code></p>
+</li>
+</ol>
+<p>在内部，为了进行跟踪，当<code>soft-dirty</code>位被清除时，可写位被从<code>PTE</code>中清除。因此，在此之后，当任务试图修改某个虚拟地址处的页面时，<code>#PF</code>会出现，内核会在相应的<code>PTE</code>上设置<code>soft-dirty</code>位。</p>
+<p>请注意，尽管在清除<code>soft-dirty</code>位后，所有任务的地址空间都标记为r / o，但是在此之后发生的<code>PF-s</code>将被快速处理。 之所以如此，是因为页面仍被映射到物理内存，因此内核所做的一切就是找出这一事实，并将可写位和<code>soft-dirty</code>位都放在<code>PTE</code>上。</p>
+<p>虽然在大多数情况下，通过<code>#PF-s</code>来跟踪内存更改已经足够了，但是仍然存在这样一种情况，即我们可能会丢失<code>soft-dirty</code>位——一个任务取消映射一个以前映射的内存区域，然后在完全相同的位置映射一个新的内存区域。当<code>unmap</code>被调用时，内核内部会清除包括软脏位在内的<code>PTE</code>值。为了将这种内存区域更新通知用户空间应用程序，内核总是将新的内存区域(和扩展的区域)标记为<code>soft-dirty</code>。</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-02-15T09:23:40.000Z" itemprop="dateUpdated">2020-02-15 17:23:40</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/02/15/linux下的pgemap文件/" target="_blank" rel="external">http://dayjun.top/2020/02/15/linux下的pgemap文件/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/02/15/linux下的pgemap文件/&title=《linux下的pgemap文件（翻译）》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/02/15/linux下的pgemap文件/&title=《linux下的pgemap文件（翻译）》 — DaJun的Blog&source=原文：https://www.kernel.org/doc/Documentation/vm/pagemap.txt" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/02/07/smallbin在unlink的时候存在的漏洞/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">smallbin在unlink的时候存在的漏洞</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#用户空间角度下的pagemap"><span class="post-toc-number">1.</span> <span class="post-toc-text">用户空间角度下的pagemap</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#soft-dirty"><span class="post-toc-number">2.</span> <span class="post-toc-text">soft-dirty</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/02/15/linux下的pgemap文件/&title=《linux下的pgemap文件（翻译）》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/02/15/linux下的pgemap文件/&title=《linux下的pgemap文件（翻译）》 — DaJun的Blog&source=原文：https://www.kernel.org/doc/Documentation/vm/pagemap.txt" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACJklEQVR42u3a24oCMRAFQP//p93XBXf0nCQuTFJ5knEwKYQmfXk84vV8We07v59cfb56smxhYGDclvF8u17feX+4Fnn1JD8bBgbGOYyrjZPj5kdJdszfxMDAwGg3bgP3/L4YGBgYq9LOq/eT5xgYGBhtEtuy84CbP1+Qi2NgYNyQkVfd///zV/obGBgYt2I8yzUTNFed4Y9dMDAwtmbkAa69nLUjF+2wBQYGxjmMmQGvsW/HWpgfYBgYGEcy2mbAWMhOQnl0BgwMjK0ZbVk/D5HzKetYcxQDA2NXRj4MMVZWa4Pp+6vh5Y4YGBibMtoGQH4FbMcy2vS4qAViYGBswchDW14mG6uJ5ee5zMUxMDC2Y7TdzhaTXwrnRz0wMDB2ZYwVucYaA8kvJOH1cloEAwPjYEZbCGvL/UlAj4YtMDAwtmZ8Ix1tm6PJSYqZEQwMjI0Y+cDWTKBs8+kk2466HBgYGFsw8ktY3lZcVdyv/wcMDIxNGatmFebbkwuQGBgYBzBmjtIOk7WlujqJxcDAOIzRXvXy1kLbFv2wOwYGxjGMthA2Njo2M66BgYFxGuNZrjwc502FsTZn8T9gYGDcnJGvpECWgNdeK2sMBgbGbRkzpa6xwbKZEQ0MDIyTGW3xKw+OY23RFo+BgYHRNi/b5mjy/MOvYWBgYExc4PIA2ibAC66GGBgYt2Ksaky2Ce18AxUDA+MExsykRrJxe5T21zAwMLZm/ACoMLJQ//UmYAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>

