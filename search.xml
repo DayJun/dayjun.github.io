@@ -30,34 +30,38 @@
 </li>
 <li><p><code>/proc/kpageflags</code>  该文件包含每个页的一组64位的flags，以<code>PFN</code>作为索引</p>
 <p>flags为：</p>
-<pre><code>0. LOCKED
- 1. ERROR
- 2. REFERENCED
- 3. UPTODATE
- 4. DIRTY
- 5. LRU
- 6. ACTIVE
- 7. SLAB
- 8. WRITEBACK
- 9. RECLAIM
- 10. BUDDY
- 11. MMAP
- 12. ANON
- 13. SWAPCACHE
- 14. SWAPBACKED
- 15. COMPOUND_HEAD
- 16. COMPOUND_TAIL
- 17. HUGE
- 18. UNEVICTABLE
- 19. HWPOISON
- 20. NOPAGE
- 21. KSM
- 22. THP
- 23. BALLOON
- 24. ZERO_PAGE
- 25. IDLE</code></pre></li>
-<li><p><code>/proc/kpagecgrope</code>  该文件包含每个页面管理的内存的cgroup的64位inode编号，以<code>PFN</code>为索引，只在<code>CONFIG_MEMCG</code>被设置后才可用</p>
 </li>
+</ul>
+<ol start="0">
+<li>LOCKED</li>
+<li>ERROR</li>
+<li>REFERENCED</li>
+<li>UPTODATE</li>
+<li>DIRTY</li>
+<li>LRU</li>
+<li>ACTIVE</li>
+<li>SLAB</li>
+<li>WRITEBACK</li>
+<li>RECLAIM</li>
+<li>BUDDY</li>
+<li>MMAP</li>
+<li>ANON</li>
+<li>SWAPCACHE</li>
+<li>SWAPBACKED</li>
+<li>COMPOUND_HEAD</li>
+<li>COMPOUND_TAIL</li>
+<li>HUGE</li>
+<li>UNEVICTABLE</li>
+<li>HWPOISON</li>
+<li>NOPAGE</li>
+<li>KSM</li>
+<li>THP</li>
+<li>BALLOON</li>
+<li>ZERO_PAGE</li>
+<li>IDLE</li>
+</ol>
+<ul>
+<li><code>/proc/kpagecgrope</code>  该文件包含每个页面管理的内存的cgroup的64位inode编号，以<code>PFN</code>为索引，只在<code>CONFIG_MEMCG</code>被设置后才可用</li>
 </ul>
 <p>对页标志的简短介绍：</p>
 <ol start="0">
@@ -647,7 +651,7 @@
 <p>先从bzImage中提取出来vmlinux，然后再把core.cpio解包</p>
 <p><code>-s</code>告诉我们可以用gdb来调试它</p>
 <h1 id="再看init"><a href="#再看init" class="headerlink" title="再看init"></a>再看init</h1><p>进入core.cpio解包的文件夹，查看init</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/sh</span><br><span class="line">mount -t proc proc /proc</span><br><span class="line">mount -t sysfs sysfs /sys</span><br><span class="line">mount -t devtmpfs none /dev</span><br><span class="line">/sbin/mdev -s</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -vt devpts -o gid=4,mode=620 none /dev/pts</span><br><span class="line">chmod 666 /dev/ptmx</span><br><span class="line">cat /proc/kallsyms &gt; /tmp/kallsyms</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/kptr_restrict</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/dmesg_restrict</span><br><span class="line">ifconfig eth0 up</span><br><span class="line">udhcpc -i eth0</span><br><span class="line">ifconfig eth0 10.0.2.15 netmask 255.255.255.0</span><br><span class="line">route add default gw 10.0.2.2 </span><br><span class="line">insmod /core.ko</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>poweroff -d 120 -f &amp;</span><br><span class="line">setsid /bin/cttyhack setuidgid 1000 /bin/sh</span><br><span class="line">echo 'sh end!\n'</span><br><span class="line">umount /proc</span><br><span class="line">umount /sys</span><br><span class="line"></span><br><span class="line">poweroff -d 0  -f</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">mount -t proc proc /proc</span><br><span class="line">mount -t sysfs sysfs /sys</span><br><span class="line">mount -t devtmpfs none /dev</span><br><span class="line">/sbin/mdev -s</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -vt devpts -o gid=4,mode=620 none /dev/pts</span><br><span class="line">chmod 666 /dev/ptmx</span><br><span class="line">cat /proc/kallsyms &gt; /tmp/kallsyms</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/kptr_restrict</span><br><span class="line">echo 1 &gt; /proc/sys/kernel/dmesg_restrict</span><br><span class="line">ifconfig eth0 up</span><br><span class="line">udhcpc -i eth0</span><br><span class="line">ifconfig eth0 10.0.2.15 netmask 255.255.255.0</span><br><span class="line">route add default gw 10.0.2.2 </span><br><span class="line">insmod /core.ko</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">poweroff -d 120 -f &amp;</span></span><br><span class="line">setsid /bin/cttyhack setuidgid 1000 /bin/sh</span><br><span class="line">echo 'sh end!\n'</span><br><span class="line">umount /proc</span><br><span class="line">umount /sys</span><br><span class="line"></span><br><span class="line">poweroff -d 0  -f</span><br></pre></td></tr></table></figure>
 
 <p><code>cat /proc/kallsyms &gt; /tmp/kallsyms</code>告诉我们有一个备份的kallsyms</p>
 <p><code>echo 1 &gt; /proc/sys/kernel/kptr_restrict</code>告诉我们不能通过 <code>/proc/kallsyms</code> 查看函数地址</p>
