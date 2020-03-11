@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>空指针公开赛逆向wp | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="re">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>空指针公开赛逆向wp</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">空指针公开赛逆向wp</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-03-11T02:33:46.000Z" itemprop="datePublished" class="page-time">
+  2020-03-11
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-空指针公开赛逆向wp"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">空指针公开赛逆向wp</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-03-11 10:33:46" datetime="2020-03-11T02:33:46.000Z"  itemprop="datePublished">2020-03-11</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+
+
+            
+	<span id="/2020/03/11/空指针公开赛逆向wp/" class="leancloud_visitors" data-flag-title="空指针公开赛逆向wp" title="空指针公开赛逆向wp">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/03/11/空指针公开赛逆向wp/#comment">
+            <span class="valine-comment-count" data-xid="/2020/03/11/空指针公开赛逆向wp/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>除了去花以及最后的flag比较算法挺麻烦的，这道题其实还好</p>
+<p>官方wp：<a href="https://mp.weixin.qq.com/s/rMh-hABCdGpYpGqtFFiKOA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/rMh-hABCdGpYpGqtFFiKOA</a></p>
+<a id="more"></a>
+
+<p>ida先打开程序发现加了壳，遂脱壳</p>
+<p>脱壳后，发现程序加了花，各种无意义跳转</p>
+<p>许多类似这样的跳转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">text:12341487                 call    loc_12341490</span><br><span class="line">.text:12341487 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:1234148C                 db  77h ; w</span><br><span class="line">.text:1234148D ; ---------------------------------------------------------------------------</span><br><span class="line">.text:1234148D                 jmp     short loc_12341496</span><br><span class="line">.text:1234148D ; ---------------------------------------------------------------------------</span><br><span class="line">.text:1234148F                 db  88h</span><br><span class="line">.text:12341490 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:12341490</span><br><span class="line">.text:12341490 loc_12341490:                           ; CODE XREF: sub_123413B0+D7↑p</span><br><span class="line">.text:12341490                 db      36h</span><br><span class="line">.text:12341490                 add     dword ptr [esp+0], 1</span><br><span class="line">.text:12341495                 retn</span><br><span class="line">.text:12341496 ; ---------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+
+<p>对于没有经验的人来说，最方便的方法是手动patch，奈何这里的花太多，patch了许久</p>
+<p>patch之后</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sub_123413B0</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> v0; <span class="comment">// ST40_4</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> v1; <span class="comment">// ST44_4</span></span><br><span class="line">  <span class="keyword">char</span> *Buf1; <span class="comment">// [esp+6Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  nullsub_11();</span><br><span class="line">  sub_12341340(<span class="number">0</span>);</span><br><span class="line">  v0 = <span class="built_in">strlen</span>(<span class="string">"npointer&#123;"</span>);</span><br><span class="line">  v1 = <span class="built_in">strlen</span>(<span class="string">"&#125;"</span>);</span><br><span class="line">  Buf1 = (<span class="keyword">char</span> *)sub_123416AD(v0 + v1 + <span class="number">33</span>);</span><br><span class="line">  nullsub_12();</span><br><span class="line">  sub_12341020(<span class="string">"Input the correct keys: "</span>);</span><br><span class="line">  nullsub_13();</span><br><span class="line">  sub_12341050(<span class="string">"%s"</span>, Buf1, v0 + v1 + <span class="number">33</span>);</span><br><span class="line">  <span class="keyword">if</span> ( !<span class="built_in">memcmp</span>(Buf1, <span class="string">"npointer&#123;"</span>, <span class="built_in">strlen</span>(<span class="string">"npointer&#123;"</span>))</span><br><span class="line">    &amp;&amp; Buf1[<span class="built_in">strlen</span>(Buf1) - <span class="number">1</span>] == asc_12343738[<span class="number">0</span>]</span><br><span class="line">    &amp;&amp; (Buf1[<span class="built_in">strlen</span>(Buf1) - <span class="number">1</span>] = <span class="number">0</span>, sub_12341090(&amp;unk_12343798, <span class="number">0x30D3</span>u, (<span class="keyword">int</span>)&amp;Buf1[<span class="built_in">strlen</span>(<span class="string">"npointer&#123;"</span>)])) )</span><br><span class="line">  &#123;</span><br><span class="line">    sub_12341340(<span class="number">1</span>);</span><br><span class="line">    sub_12341020(<span class="string">"Congrats!\n"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    sub_12341020(<span class="string">"Sorry, the gate remains closed.\n"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> system(<span class="string">"pause"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>明白我们的输入是<code>npointer{32字节}</code></p>
+<p><code>unk_12343798</code>是代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">text:123411D3 sub_123411D3    proc near               ; CODE XREF: sub_123411C7+6↑p</span><br><span class="line">.text:123411D3                 add     esp, 4</span><br><span class="line">.text:123411D6                 add     edi, [ebp-14h]</span><br><span class="line">.text:123411D9                 xor     ecx, ecx</span><br><span class="line">.text:123411DB                 call    dword ptr [ebp-14h]</span><br><span class="line">.text:123411DE                 jmp     short loc_123411E3</span><br></pre></td></tr></table></figure>
+
+<p>此处会调用它</p>
+<p>进入代码后，发现是这样一个逻辑：</p>
+<ul>
+<li>按顺序取花括号内字符，与硬编码到指令的字符进行比较</li>
+<li>第一个比较很直接，如果第一个字符是’f’，则继续，若非，则失败</li>
+<li>如果继续，在执行到retf之后，cs部分会变成0x33，然后进入到push到栈中的下一个指令的地址，但是一般的调试器在执行这一步的时候会因为检测到异常而停止程序……</li>
+<li>程序在cs是0x23的时候表示32位模式，cs是0x33的时候表示是64位模式</li>
+<li>所以这段代码就是64位和32位循环交替来对每一位进行比较，比如第一位32位模式下比较，第二位64位模式下比较，以此循环</li>
+</ul>
+<p>由于32位和64位代码不一样，所以可以把代码dump出来，copy一份，一份ida32打开它，一份ida64打开它，这样分析会比较方便</p>
+<p>但是由于分支众多，所以如何才能成功呢？</p>
+<p>经过观察，我发现，每次分叉的时候，都只有一条路径是之前没执行过的，其他路径要么执行过，要么跳入失败的函数，所以我们只需要提前分析每条路径的下一次跳转到了什么地方，然后找到一条不在原地转圈的通路就可以了</p>
+<p>在偏向后期的时候，遇到一个三叉路口，但只能否定其中一个，因此我两个都测试了一下，发现只有中间的那个je可以直通终点</p>
+<p>通到终点之后，继续运行程序就会告诉你成功了</p>
+<p>flag就是所有的输入</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-03-11T02:39:21.908Z" itemprop="dateUpdated">2020-03-11 10:39:21</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/03/11/空指针公开赛逆向wp/" target="_blank" rel="external">http://dayjun.top/2020/03/11/空指针公开赛逆向wp/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/re/">re</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/11/空指针公开赛逆向wp/&title=《空指针公开赛逆向wp》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/11/空指针公开赛逆向wp/&title=《空指针公开赛逆向wp》 — DaJun的Blog&source=除了去花以及最后的flag比较算法挺麻烦的，这道题其实还好
+官方wp：https://mp.weixin.qq.com/s/rMh-hABCdGpYpGq..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/02/29/qemu-pwn-XNUCA2019-vexx/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">qemu pwn--XNUCA2019 vexx &amp; /dev/mem</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/11/空指针公开赛逆向wp/&title=《空指针公开赛逆向wp》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/11/空指针公开赛逆向wp/&title=《空指针公开赛逆向wp》 — DaJun的Blog&source=除了去花以及最后的flag比较算法挺麻烦的，这道题其实还好
+官方wp：https://mp.weixin.qq.com/s/rMh-hABCdGpYpGq..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACIElEQVR42u3aUY7CMAwFQO5/6e4BEOHZLis1mXwh2i0ZVnoksV+veFxv4/3q+53JO+un3TwwMDAey7iW49NUkvcnyHxuGBgY5zA+JVj+6Hngrklf5oyBgYExeJ3zkudgYGBgTAI3CdZk+4qBgYEx2cTmB3Drj1z/1c/34hgYGA9k5Kfu///6J/UNDAyMRzGu4sgjtXf01pwVBgbG1ow84HpH+dXSZm8+GBgY5zCSEuNkVXZXQGNgYJzJmAdiwu6VBJqhjIGBsRGjF469kuS8mezjrDAwMLZmTBos1vckV6sNFoVfDwwMjI0YeVDOWx/yWC9vgDEwMLZmJMu4fKGWPGHS3lH+z2BgYGzBmLdZ9GL63i0xBgbGCYxq4ObhW91JN69iYGBszcgB+da396VUV7IYGBjnMKoFwrw8UOWNCgYYGBhbM6pb07wJrFq2nCwxMTAw9mbkoZYfyeWTmy86MTAwTmBUOxbyJWC18Fn9TcDAwDiNkW9Hqy1cvQO7ZmkBAwPjMEbvKK26Ec0P16IvDgMD4zBGddLV1rE83AtxjIGBsSnjKo5qUTMJzTxSv1RiMTAwNmX0Cpm9Gmmv5WsS0BgYGDsxqmWAJDp7banVwC0sEDEwMLZgFI7gi6WC25on1vdjYGBgxOXG6qTnhU8MDAyMauAmH/mTdg0MDIwDGMkmNj9KyxeLCSNadGJgYGzN6DVJ9KZ1F6lZ5cDAwHge4w+rLvAuRZhSTQAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
