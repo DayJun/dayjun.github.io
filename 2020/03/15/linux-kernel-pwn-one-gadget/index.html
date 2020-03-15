@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>linux kernel pwn one_gadget | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn,kernel">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>linux kernel pwn one_gadget</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">linux kernel pwn one_gadget</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-03-15T03:50:07.000Z" itemprop="datePublished" class="page-time">
+  2020-03-15
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-linux-kernel-pwn-one-gadget"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">linux kernel pwn one_gadget</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-03-15 11:50:07" datetime="2020-03-15T03:50:07.000Z"  itemprop="datePublished">2020-03-15</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2020/03/15/linux-kernel-pwn-one-gadget/" class="leancloud_visitors" data-flag-title="linux kernel pwn one_gadget" title="linux kernel pwn one_gadget">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/03/15/linux-kernel-pwn-one-gadget/#comment">
+            <span class="valine-comment-count" data-xid="/2020/03/15/linux-kernel-pwn-one-gadget/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>linux kernel 下的类似于one_gadget（但不同于glibc中的作用）的内核函数</p>
+<p>学习于XNUCA2019 babykernel</p>
+<a id="more"></a>
+
+<p><code>regcache_mark_dirty</code>这个函数的地址可以在<code>/proc/kallsyms</code>中查看到，其函数体为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">regcache_mark_dirty</span><span class="params">(struct regmap *<span class="built_in">map</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">map</span>-&gt;lock(<span class="built_in">map</span>-&gt;lock_arg);</span><br><span class="line">	<span class="built_in">map</span>-&gt;cache_dirty = <span class="literal">true</span>;</span><br><span class="line">	<span class="built_in">map</span>-&gt;no_sync_defaults = <span class="literal">true</span>;</span><br><span class="line">	<span class="built_in">map</span>-&gt;unlock(<span class="built_in">map</span>-&gt;lock_arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于regmap的结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">regmap</span> &#123;</span></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">mutex</span>;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="keyword">spinlock_t</span> spinlock;</span><br><span class="line">			<span class="keyword">unsigned</span> <span class="keyword">long</span> spinlock_flags;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;;</span><br><span class="line">	regmap_lock lock;</span><br><span class="line">	regmap_unlock unlock;</span><br><span class="line">	<span class="keyword">void</span> *lock_arg; <span class="comment">/* This is passed to lock/unlock functions */</span></span><br><span class="line">	<span class="keyword">gfp_t</span> alloc_flags;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span> <span class="comment">/* Device we do I/O on */</span></span><br><span class="line">	<span class="keyword">void</span> *work_buf;     <span class="comment">/* Scratch buffer used to format I/O */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">regmap_format</span> <span class="title">format</span>;</span>  <span class="comment">/* Buffer format */</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regmap_bus</span> *<span class="title">bus</span>;</span></span><br><span class="line">	<span class="keyword">void</span> *bus_context;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">bool</span> async;</span><br><span class="line">	<span class="keyword">spinlock_t</span> async_lock;</span><br><span class="line">	<span class="keyword">wait_queue_head_t</span> async_waitq;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">async_list</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">async_free</span>;</span></span><br><span class="line">	<span class="keyword">int</span> async_ret;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_DEBUG_FS</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">dentry</span> *<span class="title">debugfs</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> *debugfs_name;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> debugfs_reg_len;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> debugfs_val_len;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> debugfs_tot_len;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">debugfs_off_cache</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">cache_lock</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> max_register;</span><br><span class="line">	<span class="keyword">bool</span> (*writeable_reg)(struct device *dev, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg);</span><br><span class="line">	<span class="keyword">bool</span> (*readable_reg)(struct device *dev, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg);</span><br><span class="line">	<span class="keyword">bool</span> (*volatile_reg)(struct device *dev, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg);</span><br><span class="line">	<span class="keyword">bool</span> (*precious_reg)(struct device *dev, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg);</span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regmap_access_table</span> *<span class="title">wr_table</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regmap_access_table</span> *<span class="title">rd_table</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regmap_access_table</span> *<span class="title">volatile_table</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regmap_access_table</span> *<span class="title">precious_table</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> (*reg_read)(<span class="keyword">void</span> *context, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg, <span class="keyword">unsigned</span> <span class="keyword">int</span> *val);</span><br><span class="line">	<span class="keyword">int</span> (*reg_write)(<span class="keyword">void</span> *context, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg, <span class="keyword">unsigned</span> <span class="keyword">int</span> val);</span><br><span class="line">	<span class="keyword">int</span> (*reg_update_bits)(<span class="keyword">void</span> *context, <span class="keyword">unsigned</span> <span class="keyword">int</span> reg,</span><br><span class="line">			       <span class="keyword">unsigned</span> <span class="keyword">int</span> mask, <span class="keyword">unsigned</span> <span class="keyword">int</span> val);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">bool</span> defer_caching;</span><br><span class="line"></span><br><span class="line">	u8 read_flag_mask;</span><br><span class="line">	u8 write_flag_mask;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* number of bits to (left) shift the reg value when formatting*/</span></span><br><span class="line">	<span class="keyword">int</span> reg_shift;</span><br><span class="line">	<span class="keyword">int</span> reg_stride;</span><br><span class="line">	<span class="keyword">int</span> reg_stride_order;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* regcache specific members */</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">regcache_ops</span> *<span class="title">cache_ops</span>;</span></span><br><span class="line">	<span class="keyword">enum</span> regcache_type cache_type;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* number of bytes in reg_defaults_raw */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> cache_size_raw;</span><br><span class="line">	<span class="comment">/* number of bytes per word in reg_defaults_raw */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> cache_word_size;</span><br><span class="line">	<span class="comment">/* number of entries in reg_defaults */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> num_reg_defaults;</span><br><span class="line">	<span class="comment">/* number of entries in reg_defaults_raw */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> num_reg_defaults_raw;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* if set, only the cache is modified not the HW */</span></span><br><span class="line">	<span class="keyword">bool</span> cache_only;</span><br><span class="line">	<span class="comment">/* if set, only the HW is modified not the cache */</span></span><br><span class="line">	<span class="keyword">bool</span> cache_bypass;</span><br><span class="line">	<span class="comment">/* if set, remember to free reg_defaults_raw */</span></span><br><span class="line">	<span class="keyword">bool</span> cache_free;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">reg_default</span> *<span class="title">reg_defaults</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">void</span> *reg_defaults_raw;</span><br><span class="line">	<span class="keyword">void</span> *cache;</span><br><span class="line">	<span class="comment">/* if set, the cache contains newer data than the HW */</span></span><br><span class="line">	<span class="keyword">bool</span> cache_dirty;</span><br><span class="line">	<span class="comment">/* if set, the HW registers are known to match map-&gt;reg_defaults */</span></span><br><span class="line">	<span class="keyword">bool</span> no_sync_defaults;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">reg_sequence</span> *<span class="title">patch</span>;</span></span><br><span class="line">	<span class="keyword">int</span> patch_regs;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* if set, converts bulk read to single read */</span></span><br><span class="line">	<span class="keyword">bool</span> use_single_read;</span><br><span class="line">	<span class="comment">/* if set, converts bulk read to single read */</span></span><br><span class="line">	<span class="keyword">bool</span> use_single_write;</span><br><span class="line">	<span class="comment">/* if set, the device supports multi write mode */</span></span><br><span class="line">	<span class="keyword">bool</span> can_multi_write;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* if set, raw reads/writes are limited to this size */</span></span><br><span class="line">	<span class="keyword">size_t</span> max_raw_read;</span><br><span class="line">	<span class="keyword">size_t</span> max_raw_write;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span> <span class="title">range_tree</span>;</span></span><br><span class="line">	<span class="keyword">void</span> *selector_work_buf;	<span class="comment">/* Scratch buffer used for selector */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="利用方法"><a href="#利用方法" class="headerlink" title="利用方法"></a>利用方法</h1><p><code>map-&gt;lock</code>指向mov rdx, rdi</p>
+<p><code>map-&gt;lock_arg</code>指向我们的rop链</p>
+<p><code>map-&gt;unlock</code>指向栈迁移的指令，例如push rdx; pop rsp;之类的</p>
+<p>适用于溢出字节比较少的漏洞</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-03-15T03:58:24.030Z" itemprop="dateUpdated">2020-03-15 11:58:24</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/03/15/linux-kernel-pwn-one-gadget/" target="_blank" rel="external">http://dayjun.top/2020/03/15/linux-kernel-pwn-one-gadget/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/">kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/15/linux-kernel-pwn-one-gadget/&title=《linux kernel pwn one_gadget》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/15/linux-kernel-pwn-one-gadget/&title=《linux kernel pwn one_gadget》 — DaJun的Blog&source=linux kernel 下的类似于one_gadget（但不同于glibc中的作用）的内核函数
+学习于XNUCA2019 babykernel" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/03/11/空指针公开赛逆向wp/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">空指针公开赛逆向wp</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用方法"><span class="post-toc-number">1.</span> <span class="post-toc-text">利用方法</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/15/linux-kernel-pwn-one-gadget/&title=《linux kernel pwn one_gadget》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/15/linux-kernel-pwn-one-gadget/&title=《linux kernel pwn one_gadget》 — DaJun的Blog&source=linux kernel 下的类似于one_gadget（但不同于glibc中的作用）的内核函数
+学习于XNUCA2019 babykernel" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACKklEQVR42u3ay46jMBAF0Pz/T6e3I40C95ZJtzCHVUSC8cmi5Hq8XvH1/u/6dP/4N8er/fvt6xsXBgbGbRmzrRyvM1v/0+fjZzEwMJ7D+LStT79JQmr+bLLOyZ4xMDAwguNaHrLzoyEGBgbGjNGmncfr/1nAxcDAuCFjlmS2BbU8Wf1iLo6BgXFDRl51//3PX+lvYGBg3IrxLq/22Vlhrt4VBgbG1oxZKW2WoF4bcDEwMJ7DaINaG1KTYN0W4JaOhhgYGFswkodnxa8V2ElDAgMD4wGMtj3QNixnKXHRHMXAwNiasTLUlQ9VtOsvDathYGBsx2hHH46Xa8Nl3jaIpkUwMDA2ZbRBM3993io4SVDLOxgYGPsx2qQ0Kn7FJba8GXByBwMD42GMlaGK2UEwT2JPBsIwMDA2ZeSBr110ZWijOMliYGA8kpEc+65qYebhtcjFMTAwHsBoA24exGcNg7pdioGBsTWjfXF7Jx8Ou+CYiIGBsR3jeNPv8spD5wUtAQwMjIcx2gNZXkpLmqArfxAGBsZzGPlQxUp5bjZygYGBgZGHuVljMm8hzBJsDAyMvRnrCWrbtpylzSeBGwMDY2vGVTE7QeaNzHzrNQYDA+O2jNnY1srr22CNgYGBsVJQa9uWydFwOC6GgYGBEbc58zGL/O3RezEwMDDKYtn6QbAd8sDAwHgCY72UPxubaBufH4MvBgbG1oz8sVkjoR3sSJ5d6m9gYGDcifEDc66Jh95kblMAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
