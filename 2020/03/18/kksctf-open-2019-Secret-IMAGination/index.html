@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>#kksctf open 2019 Secret IMAGination | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn,kernel">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>#kksctf open 2019 Secret IMAGination</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">#kksctf open 2019 Secret IMAGination</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-03-18T12:15:48.000Z" itemprop="datePublished" class="page-time">
+  2020-03-18
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-kksctf-open-2019-Secret-IMAGination"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">#kksctf open 2019 Secret IMAGination</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-03-18 20:15:48" datetime="2020-03-18T12:15:48.000Z"  itemprop="datePublished">2020-03-18</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/writeup/">writeup</a></li></ul>
+
+
+
+            
+	<span id="/2020/03/18/kksctf-open-2019-Secret-IMAGination/" class="leancloud_visitors" data-flag-title="#kksctf open 2019 Secret IMAGination" title="#kksctf open 2019 Secret IMAGination">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/03/18/kksctf-open-2019-Secret-IMAGination/#comment">
+            <span class="valine-comment-count" data-xid="/2020/03/18/kksctf-open-2019-Secret-IMAGination/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>又一种没见过的题目，只提供了iso文件</p>
+<p>参考：<a href="https://github.com/kksctf/kksctf-open-19/tree/master/Reverse/Secret%20IMAGination" target="_blank" rel="noopener">https://github.com/kksctf/kksctf-open-19/tree/master/Reverse/Secret%20IMAGination</a></p>
+<p>文件：[Github](<a href="https://github.com/DayJun/Blogs/tree/master/Articles/kksctf-2019" target="_blank" rel="noopener">https://github.com/DayJun/Blogs/tree/master/Articles/kksctf-2019</a> Secret IMAGination)</p>
+<a id="more"></a>
+
+<p>将iso文件解压</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;[BOOT]&apos;    boot.cat   isolinux.bin   isolinux.cfg   kernel.gz*   ldlinux.c32   rootfs.gz</span><br></pre></td></tr></table></figure>
+
+<p>得到这些文件，其中对我们有用的文件是<code>kernel.gz, rootfs.gz</code></p>
+<h1 id="rootfs-gz"><a href="#rootfs-gz" class="headerlink" title="rootfs.gz"></a>rootfs.gz</h1><p>将其解压，打开其中的init文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">dmesg -n 1</span><br><span class="line">mount -t devtmpfs none /dev</span><br><span class="line">mount -t proc none /proc</span><br><span class="line">mount -t sysfs none /sys</span><br><span class="line">setsid cttyhack sh -c '/bin/task &amp;&amp; sleep 4 ; sleep 1 ; poweroff -f'</span><br></pre></td></tr></table></figure>
+
+<p>程序在启动时执行了<code>/bin/task</code>，用分析它</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">cdecl <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> **argv, <span class="keyword">const</span> <span class="keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  __int64 v3; <span class="comment">// rdx</span></span><br><span class="line">  __int64 v4; <span class="comment">// ST30_8</span></span><br><span class="line">  <span class="keyword">int</span> v5; <span class="comment">// ST20_4</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> v6; <span class="comment">// ST24_4</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">calloc</span>(<span class="number">200L</span>L, <span class="number">1L</span>L, envp);</span><br><span class="line">  v4 = <span class="built_in">calloc</span>(<span class="number">21L</span>L, <span class="number">1L</span>L, v3);</span><br><span class="line">  <span class="built_in">printf</span>((<span class="keyword">unsigned</span> __int64)<span class="string">"Enter password: "</span>);</span><br><span class="line">  _isoc99_scanf((<span class="keyword">unsigned</span> __int64)<span class="string">"%20s"</span>);</span><br><span class="line">  v5 = (<span class="keyword">unsigned</span> __int64)j_strlen_ifunc(v4, v4);</span><br><span class="line">  v6 = open64(<span class="string">"/pass"</span>, <span class="number">577</span>, (<span class="keyword">char</span>)argv);</span><br><span class="line">  write(v6, v4, v5);</span><br><span class="line">  close(v6);</span><br><span class="line">  __asm &#123; syscall; LINUX - &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.text:0000000000401D38                 mov     edx, 539h</span><br><span class="line">.text:0000000000401D3D                 nop</span><br><span class="line">.text:0000000000401D3E                 mov     rax, rdx</span><br><span class="line">.text:0000000000401D41                 syscall                 ; LINUX -</span><br><span class="line">.text:0000000000401D43                 mov     rdx, rax</span><br><span class="line">.text:0000000000401D46                 mov     [rbp+var_8], rdx</span><br><span class="line">.text:0000000000401D4A                 cmp     [rbp+var_8], 0</span><br><span class="line">.text:0000000000401D4F                 jnz     short loc_401D5D</span><br><span class="line">.text:0000000000401D51                 lea     rdi, aWrongPassword ; &quot;Wrong password!&quot;</span><br><span class="line">.text:0000000000401D58                 call    puts</span><br><span class="line">.text:0000000000401D5D</span><br><span class="line">.text:0000000000401D5D loc_401D5D:                             ; CODE XREF: main+DA↑j</span><br><span class="line">.text:0000000000401D5D                 cmp     [rbp+var_8], 0</span><br><span class="line">.text:0000000000401D62                 setz    al</span><br><span class="line">.text:0000000000401D65                 movzx   eax, al</span><br><span class="line">.text:0000000000401D68                 leave</span><br><span class="line">.text:0000000000401D69                 retn</span><br></pre></td></tr></table></figure>
+
+<p>程序获取我们的输入，然后写入pass文件，最后调用了编号为0x539的系统调用，该调用应该是作者加的</p>
+<h1 id="kernel-gz"><a href="#kernel-gz" class="headerlink" title="kernel.gz"></a>kernel.gz</h1><p>该文件其实就和<code>bzImage</code>是同一类型，所以将其解压</p>
+<p>猜测该系统调用会打开<code>/pass</code>文件，所以先用<code>ida</code>打开解压出来的二进制文件，然后搜索<code>/pass</code>字符串，找到一处函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">.text:FFFFFFFF81372346                 mov     r8d, <span class="number">1</span></span><br><span class="line">.text:FFFFFFFF8137234C                 mov     rdx, offset dword_FFFFFFFF824A5850</span><br><span class="line">.text:FFFFFFFF81372353                 mov     rsi, offset qword_FFFFFFFF82733DD8</span><br><span class="line">.text:FFFFFFFF8137235A                 mov     rdi, offset aPass ; <span class="string">"/pass"</span></span><br><span class="line">.text:FFFFFFFF81372361                 call    kernel_read_file_from_path</span><br><span class="line">.text:FFFFFFFF81372366                 mov     edx, cs:dword_FFFFFFFF824A5850</span><br><span class="line">.text:FFFFFFFF8137236C                 mov     rsi, cs:qword_FFFFFFFF82733DD8</span><br><span class="line">.text:FFFFFFFF81372373                 mov     rdi, offset unk_FFFFFFFF82733DE0</span><br><span class="line">.text:FFFFFFFF8137237A                 call    md5_hash</span><br><span class="line">.text:FFFFFFFF8137237F                 mov     edx, <span class="number">10</span>h</span><br><span class="line">.text:FFFFFFFF81372384                 mov     rsi, offset unk_FFFFFFFF82733DE0</span><br><span class="line">.text:FFFFFFFF8137238B                 mov     rdi, offset byte_FFFFFFFF82046780</span><br><span class="line">.text:FFFFFFFF81372392                 call    <span class="built_in">strncmp</span></span><br><span class="line">.text:FFFFFFFF81372397                 test    eax, eax</span><br><span class="line">.text:FFFFFFFF81372399                 jz      <span class="keyword">short</span> loc_FFFFFFFF813723AA</span><br><span class="line">.text:FFFFFFFF8137239B                 mov     cs:qword_FFFFFFFF82733DC0, <span class="number">0</span></span><br><span class="line">.text:FFFFFFFF813723A6                 xor     eax, eax</span><br><span class="line">.text:FFFFFFFF813723A8</span><br><span class="line">.text:FFFFFFFF813723A8 loc_FFFFFFFF813723A8:                   ; CODE XREF: sys_flag+<span class="number">187</span>↓j</span><br><span class="line">.text:FFFFFFFF813723A8                 pop     rbp</span><br><span class="line">.text:FFFFFFFF813723A9                 retn</span><br></pre></td></tr></table></figure>
+
+<p>这个文件是无符号的，对于函数名称我是在<code>/proc/kallsyms</code>文件中查询函数地址而得到的</p>
+<p>这里就很清楚了，它把<code>/pass</code>中的字符串用md5加密，然后与一串硬编码的哈希值比对，如果成功会跳到成功的分支，所以将<code>byte_FFFFFFFF82046780</code>中的哈希值提取出来，对其进行解密</p>
+<p><code>16fb67d82414db7d1c2ab1ed965dc754: diviz_)(159$=*@</code></p>
+<p>之后将解出来的字符串输进去，就会得到flag</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-03-18T12:41:46.418Z" itemprop="dateUpdated">2020-03-18 20:41:46</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/03/18/kksctf-open-2019-Secret-IMAGination/" target="_blank" rel="external">http://dayjun.top/2020/03/18/kksctf-open-2019-Secret-IMAGination/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/">kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/18/kksctf-open-2019-Secret-IMAGination/&title=《#kksctf open 2019 Secret IMAGination》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/18/kksctf-open-2019-Secret-IMAGination/&title=《#kksctf open 2019 Secret IMAGination》 — DaJun的Blog&source=又一种没见过的题目，只提供了iso文件
+参考：https://github.com/kksctf/kksctf-open-19/tree/master/R..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/03/17/CONFidence2019-p4fmt/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">CONFidence2019 p4fmt</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#rootfs-gz"><span class="post-toc-number">1.</span> <span class="post-toc-text">rootfs.gz</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#kernel-gz"><span class="post-toc-number">2.</span> <span class="post-toc-text">kernel.gz</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/18/kksctf-open-2019-Secret-IMAGination/&title=《#kksctf open 2019 Secret IMAGination》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/18/kksctf-open-2019-Secret-IMAGination/&title=《#kksctf open 2019 Secret IMAGination》 — DaJun的Blog&source=又一种没见过的题目，只提供了iso文件
+参考：https://github.com/kksctf/kksctf-open-19/tree/master/R..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACtUlEQVR42u3aQW7kMAwEwPz/01kg2Ksz3aQ0mUP5FBgeW6UAFt3i11d8fP8cszPJ+ae/f7//sQMPDw9vNPSn4/cBJeefrmyvz5+Ch4eH9x7e7y/iF7co75Y8JbkyegoeHh7en/KS66OXdVwiHyi78fDw8D6A1w4uKc3zCAMPDw/vc3htELB5ZDL0PBw5lrXg4eHhdfVtsQH2CX9f3N/Dw8PDW+yq345uk82w2Tj//xYPDw/vAi+56f59O2u6agvl4osBDw8Pb83LX9Z5G0HbELBhRBEzHh4e3lHeLGbNMe0CMLvD41Ti4eHhXePlr/79g9srZ0U/Hh4e3jt5m0ar/dZavukVFeJ4eHh4l3lRkbouvjcNUu1yhYeHh3eWtx9cHtHmS0veWPBi0vHw8PAu8GYf//vNrTb2PRbj4uHh4a15bcmbBLibfqd2EodNA3h4eHjXktjN4zeldrIsJROKh4eHd4+3iRhm21dtgNsuUXh4eHj3eJtP/Xw62uUnn9YXpTYeHh7eZV6+pdQOJY90o3UsuBIPDw/vHq/dqm+L4zakyIdelPJ4eHh4R3n5675dMGbUzVS+6CnDw8PDO8rLh5U/uN0Ay8OOYlHBw8PDu8ZrB5QUuJtIIg8sip4yPDw8vEO8NhLdNAds4oy8XeDxn4SHh4d3iLcplGdTsMfkixYeHh7ee3izICDawo9L4bakfvwtHh4e3gVee+SNU2171mZw+RKCh4eHt+d9l8dmzto7zyLgx/09PDw8vEO82ct3s001jBXKtjA8PDy827w2nG0D3LxRoL1y+B2Ah4eHd4jXbkfth9WeH2YteHh4eH/Ka7fEkiDj1PnH8eDh4eF9AC+PG2bF8anFBg8PD+82rw0akighfz9vGgheLDx4eHh4F3izxqZNpJsEyvn2W43Bw8PDm/P+ARKgkpcB8kOZAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
