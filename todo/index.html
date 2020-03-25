@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     
     
-    <title>syzkaller初步使用 | DaJun的Blog | 脑袋空空</title>
+    <title>todo | DaJun的Blog | 脑袋空空</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-    <meta name="keywords" content="kernel">
+    <meta name="keywords" content>
     <link rel="shortcut icon" href="/img/girl.ico">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
     <link rel="stylesheet" href="/css/style.css?v=1.4.4">
@@ -131,7 +131,7 @@
               </a>
             </li>
         
-            <li class="">
+            <li class=" active">
               <a href="/todo"  >
                 <i class="icon icon-lg icon-clock"></i>
                 todo
@@ -157,7 +157,7 @@
           <i class="icon icon-lg icon-navicon"></i>
         </a>
         <div class="flex-col header-title ellipsis">
-            <span>syzkaller初步使用</span>
+            <span>todo</span>
             
         </div>
         
@@ -167,19 +167,11 @@
         
     </div>
 </header>
-<header class="content-header post-header">
+<header class="content-header page-header">
     <img src="/img/dawn.jpg" class="header-bg">
     <div class="container fade-scale">
-        <h1 class="title">syzkaller初步使用</h1>
+        <h1 class="title">todo</h1>
         <h5 class="subtitle">
-            
-                <time datetime="2020-03-24T01:22:50.000Z" itemprop="datePublished" class="page-time">
-  2020-03-24
-</time>
-
-
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/fuzz/">fuzz</a></li></ul>
-
             
         </h5>
         
@@ -202,95 +194,24 @@
 </div>
 
 
-<div class="container body-wrap">
-    <article id="post-syzkaller初步使用"
-  class="post-article article-type-post" itemprop="blogPost">
-    <div class="post-card">
-        <h1 class="post-card-title">syzkaller初步使用</h1>
-        <div class="post-meta">
-            <time class="post-time" title="2020-03-24 09:22:50" datetime="2020-03-24T01:22:50.000Z"  itemprop="datePublished">2020-03-24</time>
-
+<div class="container body-wrap ">
+    <article class="page-article fade" itemprop="blogPage">
+        <div class="post-content page-content" id="page-content" itemprop="pageContent">
             
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/fuzz/">fuzz</a></li></ul>
-
-
-
-            
-	<span id="/2020/03/24/syzkaller初步使用/" class="leancloud_visitors" data-flag-title="syzkaller初步使用" title="syzkaller初步使用">
-		
-			<i class="icon icon-eye"></i>
-		
-		<span class="leancloud-visitors-count"></span>
-	</span>
- 
-
-            
-    <span class="leancloud-comment">
-        <i class="icon icon-comment-o"></i>
-        <a href="/2020/03/24/syzkaller初步使用/#comment">
-            <span class="valine-comment-count" data-xid="/2020/03/24/syzkaller初步使用/"></span>
-        </a>
-    </span>
-
-
-
-            
-        </div>
-        <div class="post-content" id="post-content" itemprop="postContent">
-            
-            <p>第一次真正使用fuzz，与我对fuzz的印象不同，syzkaller是不需要我提供样例输入的，这就让人很舒服</p>
-<a id="more"></a>
-
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>首先安装go，由于我使用的linux系统是manjaro，所以直接使用<code>sudo pacman -S go</code>即可完成安装</p>
-<p>然后运行如下指令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go get -u -d github.com/google/syzkaller/...</span><br><span class="line">cd gopath/src/github.com/google/syzkaller/</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
-
-<p>对于manjaro，gopath位于当前用户的家目录内</p>
-<p>然后要做镜像，在<code>gopath/src/github.com/google/syzkaller/tools/</code>目录中有一个<code>create-image.sh</code>，其中用到了<code>debootstrap</code>可能需要额外安装一下，再一个就是要给他使用国内源，不然会很慢</p>
-<p>使用国内源的方法是，使用编辑器编辑该脚本文件，在<code>debootstrap</code>的那条指令的最后添加一个<code>http://mirrors.163.com/debian/</code>参数</p>
-<p>最后运行该文件，会在当前文件夹得到一个chroot的目录、stretch.img以及stretch.id_rsa 和stretch.id_rsa.pub用来进行ssh连接</p>
-<p>chroot目录的作用是生成stretch.img，因此可以删除</p>
-<p>接下来是内核的编译，下载内核</p>
-<p>首先在内核目录执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make defconfig</span><br><span class="line">make kvmconfig</span><br></pre></td></tr></table></figure>
-
-<p>然后修改当前目录下的<code>.config</code>文件，把下面链接中说的配置改上去</p>
-<p><a href="https://github.com/google/syzkaller/blob/master/docs/linux/kernel_configs.md" target="_blank" rel="noopener">https://github.com/google/syzkaller/blob/master/docs/linux/kernel_configs.md</a></p>
-<p>然后直接make即可</p>
-<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在syzkaller文件夹下新建一个workdir，里面新建一个文件my.cfg</p>
-<p>文件内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;http&quot;: &quot;127.0.0.1:56741&quot;,</span><br><span class="line">    &quot;target&quot;: &quot;linux/amd64&quot;,</span><br><span class="line">    &quot;workdir&quot;: &quot;path/to/syzkaller/workdir&quot;,</span><br><span class="line">    &quot;kernel_obj&quot;: &quot;path/to/vmlinux&quot;,</span><br><span class="line">    &quot;image&quot;: &quot;path/to/stretch.img&quot;,</span><br><span class="line">    &quot;sshkey&quot;: &quot;path/to/stretch.id_rsa&quot;,</span><br><span class="line">    &quot;syzkaller&quot;: &quot;path/to/syzkaller&quot;,</span><br><span class="line">    &quot;procs&quot;: 4,</span><br><span class="line">    &quot;type&quot;: &quot;qemu&quot;,</span><br><span class="line">    &quot;vm&quot;: &#123;</span><br><span class="line">        &quot;count&quot;: 4,</span><br><span class="line">        &quot;kernel&quot;: &quot;path/to/bzImage&quot;,</span><br><span class="line">        &quot;cpu&quot;: 2,</span><br><span class="line">        &quot;mem&quot;: 2048</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后在该目录执行<code>../bin/syz-manager -config=./my.cfg</code>就开始fuzz了</p>
-<p>浏览器进入<code>http://127.0.0.1:56741</code>就可以监视fuzz的运行状态以及fuzz的成果</p>
+            <h1 id="userfaultfd"><a href="#userfaultfd" class="headerlink" title="userfaultfd"></a>userfaultfd</h1><p>根据这里<a href="https://blog.csdn.net/seaaseesa/article/details/104650794使用userfaultfd来完成条件竞争，这里的userfaultfd相关代码和`man" target="_blank" rel="noopener">https://blog.csdn.net/seaaseesa/article/details/104650794使用userfaultfd来完成条件竞争，这里的userfaultfd相关代码和`man</a> 2 userfaultfd`里面的示例代码看起来除了有些细节不通，实在是感觉不到还有什么不一样，但使用示例代码来做题就是达不成效果。。</p>
+<p><a href="https://github.com/Ex-Origin/ctf-writeups/tree/master/d3ctf2019/pwn/knote" target="_blank" rel="noopener">https://github.com/Ex-Origin/ctf-writeups/tree/master/d3ctf2019/pwn/knote</a></p>
+<p>这里的代码使用的是示例代码，但是他却成功了。。</p>
 
         </div>
         
-<blockquote class="post-copyright">
-    <div class="content">
         
-<span class="post-time">
-    最后更新时间：<time datetime="2020-03-24T01:46:47.812Z" itemprop="dateUpdated">2020-03-24 09:46:47</time>
-</span><br>
-
-
-        
-        转载注明出处，原文地址：<a href="/2020/03/24/syzkaller初步使用/" target="_blank" rel="external">http://dayjun.top/2020/03/24/syzkaller初步使用/</a>
-        
-    </div>
-    <footer>
-        <a href="http://dayjun.top">
-            <img src="/img/girl.jpg" alt="DaJun">
-            DaJun
-        </a>
-    </footer>
-</blockquote>
-
-        
-        <div class="post-footer">
-            
-	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/">kernel</a></li></ul>
-
+        <div class="card page-about-me flex-row">
+            <a href="/" class="avatar waves-effect waves-circle waves-light"><img src="/img/girl.jpg"></a>
+            <div class="content flex-col">
+                <p><strong>DaJun</strong></p>
+                <p><em>脑袋空空</em></p>
+                <p></p>
+            </div>
             <div class="page-share-wrap">
     
 
@@ -298,7 +219,7 @@
     <ul class="reset share-icons">
       
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/24/syzkaller初步使用/&title=《syzkaller初步使用》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/todo/&title=《todo》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -310,7 +231,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/24/syzkaller初步使用/&title=《syzkaller初步使用》 — DaJun的Blog&source=第一次真正使用fuzz，与我对fuzz的印象不同，syzkaller是不需要我提供样例输入的，这就让人很舒服" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/todo/&title=《todo》 — DaJun的Blog&source=" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -327,41 +248,17 @@
 
         </div>
         
-            
+        
+        <div class="card">   
+           
     <div id="comment"></div>
 
 
 
+        </div>
         
-    </div>
+    </article>
     
-<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
-  
-
-  
-    <div class="next">
-      <a href="/2020/03/18/kksctf-open-2019-Secret-IMAGination/" id="post-next" class="post-nav-link">
-        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
-        <h4 class="title">#kksctf open 2019 Secret IMAGination</h4>
-      </a>
-    </div>
-  
-</nav>
-
-
-    
-    
-        <aside class="post-widget">
-            <nav class="post-toc-wrap" id="post-toc">
-                <strong>目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#安装"><span class="post-toc-number">1.</span> <span class="post-toc-text">安装</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#运行"><span class="post-toc-number">2.</span> <span class="post-toc-text">运行</span></a></li></ol>
-            </nav>
-            <div class="toc-bar"><div>
-        </aside>
-    
-</article>
-
-
 </div>
 
     </main>
@@ -432,7 +329,7 @@
     <ul class="reset share-icons">
       
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/24/syzkaller初步使用/&title=《syzkaller初步使用》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/todo/&title=《todo》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -444,7 +341,7 @@
       </li>
       
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/24/syzkaller初步使用/&title=《syzkaller初步使用》 — DaJun的Blog&source=第一次真正使用fuzz，与我对fuzz的印象不同，syzkaller是不需要我提供样例输入的，这就让人很舒服" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/todo/&title=《todo》 — DaJun的Blog&source=" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
@@ -456,7 +353,7 @@
 <div class="page-modal wx-share" id="wxShare">
     <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACHklEQVR42u3aQW7DMAwEwPz/0y7QaxF5SckFLI1OARrYnBxYUuTnE5/r9+Tf+ft5/Nfqu5oHAwPjtYxrePIQk+B63xnHhoGBcQ4jSaAJIA+rmrhvYsbAwMAIXpwn7vFPgIGBgfFcwu2l4KT0xMDAwKgmyiTtJs9Prtse6cUxMDBeyKgOBv7z84PzDQwMjJcwruLJn5YXmnmC/hoVBgbG1ozqusMMdaZwjNIxBgbGpowEUF2PyJNvddnia5wYGBhbM6pNY6/sW9tzF/5vYGBgbMEYv6AaUA9QLQdv2lcMDIwjGdVB48y9fZKIMTAwzmRU02h+YTeTsgvDVAwMjMMY1Za1l4JXjQowMDDOYYxTXh50UhRWC8doIIGBgbE1Yy1gZmGil9wxMDBOYyQFXH7RP1My9lbWMDAwTmBUL7zmx5PVHyXaccPAwNiUUW1Qo5aytXDWa3cxMDBOYFQT3Mx4svrGws+BgYFxDKMadO8Sv5deb9pgDAyMTRm9kcATF21j2E1sGBgYBzB6w4C80Kwm3ByMgYFxAqPXUuah95rn/Equed2GgYHxKkavTa2OEGZWvqIyEQMDY2tGfpKUWp6Uxq3vzPMxMDD2YMyMJFe1u70WGgMD4zTGfJLttb7LWmUMDAyM1kJGvrSRP605yMTAwDiYsTZ1Vpc8liVcDAyMlzDyVLhqkWIm9GjHDQMDYyPG2sFA9bp/vtzEwMDYmvEDBYWJh0gHiwwAAAAASUVORK5CYII=" alt="微信分享二维码">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAABTklEQVR42u3aQRKDIBBEUe9/abO1KgX+BrOI/VkqgefCYTLOceBxXsb1Cr97/GLIkvUi1jkdc8T3zNEcvpcsWc2s0Rs6mjOn8znD67JkyZqyRtuT8CFLlqx9Fk+O0wRalixZPGlOwwQPH7JkyeJVnWeDwmP1LVmy/px1hoMct6SodLOLLFllrJ2S7jzlJcSb1FmWrBpWmgrzDdYObFmymlk7SxBW3I4gS1Yxa+3YTsMBKVHJktXMWnvV4y1J85AsWWWstNyTthcQLjq2ZckqYK0VhtJfpQe/LFnNrLSQlB7JQZItS1Yxi4eDNMTEDyZLVg1rp+Hg2RRZlqxm1n5fHL+btibIktXGSoNC+qGUr7nYkSRL1otYaa5NoFtDlixZIYsfwFuVZlmyZJHmAFxaCr67ypJVxtr/g8pLwOhRZckqY6UZLFmOl25lyapnfQDfwt9vq+C7TgAAAABJRU5ErkJggg==" alt="微信分享二维码">
 </div>
 
 

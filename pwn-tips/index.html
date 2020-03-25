@@ -132,6 +132,13 @@
             </li>
         
             <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock"></i>
+                todo
+              </a>
+            </li>
+        
+            <li class="">
               <a href="https://github.com/DayJun" target="_blank" >
                 <i class="icon icon-lg icon-github"></i>
                 Github
@@ -196,6 +203,7 @@
 <p>可以使栈的权限变为<code>__stack_prot</code>这个全局变量所指定的权限</p>
 <p>可以用在ROP的时候</p>
 <h1 id="small-bin-smash"><a href="#small-bin-smash" class="headerlink" title="small bin smash"></a>small bin smash</h1><p>博客有说，但只说了任意地址写<code>libc</code>地址，但其实它还可以任意地址分配块，只需要构造写<code>libc</code>的地址附近块的内容即可，同时<code>small bin</code>中块的数量由三块变为两块，<code>tcache</code>中的不变</p>
+<h1 id="kernel"><a href="#kernel" class="headerlink" title="kernel"></a>kernel</h1><p><a href="https://www.jianshu.com/p/a2259cd3e79e" target="_blank" rel="noopener">https://www.jianshu.com/p/a2259cd3e79e</a></p>
 
         </div>
         
