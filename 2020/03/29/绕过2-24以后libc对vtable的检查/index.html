@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>绕过2.24以后libc对vtable的检查 | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="pwn">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock-o"></i>
+                TODO
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>绕过2.24以后libc对vtable的检查</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">绕过2.24以后libc对vtable的检查</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-03-29T07:56:08.000Z" itemprop="datePublished" class="page-time">
+  2020-03-29
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-绕过2-24以后libc对vtable的检查"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">绕过2.24以后libc对vtable的检查</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-03-29 15:56:08" datetime="2020-03-29T07:56:08.000Z"  itemprop="datePublished">2020-03-29</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2020/03/29/绕过2-24以后libc对vtable的检查/" class="leancloud_visitors" data-flag-title="绕过2.24以后libc对vtable的检查" title="绕过2.24以后libc对vtable的检查">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/03/29/绕过2-24以后libc对vtable的检查/#comment">
+            <span class="valine-comment-count" data-xid="/2020/03/29/绕过2-24以后libc对vtable的检查/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>glibc-2.24之后添加了对vtable的检查，如果想继续通过vtable来劫持程序执行流程，则需要其他的骚操作</p>
+<p>这里以glibc-2.24来说明，以fclose为例</p>
+<a id="more"></a>
+
+<h1 id="fclose源码"><a href="#fclose源码" class="headerlink" title="fclose源码"></a>fclose源码</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#   <span class="meta-keyword">define</span> fclose(fp) _IO_new_fclose (fp)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">_IO_new_fclose (FILE *fp)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">int</span> status;</span><br><span class="line"></span><br><span class="line">  CHECK_FILE(fp, EOF);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)</span></span><br><span class="line">  <span class="comment">/* We desperately try to help programs which are using streams in a</span></span><br><span class="line"><span class="comment">     strange way and mix old and new functions.  Detect old streams</span></span><br><span class="line"><span class="comment">     here.  */</span></span><br><span class="line">  <span class="keyword">if</span> (_IO_vtable_offset (fp) != <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> _IO_old_fclose (fp);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* First unlink the stream.  */</span></span><br><span class="line">  <span class="keyword">if</span> (fp-&gt;_flags &amp; _IO_IS_FILEBUF)</span><br><span class="line">    _IO_un_link ((struct _IO_FILE_plus *) fp);</span><br><span class="line"></span><br><span class="line">  _IO_acquire_lock (fp);</span><br><span class="line">  <span class="keyword">if</span> (fp-&gt;_flags &amp; _IO_IS_FILEBUF)</span><br><span class="line">    status = _IO_file_close_it (fp);</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    status = fp-&gt;_flags &amp; _IO_ERR_SEEN ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">  _IO_release_lock (fp);</span><br><span class="line">  _IO_FINISH (fp);	<span class="comment">//这个是重点</span></span><br><span class="line">  <span class="keyword">if</span> (fp-&gt;_mode &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">/* This stream has a wide orientation.  This means we have to free</span></span><br><span class="line"><span class="comment">	 the conversion functions.  */</span></span><br><span class="line">      <span class="class"><span class="keyword">struct</span> _<span class="title">IO_codecvt</span> *<span class="title">cc</span> = <span class="title">fp</span>-&gt;_<span class="title">codecvt</span>;</span></span><br><span class="line"></span><br><span class="line">      __libc_lock_lock (__gconv_lock);</span><br><span class="line">      __gconv_release_step (cc-&gt;__cd_in.__cd.__steps);</span><br><span class="line">      __gconv_release_step (cc-&gt;__cd_out.__cd.__steps);</span><br><span class="line">      __libc_lock_unlock (__gconv_lock);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> (_IO_have_backup (fp))</span><br><span class="line">	_IO_free_backup_area (fp);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">if</span> (fp != _IO_stdin &amp;&amp; fp != _IO_stdout &amp;&amp; fp != _IO_stderr)</span><br><span class="line">    &#123;</span><br><span class="line">      fp-&gt;_flags = <span class="number">0</span>;</span><br><span class="line">      <span class="built_in">free</span>(fp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到不管<code>fp-&gt;flag</code>是多少，总会执行<code>_IO_FINISH(fp)</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _IO_FINISH(FP) JUMP1 (__finish, FP, 0)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> JUMP1(FUNC, THIS, X1) (_IO_JUMPS_FUNC(THIS)-&gt;FUNC) (THIS, X1)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">define</span> _IO_JUMPS_FUNC(THIS) (IO_validate_vtable (_IO_JUMPS_FILE_plus (THIS)))</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>IO_validate_vtable</code>就是对vtable的检查</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span> *</span></span><br><span class="line"><span class="class"><span class="title">IO_validate_vtable</span> (<span class="title">const</span> <span class="title">struct</span> _<span class="title">IO_jump_t</span> *<span class="title">vtable</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* Fast path: The vtable pointer is within the __libc_IO_vtables</span></span><br><span class="line"><span class="comment">     section.  */</span></span><br><span class="line">  <span class="keyword">uintptr_t</span> section_length = __stop___libc_IO_vtables - __start___libc_IO_vtables;	<span class="comment">//要求</span></span><br><span class="line">  <span class="keyword">uintptr_t</span> ptr = (<span class="keyword">uintptr_t</span>) vtable;</span><br><span class="line">  <span class="keyword">uintptr_t</span> offset = ptr - (<span class="keyword">uintptr_t</span>) __start___libc_IO_vtables;</span><br><span class="line">  <span class="keyword">if</span> (__glibc_unlikely (offset &gt;= section_length))</span><br><span class="line">    <span class="comment">/* The vtable pointer is not in the expected section.  Use the</span></span><br><span class="line"><span class="comment">       slow path, which will terminate the process if necessary.  */</span></span><br><span class="line">    _IO_vtable_check ();</span><br><span class="line">  <span class="keyword">return</span> vtable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个检查就限制了vtable的指针必须在<code>__start___libc_IO_vtables</code>和<code>__stop___libc_IO_vtables</code>之间，我们就不能随意修改vtable的指针了</p>
+<h1 id="bypass"><a href="#bypass" class="headerlink" title="bypass"></a>bypass</h1><p>在<code>__stop___libc_IO_vtables</code> 和 <code>__start___libc_IO_vtables</code>之间除了我们iofile结构体本身初始化所带的跳转表<code>_IO_file_jumps</code>之外，还有另一个跳转表<code>_IO_str_jumps</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span> _<span class="title">IO_str_jumps</span> <span class="title">libio_vtable</span> =</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  JUMP_INIT_DUMMY,</span><br><span class="line">  JUMP_INIT(finish, _IO_str_finish),</span><br><span class="line">  JUMP_INIT(overflow, _IO_str_overflow),</span><br><span class="line">  JUMP_INIT(underflow, _IO_str_underflow),</span><br><span class="line">  JUMP_INIT(uflow, _IO_default_uflow),</span><br><span class="line">  JUMP_INIT(pbackfail, _IO_str_pbackfail),</span><br><span class="line">  JUMP_INIT(xsputn, _IO_default_xsputn),</span><br><span class="line">  JUMP_INIT(xsgetn, _IO_default_xsgetn),</span><br><span class="line">  JUMP_INIT(seekoff, _IO_str_seekoff),</span><br><span class="line">  JUMP_INIT(seekpos, _IO_default_seekpos),</span><br><span class="line">  JUMP_INIT(setbuf, _IO_default_setbuf),</span><br><span class="line">  JUMP_INIT(sync, _IO_default_sync),</span><br><span class="line">  JUMP_INIT(doallocate, _IO_default_doallocate),</span><br><span class="line">  JUMP_INIT(read, _IO_default_read),</span><br><span class="line">  JUMP_INIT(write, _IO_default_write),</span><br><span class="line">  JUMP_INIT(seek, _IO_default_seek),</span><br><span class="line">  JUMP_INIT(close, _IO_default_close),</span><br><span class="line">  JUMP_INIT(stat, _IO_default_stat),</span><br><span class="line">  JUMP_INIT(showmanyc, _IO_default_showmanyc),</span><br><span class="line">  JUMP_INIT(imbue, _IO_default_imbue)</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其中的<code>_IO_str_overflow</code>有我们可以利用的地方</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">_IO_str_overflow (_IO_FILE *fp, <span class="keyword">int</span> c)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">int</span> flush_only = c == EOF;</span><br><span class="line">  _IO_size_t pos;</span><br><span class="line">  <span class="keyword">if</span> (fp-&gt;_flags &amp; _IO_NO_WRITES)<span class="comment">// pass</span></span><br><span class="line">      <span class="keyword">return</span> flush_only ? <span class="number">0</span> : EOF;</span><br><span class="line">  <span class="keyword">if</span> ((fp-&gt;_flags &amp; _IO_TIED_PUT_GET) &amp;&amp; !(fp-&gt;_flags &amp; _IO_CURRENTLY_PUTTING))</span><br><span class="line">    &#123;</span><br><span class="line">      fp-&gt;_flags |= _IO_CURRENTLY_PUTTING;</span><br><span class="line">      fp-&gt;_IO_write_ptr = fp-&gt;_IO_read_ptr;</span><br><span class="line">      fp-&gt;_IO_read_ptr = fp-&gt;_IO_read_end;</span><br><span class="line">    &#125;</span><br><span class="line">  pos = fp-&gt;_IO_write_ptr - fp-&gt;_IO_write_base;</span><br><span class="line">  <span class="keyword">if</span> (pos &gt;= (_IO_size_t) (_IO_blen (fp) + flush_only))<span class="comment">// should in </span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> (fp-&gt;_flags &amp; _IO_USER_BUF) <span class="comment">/* not allowed to enlarge */</span> <span class="comment">// pass</span></span><br><span class="line">    <span class="keyword">return</span> EOF;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">char</span> *new_buf;</span><br><span class="line">      <span class="keyword">char</span> *old_buf = fp-&gt;_IO_buf_base;</span><br><span class="line">      <span class="keyword">size_t</span> old_blen = _IO_blen (fp);</span><br><span class="line">      _IO_size_t new_size = <span class="number">2</span> * old_blen + <span class="number">100</span>;</span><br><span class="line">      <span class="keyword">if</span> (new_size &lt; old_blen)<span class="comment">//pass 一般会通过</span></span><br><span class="line">        <span class="keyword">return</span> EOF;</span><br><span class="line">      new_buf</span><br><span class="line">        = (<span class="keyword">char</span> *) (*((_IO_strfile *) fp)-&gt;_s._allocate_buffer) (new_size);<span class="comment">//target [fp+0xe0]</span></span><br><span class="line">      <span class="keyword">if</span> (new_buf == <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="comment">/*      __ferror(fp) = 1; */</span></span><br><span class="line">          <span class="keyword">return</span> EOF;</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="keyword">if</span> (old_buf)</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="built_in">memcpy</span> (new_buf, old_buf, old_blen);</span><br><span class="line">          (*((_IO_strfile *) fp)-&gt;_s._free_buffer) (old_buf);</span><br><span class="line">          <span class="comment">/* Make sure _IO_setb won't try to delete _IO_buf_base. */</span></span><br><span class="line">          fp-&gt;_IO_buf_base = <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="built_in">memset</span> (new_buf + old_blen, <span class="string">'\0'</span>, new_size - old_blen);</span><br><span class="line"></span><br><span class="line">      _IO_setb (fp, new_buf, new_buf + new_size, <span class="number">1</span>);</span><br><span class="line">      fp-&gt;_IO_read_base = new_buf + (fp-&gt;_IO_read_base - old_buf);</span><br><span class="line">      fp-&gt;_IO_read_ptr = new_buf + (fp-&gt;_IO_read_ptr - old_buf);</span><br><span class="line">      fp-&gt;_IO_read_end = new_buf + (fp-&gt;_IO_read_end - old_buf);</span><br><span class="line">      fp-&gt;_IO_write_ptr = new_buf + (fp-&gt;_IO_write_ptr - old_buf);</span><br><span class="line"></span><br><span class="line">      fp-&gt;_IO_write_base = new_buf;</span><br><span class="line">      fp-&gt;_IO_write_end = fp-&gt;_IO_buf_end;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!flush_only)</span><br><span class="line">    *fp-&gt;_IO_write_ptr++ = (<span class="keyword">unsigned</span> <span class="keyword">char</span>) c;</span><br><span class="line">  <span class="keyword">if</span> (fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_read_end)</span><br><span class="line">    fp-&gt;_IO_read_end = fp-&gt;_IO_write_ptr;</span><br><span class="line">  <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中有一段</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new_buf = (<span class="keyword">char</span> *) (*((_IO_strfile *) fp)-&gt;_s._allocate_buffer) (new_size);</span><br></pre></td></tr></table></figure>
+
+<p>其中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_strfile_</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_streambuf</span> _<span class="title">sbf</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_str_fields</span> _<span class="title">s</span>;</span></span><br><span class="line">&#125; _IO_strfile;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_streambuf</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span> _<span class="title">f</span>;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span> *<span class="title">vtable</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_str_fields</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  _IO_alloc_type _allocate_buffer;</span><br><span class="line">  _IO_free_type _free_buffer;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，换到<code>_IO_FILE</code>结构体中，<code>_allocate_buffer</code>就位于vtable之后</p>
+<p>而<code>new_size = 2 * (fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base)+ 100;</code></p>
+<h1 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    JUMP_FIELD(<span class="keyword">size_t</span>, __dummy);</span><br><span class="line">    JUMP_FIELD(<span class="keyword">size_t</span>, __dummy2);</span><br><span class="line">    JUMP_FIELD(_IO_finish_t, __finish);</span><br><span class="line">    JUMP_FIELD(_IO_overflow_t, __overflow);</span><br><span class="line">    JUMP_FIELD(_IO_underflow_t, __underflow);</span><br><span class="line">    JUMP_FIELD(_IO_underflow_t, __uflow);</span><br><span class="line">    JUMP_FIELD(_IO_pbackfail_t, __pbackfail);</span><br><span class="line">    <span class="comment">/* showmany */</span></span><br><span class="line">    JUMP_FIELD(_IO_xsputn_t, __xsputn);</span><br><span class="line">    JUMP_FIELD(_IO_xsgetn_t, __xsgetn);</span><br><span class="line">    JUMP_FIELD(_IO_seekoff_t, __seekoff);</span><br><span class="line">    JUMP_FIELD(_IO_seekpos_t, __seekpos);</span><br><span class="line">    JUMP_FIELD(_IO_setbuf_t, __setbuf);</span><br><span class="line">    JUMP_FIELD(_IO_sync_t, __sync);</span><br><span class="line">    JUMP_FIELD(_IO_doallocate_t, __doallocate);</span><br><span class="line">    JUMP_FIELD(_IO_read_t, __read);</span><br><span class="line">    JUMP_FIELD(_IO_write_t, __write);</span><br><span class="line">    JUMP_FIELD(_IO_seek_t, __seek);</span><br><span class="line">    JUMP_FIELD(_IO_close_t, __close);</span><br><span class="line">    JUMP_FIELD(_IO_stat_t, __stat);</span><br><span class="line">    JUMP_FIELD(_IO_showmanyc_t, __showmanyc);</span><br><span class="line">    JUMP_FIELD(_IO_imbue_t, __imbue);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>由于fclose会调用<code>vtable-&gt;__finish</code>的函数指针，那么如果我们把vtable改为<code>_IO_str_jumps-8</code>即可让其调用<code>_IO_str_overflow</code>函数</p>
+<p>我们将伪造的<code>IO_FILE</code>结构体中vtable之后的八个字节填充为system函数的地址，<code>_IO_str_overflow</code>就会调用它，接下来我们只需要将<code>new_size</code>指向”/bin/sh”字符串即可，方法是伪造<code>_IO_buf_end</code>的地址为<code>(addr_of_binsh-100)/2</code></p>
+<p>对了，还有，<code>fp-&gt;_flags &amp; _IO_NO_WRITES</code>要为0，因为在<code>_IO_str_overflow</code>中有这么个检查</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-03-29T09:00:17.534Z" itemprop="dateUpdated">2020-03-29 17:00:17</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/03/29/绕过2-24以后libc对vtable的检查/" target="_blank" rel="external">http://dayjun.top/2020/03/29/绕过2-24以后libc对vtable的检查/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pwn/">pwn</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/29/绕过2-24以后libc对vtable的检查/&title=《绕过2.24以后libc对vtable的检查》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/29/绕过2-24以后libc对vtable的检查/&title=《绕过2.24以后libc对vtable的检查》 — DaJun的Blog&source=glibc-2.24之后添加了对vtable的检查，如果想继续通过vtable来劫持程序执行流程，则需要其他的骚操作
+这里以glibc-2.24来说明，以..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/03/24/syzkaller初步使用/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">syzkaller初步使用</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#fclose源码"><span class="post-toc-number">1.</span> <span class="post-toc-text">fclose源码</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#bypass"><span class="post-toc-number">2.</span> <span class="post-toc-text">bypass</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用"><span class="post-toc-number">3.</span> <span class="post-toc-text">利用</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/03/29/绕过2-24以后libc对vtable的检查/&title=《绕过2.24以后libc对vtable的检查》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/03/29/绕过2-24以后libc对vtable的检查/&title=《绕过2.24以后libc对vtable的检查》 — DaJun的Blog&source=glibc-2.24之后添加了对vtable的检查，如果想继续通过vtable来劫持程序执行流程，则需要其他的骚操作
+这里以glibc-2.24来说明，以..." data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACv0lEQVR42u3awXLqQAwEQP7/p9+7piqBjEa7hEP7RNnGbHNYyZIej/j49+X4fub11Wf3fz2f/+LjxoGHh4e3WHq33O9Pe/Y5/4Pyp71+Ah4eHt493rMd9dk9yVKSwJBcTdbz9DweHh7eB/DysNFt7pv0Gg8PD+8zea9T6vzJXRqNh4eH9zm8pBgxLbxOE+59ERkPDw/vPby8i/Q5n6/09/Dw8PDWXfVpMyxJcJM0+thq8fDw8C7wukefTaA3YwpRWo+Hh4d3gTd9vZ+2u/KrXfk4CjN4eHh4h3jTtlZXwJ3CNoGhzOjx8PDw1ry8fLAfQt3c/8u38PDw8C7zuiGqfOAgDwCbEDWORXh4eHhDXrIdd6lwHjamBdlk9AoPDw/vHi8v1Hal3nywIA8SScHih8kIPDw8vKO8bmggb311w1t5in9l3AoPDw9vkVJPyxBdeeJU4MHDw8N7Jy9/4R9synGpt0vrozYeHh4e3lt4XcvqVFF40zCLunZ4eHh4a15Xenh9f15iSK52IQcPDw/vBm/azs/LAdOm17SFloDx8PDwbvC6xtV+ZCr5bl7IGLwx4OHh4a15+8DQpc6rsmxesMDDw8O7wNtvvuNqRwzoChODeQQ8PDy8Ba9jJAWFLoTkqfm49YWHh4d3lHcqLc6T4y7MdEUQPDw8vLO8aVo8LRx01eXNAOtqfAIPDw9vGAySsYAume6aXklb7pdfwcPDw7vMS9LZTSurKx+vDjw8PLyjvM2GOx027QZVp2Hmh8kIPDw8vKO8zR473YGnRY08uR+PEeDh4eGtecmyNl21swn6uDGGh4eHd43XbcqnyhPTEYGy1oKHh4f3R7zpsqbFjm70atDfw8PDw3s7b9raz/+yDn8l7uHh4eEtOux56pyk0TeaWNHQFR4eHt5R3vSNvtv0Xy+lS6yPHXh4eHjp8R8QiA0BQHuzoQAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
