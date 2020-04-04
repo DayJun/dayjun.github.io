@@ -9,9 +9,11 @@
 <h1 id="BPF"><a href="#BPF" class="headerlink" title="BPF"></a>BPF</h1><p>根据<code>man bpf</code>中的描述</p>
 <blockquote>
 <p>描述：</p>
-<p>​    bpf系统调用执行一系列与extended Berkeley Packet Filters相关的操作，eBPF与传统的BPF相似，作用为    过滤网络包。对于eBPF和传统的BPF来说，为了确保它们进行的操作不会损伤运行时的系统，内核会在加    载程序之前静态地分析它们。</p>
+<p>bpf系统调用执行一系列与extended Berkeley Packet Filters相关的操作，eBPF与传统的BPF相似，作用为    过滤网络包。对于eBPF和传统的BPF来说，为了确保它们进行的操作不会损伤运行时的系统，内核会在加    载程序之前静态地分析它们。</p>
+</blockquote>
+<blockquote>
 <p>eBPF设计/架构：</p>
-<p>eBPF maps是一种通用的数据结构，它被用来存储不同的数据类型。数据类型通常被视为二进制块，所以用户需要在创建maps的时候指定key和value的size，所以一个给定的键值对可以有任意的结构。一个用户进程可以创建多个maps，并可以通过文件描述符来访问它们。不同的eBPF程序可以平行地访问相同的maps。关于往maps中存什么完全是由用户进程和eBPF程序来决定的。</p>
+<p>++eBPF maps是一种通用的数据结构，它被用来存储不同的数据类型。数据类型通常被视为二进制块，所以++用户需要在创建maps的时候指定key和value的size，所以一个给定的键值对可以有任意的结构。一个用户进程可以创建多个maps，并可以通过文件描述符来访问它们。不同的eBPF程序可以平行地访问相同的maps。关于往maps中存什么完全是由用户进程和eBPF程序来决定的。</p>
 <p>有一种特殊的map类型，被称为program array。这种map存储指向其他eBPF的文件描述符，当在该map中执行lookup的时候，程序流将被重定向到另一个eBPF程序的开头，而不会返回到正在调用的程序。嵌套的层数最大为32，所以无法实现无限循环。在运行时，在map中存储的文件描述符可以被修改，所以程序如果有什么特殊的需要的话是可以在功能上进行修改的。所有在program array中的程序都必须使用bpf系统调用提前加载到内核之中。如果map的lookup失败的话，程序会继续执行下去。</p>
 <p>每一个eBPF程序都是一组指令，在完成之前都可以安全地执行。内核中的验证器会静态地确定程序终止或者安全地被执行。在验证的时候，内核会增加被验证的map的引用计数来确保被附加的map不能在程序卸载之前被移除。</p>
 <p>更多详见<code>man bpf</code></p>
@@ -2099,8 +2101,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -2194,8 +2196,8 @@
         <category>browser</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
         <tag>chrome</tag>
         <tag>v8</tag>
       </tags>
@@ -2258,8 +2260,8 @@
       </categories>
       <tags>
         <tag>malloc</tag>
-        <tag>pwn</tag>
         <tag>free</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
@@ -2343,8 +2345,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
