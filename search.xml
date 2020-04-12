@@ -3,6 +3,43 @@
   
     
     <entry>
+      <title><![CDATA[初步了解Linux内核eBPF程序，以及资料参考]]></title>
+      <url>/2020/04/12/%E5%88%9D%E6%AD%A5%E4%BA%86%E8%A7%A3Linux%E5%86%85%E6%A0%B8BPF%E6%A8%A1%E5%9D%97/</url>
+      <content type="html"><![CDATA[<p>每周分享，很水轻喷</p>
+<a id="more"></a>
+
+<h1 id="bpf-insn"><a href="#bpf-insn" class="headerlink" title="bpf_insn"></a>bpf_insn</h1><p><code>bpf_insn</code>是一个结构体，代表一条bpf指令</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bpf_insn</span> &#123;</span></span><br><span class="line">	__u8	code;		<span class="comment">/* opcode */</span></span><br><span class="line">	__u8	dst_reg:<span class="number">4</span>;	<span class="comment">/* dest register */</span></span><br><span class="line">	__u8	src_reg:<span class="number">4</span>;	<span class="comment">/* source register */</span></span><br><span class="line">	__s16	off;		<span class="comment">/* signed offset */</span></span><br><span class="line">	__s32	imm;		<span class="comment">/* signed immediate constant */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其中后三个字段并不总是被使用的，例如使用<code>mov</code>操作对寄存器赋值立即数的指令中，<code>src_reg</code>和<code>off</code>字段是无用的，须为0</p>
+<h1 id="prog"><a href="#prog" class="headerlink" title="prog"></a>prog</h1><p>一般的编写方式是直接使用一个<code>bpf_insn</code>数组作为一个完整程序加载到内核中，在Kernel的源码目录中的<code>/samples/bpf/bpf_insn.h</code>文件中有宏定义了大部分指令，可以参考<a href="https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/bpf_insn.h#L1" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/bpf_insn.h#L1</a></p>
+<p>还有相关的eBPF包括编写、加载到内核、使用的示例</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/sock_example.c" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/sock_example.c</a></p>
+<h1 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h1><p>eBPF程序在载入内核之前，会先进行几段检查</p>
+<h2 id="check-cfg"><a href="#check-cfg" class="headerlink" title="check_cfg"></a>check_cfg</h2><p>利用程序流程图，主要负责检查程序是否有独立的块，即无法到达的块</p>
+<h2 id="do-check"><a href="#do-check" class="headerlink" title="do_check"></a>do_check</h2><p>模拟执行程序，检查是否有违法操作、有死循环等</p>
+<h1 id="eBPF模块可能存在的漏洞点"><a href="#eBPF模块可能存在的漏洞点" class="headerlink" title="eBPF模块可能存在的漏洞点"></a>eBPF模块可能存在的漏洞点</h1><p>除去上篇文章分析的整数溢出这种漏洞外，我所了解的另外两个漏洞都是关于，内核在模拟执行eBPF程序的过程中与实际执行程序的过程中的某些操作略有不同，导致在检查过程中有些条件恒成立，如果该条件恒成立，那么检查的时候就不会去检查不成立的那一分支。而如果检查过程中恒成立的条件在实际执行的过程中可以构成不成立的情况，那么就可以执行非法代码，完成任意读写等操作</p>
+<h1 id="一些参考学习的资料"><a href="#一些参考学习的资料" class="headerlink" title="一些参考学习的资料"></a>一些参考学习的资料</h1><p><a href="https://www.kernel.org/doc/Documentation/networking/filter.txt" target="_blank" rel="noopener">https://www.kernel.org/doc/Documentation/networking/filter.txt</a></p>
+<p><a href="http://www.man7.org/linux/man-pages/man2/bpf.2.html" target="_blank" rel="noopener">http://www.man7.org/linux/man-pages/man2/bpf.2.html</a></p>
+<p><a href="https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.6/source/samples/bpf/</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> 学习日记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Linux kernel 4.20 BPF 整数溢出漏洞]]></title>
       <url>/2020/04/04/Linux-kernel-4-20-BPF-%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E/</url>
       <content type="html"><![CDATA[<p><code>Linux kernel 4.20-rc1-rc4</code>中存在一个整数溢出漏洞，导致堆溢出</p>
@@ -2438,9 +2475,9 @@
         
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
         </tags>
         
@@ -2543,9 +2580,9 @@
         
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
             <tag> chrome </tag>
             
@@ -2618,11 +2655,11 @@
         
         <tags>
             
-            <tag> pwn </tag>
-            
             <tag> malloc </tag>
             
             <tag> free </tag>
+            
+            <tag> pwn </tag>
             
         </tags>
         
@@ -2715,9 +2752,9 @@
         
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
         </tags>
         
