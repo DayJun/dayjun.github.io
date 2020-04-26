@@ -92,11 +92,17 @@
 <p>理解该漏洞之前要先理解该结构体，要注意的一个字段是<code>var_off</code>，它是一个<code>tnum</code>结构体</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* tnum: tracked (or tristate) numbers</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * A tnum tracks knowledge about the bits of a value.  Each bit can be either</span></span><br><span class="line"><span class="comment"> * known (0 or 1), or unknown (x).  Arithmetic operations on tnums will</span></span><br><span class="line"><span class="comment"> * propagate the unknown bits such that the tnum result represents all the</span></span><br><span class="line"><span class="comment"> * possible results for possible values of the operands.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">tnum</span> &#123;</span></span><br><span class="line">	u64 value;</span><br><span class="line">	u64 mask;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p><code>tnum</code>的注释没太懂，我的理解是：</p>
+<p><del><code>tnum</code>的注释没太懂，我的理解是：</del></p>
 <ul>
-<li><code>mask</code>为0的时候，表示该<code>tnum</code>是一个数字，值为<code>value</code></li>
-<li><code>mask</code>非0的时候，表示一个范围，所有与<code>mask</code>进行与操作不为0的数字都在这个范围内，而此时的<code>value</code>只是该范围内的一个数字，并不精确</li>
+<li><del><code>mask</code>为0的时候，表示该<code>tnum</code>是一个数字，值为<code>value</code></del></li>
+<li><del><code>mask</code>非0的时候，表示一个范围，所有与<code>mask</code>进行与操作不为0的数字都在这个范围内，而此时的<code>value</code>只是该范围内的一个数字，并不精确</del></li>
 </ul>
+<p>引用自<a href="https://www.anquanke.com/post/id/203416" target="_blank" rel="noopener">https://www.anquanke.com/post/id/203416</a></p>
+<blockquote>
+<p><code>value</code>: 某个bit为1 表示这个寄存器的这个bit 确定是1</p>
+<p><code>mask</code>: 某个bit 为1表示这个 bit 是未知的</p>
+<p>举个栗子，假如<code>value</code> 是 <code>010</code>（二进制表示) ， <code>mask</code> 是<code>100</code> , 那么就是经过前面的指令的模拟执行之后，可以确定这个寄存器的 第二个bit 一定是 1, 第三个 bit 在<code>mask</code> 里面设置了，表示这里不确定，可以是1或者是0。详细的文档可以在<code>Documentnetworking/filter.txt</code> 里面找到。</p>
+</blockquote>
 <h3 id="0-b7-r0-808464432"><a href="#0-b7-r0-808464432" class="headerlink" title="0: (b7) r0 = 808464432"></a>0: (b7) r0 = 808464432</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">$r0 = &#123;</span><br><span class="line">  type = SCALAR_VALUE,</span><br><span class="line">  &#123;</span><br><span class="line">    range = <span class="number">0x0</span>,</span><br><span class="line">    map_ptr = <span class="number">0x0</span> &lt;fixed_percpu_data&gt;,</span><br><span class="line">    btf_id = <span class="number">0x0</span>,</span><br><span class="line">    raw = <span class="number">0x0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  off = <span class="number">0x0</span>,</span><br><span class="line">  id = <span class="number">0x0</span>,</span><br><span class="line">  ref_obj_id = <span class="number">0x0</span>,</span><br><span class="line">  var_off = &#123;</span><br><span class="line">    value = <span class="number">0x30303030</span>,</span><br><span class="line">    mask = <span class="number">0x0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  smin_value = <span class="number">0x30303030</span>,</span><br><span class="line">  smax_value = <span class="number">0x30303030</span>,</span><br><span class="line">  umin_value = <span class="number">0x30303030</span>,</span><br><span class="line">  umax_value = <span class="number">0x30303030</span>,</span><br><span class="line">  parent = <span class="number">0x0</span> &lt;fixed_percpu_data&gt;,</span><br><span class="line">  frameno = <span class="number">0x0</span>,</span><br><span class="line">  subreg_def = <span class="number">0x0</span>,</span><br><span class="line">  live = REG_LIVE_WRITTEN,</span><br><span class="line">  precise = <span class="number">0x1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>此时，r0存储着一个确定的值，为0x30303030</p>
