@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>漏洞战争学习日记(4) | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="Windows Kernel">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock-o"></i>
+                TODO
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>漏洞战争学习日记(4)</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">漏洞战争学习日记(4)</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-06-03T11:03:38.000Z" itemprop="datePublished" class="page-time">
+  2020-06-03
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/漏洞战争/">漏洞战争</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-漏洞战争学习日记-4"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">漏洞战争学习日记(4)</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-06-03 19:03:38" datetime="2020-06-03T11:03:38.000Z"  itemprop="datePublished">2020-06-03</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/漏洞战争/">漏洞战争</a></li></ul>
+
+
+
+            
+	<span id="/2020/06/03/漏洞战争学习日记-4/" class="leancloud_visitors" data-flag-title="漏洞战争学习日记(4)" title="漏洞战争学习日记(4)">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/06/03/漏洞战争学习日记-4/#comment">
+            <span class="valine-comment-count" data-xid="/2020/06/03/漏洞战争学习日记-4/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>学习Windows下Kernel相关</p>
+<p>学习内核漏洞利用部分第一个漏洞：360安全卫士本地提权漏洞</p>
+<a id="more"></a>
+
+<p>漏洞成因是360对注册表操作单独做了一个底层的实现，然而这个实现并没有检测调用者的权限，导致任意用户可以随意修改注册表的任意条目，从而完成利用</p>
+<h1 id="利用程序分析"><a href="#利用程序分析" class="headerlink" title="利用程序分析"></a>利用程序分析</h1><p>利用程序的功能是在远程开端口，可以远程连接上去。连接上之后是登录界面，此时按<code>SHIFT</code>五下会跳出cmd窗口</p>
+<p>做成这样并不是为了花里胡哨的，而是漏洞面导致的</p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>首先调用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RegOpenKeyA(HKEY_LOCAL_MACHINE, <span class="string">"Software\Microsoft\Windows\CurrentVersion\App Paths\360safe.exe"</span>, &amp;phkResult);</span><br><span class="line">RegQueryValueExA(phkResult, <span class="string">"Path"</span>, <span class="number">0</span>, &amp;Type, &amp;Data, &amp;cbData);</span><br></pre></td></tr></table></figure>
+
+<p>能得到目标机器中360安全卫士的路径，根据该路径可以找到目标动态链接库</p>
+<p>然后用<code>LoadLibraryA</code>函数将该链接库导入，并用<code>GetProcAddress</code>函数得到其中的漏洞函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">InitRegEngine</span><br><span class="line">BRegDeleteKey</span><br><span class="line">BRegOpenKey</span><br><span class="line">BregCloseKey</span><br><span class="line">BRegSetValueEx</span><br><span class="line">BRegCreateKey</span><br></pre></td></tr></table></figure>
+
+<p>根据利用程序，其之后对注册表创建了一些键值</p>
+<p>利用<code>BregOpenKey</code>打开<code>SYSTEM\CurrentControlSet\Control\Terminal Server</code>键，<code>BRegSetValueEx</code>设置<code>fDenyTSConnections</code>为0，这一步是为了打开远程协助功能</p>
+<p>利用<code>BregOpenKey</code>打开<code>SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd\Tds\tcp</code>键，<code>BRegSetValueEx</code>设置<code>PortNumber</code>为3389</p>
+<p>利用<code>BregOpenKey</code>打开<code>SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp</code>键，<code>BRegSetValueEx</code>设置</p>
+<p><code>PortNumber</code>为3389，这两步是修改远程桌面连接的端口为3389</p>
+<p>利用<code>BregOpenKey</code>打开<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution</code>键，<code>BRegCreateKey</code>创建<code>sethc.exe</code>键，<code>BRegSetValueEx</code>设置<code>Debugger</code>为<code>cmd.exe</code>，这样就能在五次<code>SHIFT</code>的时候打开<code>cmd.exe</code></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>该漏洞很没意思，但是学习到了一些注册表项的用法，也算是有点价值</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-06-06T16:18:26.528Z" itemprop="dateUpdated">2020-06-07 00:18:26</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/06/03/漏洞战争学习日记-4/" target="_blank" rel="external">http://dayjun.top/2020/06/03/漏洞战争学习日记-4/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows-Kernel/">Windows Kernel</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/06/03/漏洞战争学习日记-4/&title=《漏洞战争学习日记(4)》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/06/03/漏洞战争学习日记-4/&title=《漏洞战争学习日记(4)》 — DaJun的Blog&source=学习Windows下Kernel相关
+学习内核漏洞利用部分第一个漏洞：360安全卫士本地提权漏洞" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="prev">
+      <a href="/2020/06/09/漏洞战争学习日记-5/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">漏洞战争学习日记(5)</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="next">
+      <a href="/2020/05/24/漏洞战争学习日记-3/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">漏洞战争学习日记(3)</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#利用程序分析"><span class="post-toc-number">1.</span> <span class="post-toc-text">利用程序分析</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#流程"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">流程</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#总结"><span class="post-toc-number">2.</span> <span class="post-toc-text">总结</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/06/03/漏洞战争学习日记-4/&title=《漏洞战争学习日记(4)》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/06/03/漏洞战争学习日记-4/&title=《漏洞战争学习日记(4)》 — DaJun的Blog&source=学习Windows下Kernel相关
+学习内核漏洞利用部分第一个漏洞：360安全卫士本地提权漏洞" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLklEQVR42u3aS46DQAxF0ex/02QBCLh+VYmEfRmhFgl1MnD79/ng68DX+fmrv5y//3y/+ZIhQ8ZrGfxYV/f3L756vvr9V5+VIUPGHAYPgvfB8f6IBEOCrwwZMmSsHL2KzNJEGTJkyCApIA+1HPOngCtDhozXMnj7jB/0HpwVvRtqcRkyZLyQwbvu/7//yXxDhgwZr2IcxYvDSHAkYR2dSoYMGa0Z6yPMldDJi1VUysqQIaMpgyRhe5v+2SrGw2dlyJDRmpGNAXgzjiSL2eLFJVKGDBntGFkZyRO4aknMA64MGTLmMKrNer4MUV3myAaZMmTImMPgRez60lhWrG6bwcqQIeO1jCx1q6aAfAxAfqbCfEOGDBkDGGQAkC1eVJtuKMOVIUPGAMbKYgQvUKtLG4V2mwwZMtoxeIFKXpONJ/lwVIYMGTMZWbOejDOzEJyVzTJkyJjA4I9yADkESRC3TTBkyJDRgpEVq+tzRv5zPJxKhgwZYxjZACArd3nkRKFchgwZAxh8xJgVnHwwUG3PyZAhYxpj18CyuhxWHQmgdpsMGTIaMaqVYDWkhkcpdtVkyJDRlXEUr5XylTfRyqmqDBkyWjPWx5zV9JFE/WwpTYYMGb0ZPMhmLf7CGDIqgGXIkDGHwUeJpHFfXQvj/wfC+luGDBnDGHzcSMYGWTIqQ4YMGTwscgYZBvBnZMiQMZOxkvytREI+hHh4uwwZMlozsrwrS/6qh+ZnkCFDRlPGFxbOJ81z84rcAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>

