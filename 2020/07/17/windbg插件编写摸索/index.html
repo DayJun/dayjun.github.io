@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    
+    
+    <title>windbg插件编写摸索 | DaJun的Blog | 脑袋空空</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="keywords" content="windbg">
+    <link rel="shortcut icon" href="/img/girl.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.4">
+    
+    <script type="text/javascript">
+        // Data Center
+        var DC = {
+            reward:	false,
+            lv: JSON.parse('{"enable":true,"app_id":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","app_key":"Qn93YchF3LXlS54tbXjzMvAI","icon":true}'),
+            v: JSON.parse('{"enable":true,"appid":"ekgad1tINypClpAa8y0wrbvl-gzGzoHsz","appkey":"Qn93YchF3LXlS54tbXjzMvAI","notify":true,"verify":true,"placeholder":"想说什么...","avatar":"wavatar"}'),
+            g: JSON.parse('{"enable":false,"lazy":true,"owner":"codefine","repo":"gitment","oauth":{"client_id":null,"client_secret":null},"perPage":10}'),
+            d: JSON.parse('{"app_id":null}')
+        };
+    </script>
+    <script type="text/javascript">
+        window.lazyScripts=[];
+    </script>
+    
+</head>
+
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      
+      <img src="/img/brand.jpg" class="brand-bg">
+      
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/girl.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">DaJun</h5>
+          <a href="mailto:571986260@qq.com" title="571986260@qq.com" class="mail">
+            
+              <span>5</span>
+            
+              <span>7</span>
+            
+              <span>1</span>
+            
+              <span>9</span>
+            
+              <span>8</span>
+            
+              <span>6</span>
+            
+              <span>2</span>
+            
+              <span>6</span>
+            
+              <span>0</span>
+            
+              <span>@</span>
+            
+              <span>q</span>
+            
+              <span>q</span>
+            
+              <span>.</span>
+            
+              <span>c</span>
+            
+              <span>o</span>
+            
+              <span>m</span>
+            
+          </a>
+        </hgroup>
+        
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                HOME
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                CATEGORIES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                TAGS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                ARCHIVES
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/about"  >
+                <i class="icon icon-lg icon-user"></i>
+                ABOUT
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/pwn-tips"  >
+                <i class="icon icon-lg icon-info"></i>
+                PWN TIPS
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="/todo"  >
+                <i class="icon icon-lg icon-clock-o"></i>
+                TODO
+              </a>
+            </li>
+        
+            <li class="">
+              <a href="https://github.com/DayJun" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row clearfix">
+        <a href="javascript:;" class="header-icon pull-left waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">
+            <span>windbg插件编写摸索</span>
+            
+        </div>
+        
+        <a href="javascript:;" id="site_search_btn" class="header-icon pull-right waves-effect waves-circle waves-light">
+            <i class="icon icon-lg icon-search"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+    <img src="/img/dawn.jpg" class="header-bg">
+    <div class="container fade-scale">
+        <h1 class="title">windbg插件编写摸索</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-07-17T13:18:59.000Z" itemprop="datePublished" class="page-time">
+  2020-07-17
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+            
+        </h5>
+        
+    </div>
+    
+
+</header>
+
+<div id="site_search">
+    <div class="search-title clearfix">
+        <span class="pull-left">
+          <i class="icon icon-lg icon-search"></i>
+        </span>
+        <input type="text" id="local-search-input" name="q" results="0" placeholder="search my blog..." class="form-control pull-left"/>
+        <a href="javascript:;" class="close pull-right waves-effect waves-circle waves-light">
+          <i class="icon icon-lg icon-close"></i>
+        </a>
+    </div>
+    <div id="local-search-result"></div>
+</div>
+
+
+<div class="container body-wrap">
+    <article id="post-windbg插件编写摸索"
+  class="post-article article-type-post" itemprop="blogPost">
+    <div class="post-card">
+        <h1 class="post-card-title">windbg插件编写摸索</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-07-17 21:18:59" datetime="2020-07-17T13:18:59.000Z"  itemprop="datePublished">2020-07-17</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/学习日记/">学习日记</a></li></ul>
+
+
+
+            
+	<span id="/2020/07/17/windbg插件编写摸索/" class="leancloud_visitors" data-flag-title="windbg插件编写摸索" title="windbg插件编写摸索">
+		
+			<i class="icon icon-eye"></i>
+		
+		<span class="leancloud-visitors-count"></span>
+	</span>
+ 
+
+            
+    <span class="leancloud-comment">
+        <i class="icon icon-comment-o"></i>
+        <a href="/2020/07/17/windbg插件编写摸索/#comment">
+            <span class="valine-comment-count" data-xid="/2020/07/17/windbg插件编写摸索/"></span>
+        </a>
+    </span>
+
+
+
+            
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            
+            <p>感觉有必要学习一下写一个windbg插件</p>
+<a id="more"></a>
+
+<p>windows官方有一个插件的示例，便从该示例学习</p>
+<p><a href="https://github.com/tpn/winsdk-10/tree/master/Debuggers/x64/sdk/samples/exts" target="_blank" rel="noopener">https://github.com/tpn/winsdk-10/tree/master/Debuggers/x64/sdk/samples/exts</a></p>
+<p>目录结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">dbgexts.cpp</span><br><span class="line">dbgexts.def</span><br><span class="line">dbgexts.h</span><br><span class="line">dbgexts.rc</span><br><span class="line">exts.cpp</span><br><span class="line">exts.vcxproj</span><br><span class="line">makefile</span><br><span class="line">readme.txt</span><br><span class="line">sources</span><br></pre></td></tr></table></figure>
+
+<p>先看一下<code>dbgexts.h</code>中的几个部分</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INIT_API()                             \</span></span><br><span class="line">    HRESULT Status;                            \</span><br><span class="line">    <span class="keyword">if</span> ((Status = ExtQuery(Client)) != S_OK) <span class="keyword">return</span> Status;</span><br></pre></td></tr></table></figure>
+
+<p>这里面，<code>ExtQurey</code>是在<code>dbgexts.cpp</code>中定义的函数，它的参数<code>Client</code>可能是调试器，因为使用交叉引用并不能找得到它的定义</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> HRESULT</span><br><span class="line">ExtQuery(PDEBUG_CLIENT4 Client)</span><br><span class="line">&#123;</span><br><span class="line">    HRESULT Status;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((Status = Client-&gt;QueryInterface(__uuidof(IDebugControl),</span><br><span class="line">                                 (<span class="keyword">void</span> **)&amp;g_ExtControl)) != S_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">goto</span> Fail;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ((Status = Client-&gt;QueryInterface(__uuidof(IDebugSymbols2),</span><br><span class="line">                                (<span class="keyword">void</span> **)&amp;g_ExtSymbols)) != S_OK)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">goto</span> Fail;</span><br><span class="line">    &#125;</span><br><span class="line">    g_ExtClient = Client;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> S_OK;</span><br><span class="line"></span><br><span class="line"> Fail:</span><br><span class="line">    ExtRelease();</span><br><span class="line">    <span class="keyword">return</span> Status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>据<a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/writing-an-analysis-extension-to-extend--analyze中所说，`Client-&gt;QueryInterface`" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/writing-an-analysis-extension-to-extend--analyze中所说，`Client-&gt;QueryInterface`</a> 获取<a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/ddi/dbgeng/nn-dbgeng-idebugcontrol" target="_blank" rel="noopener"><strong>IDebugControl</strong></a>，<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/dbgeng/nn-dbgeng-idebugsymbols2" target="_blank" rel="noopener"><strong>IDebugSymbols2</strong></a>接口，然后将该接口赋值给第二个参数，那么接下来就可以通过第二个参数来使用该接口中的函数了</p>
+<p>接下来是<code>ExtRelease</code>，位于<code>dbgexts.cpp</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Cleans up all debugger interfaces.</span></span><br><span class="line"><span class="keyword">void</span></span><br><span class="line">ExtRelease(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    g_ExtClient = <span class="literal">NULL</span>;</span><br><span class="line">    EXT_RELEASE(g_ExtControl);</span><br><span class="line">    EXT_RELEASE(g_ExtSymbols);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>EXT_RELEASE</code>是一个宏，位于<code>dbgexts.h</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXT_RELEASE(Unk) \</span></span><br><span class="line">    ((Unk) != <span class="literal">NULL</span> ? ((Unk)-&gt;Release(), (Unk) = <span class="literal">NULL</span>) : <span class="literal">NULL</span>)</span><br></pre></td></tr></table></figure>
+
+<p>原来是调用了接口的<code>Release</code>函数，关于该函数微软并没有给出官方的解释，不过顾名思义，该函数的作用应该就是释放资源</p>
+<p>接下来是<code>ExtOut</code>，位于<code>dbgexts.cpp</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Normal output.</span></span><br><span class="line"><span class="keyword">void</span> __cdecl</span><br><span class="line">ExtOut(PCSTR Format, ...)</span><br><span class="line">&#123;</span><br><span class="line">    va_list Args;</span><br><span class="line"></span><br><span class="line">    va_start(Args, Format);</span><br><span class="line">    g_ExtControl-&gt;OutputVaList(DEBUG_OUTPUT_NORMAL, Format, Args);</span><br><span class="line">    va_end(Args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只见其使用了接口的<code>OutputVaList</code>函数，该函数设置字符串格式，并将结果发送到在引擎的客户端中注册的输出回调。大概就是可以依靠这个函数输出内容到调试器的显示界面或者交互界面</p>
+<p>接下来是重头戏，位于<code>dbgexts.cpp</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line">HRESULT</span><br><span class="line">CALLBACK</span><br><span class="line">DebugExtensionInitialize(PULONG Version, PULONG Flags)</span><br><span class="line">&#123;</span><br><span class="line">    IDebugClient *DebugClient;</span><br><span class="line">    PDEBUG_CONTROL DebugControl;</span><br><span class="line">    HRESULT Hr;</span><br><span class="line"></span><br><span class="line">    *Version = DEBUG_EXTENSION_VERSION(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    *Flags = <span class="number">0</span>;</span><br><span class="line">    Hr = S_OK;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((Hr = DebugCreate(__uuidof(IDebugClient),</span><br><span class="line">                          (<span class="keyword">void</span> **)&amp;DebugClient)) != S_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Hr;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((Hr = DebugClient-&gt;QueryInterface(__uuidof(IDebugControl),</span><br><span class="line">                                  (<span class="keyword">void</span> **)&amp;DebugControl)) == S_OK)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Get the windbg-style extension APIS</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        ExtensionApis.nSize = <span class="keyword">sizeof</span> (ExtensionApis);</span><br><span class="line">        Hr = DebugControl-&gt;GetWindbgExtensionApis64(&amp;ExtensionApis);</span><br><span class="line"></span><br><span class="line">        DebugControl-&gt;Release();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    DebugClient-&gt;Release();</span><br><span class="line">    <span class="keyword">return</span> Hr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/ddi/dbgeng/nc-dbgeng-pdebug_extension_initialize" target="_blank" rel="noopener"><strong>DebugExtensionInitialize</strong></a>是一个回调函数，当调试器引擎导入了一个<code>DbgEng</code>拓展之后会被自动调用，目的是对拓展进行初始化</p>
+<p><code>DEBUG_EXTENSION_VERSION</code>返回一个版本号</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Returns a version with the major version in</span></span><br><span class="line"><span class="comment">// the high word and the minor version in the low word.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEBUG_EXTENSION_VERSION(Major, Minor) \</span></span><br><span class="line">    ((((Major) &amp; <span class="number">0xffff</span>) &lt;&lt; <span class="number">16</span>) | ((Minor) &amp; <span class="number">0xffff</span>))</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/dbgeng/nf-dbgeng-debugcreate" target="_blank" rel="noopener"><strong>DebugCreate</strong></a>函数会创建一个新的<code>client</code>，其中第一个参数指定所需的调试器引擎客户端接口的接口标识符，函数执行成功会返回<code>S_OK</code></p>
+<p><code>ExtensionApis</code>的定义为</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINDBG_EXTENSION_APIS   ExtensionApis;</span><br></pre></td></tr></table></figure>
+
+<p><code>WINDBG_EXTENSION_APIS</code>是一个结构体，其定义位于<code>WDBGEXTS.H</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">WINDBG_EXTENSION_APIS64</span> &#123;</span></span><br><span class="line">    ULONG                                  nSize;</span><br><span class="line">    PWINDBG_OUTPUT_ROUTINE                 lpOutputRoutine;</span><br><span class="line">    PWINDBG_GET_EXPRESSION64               lpGetExpressionRoutine;</span><br><span class="line">    PWINDBG_GET_SYMBOL64                   lpGetSymbolRoutine;</span><br><span class="line">    PWINDBG_DISASM64                       lpDisasmRoutine;</span><br><span class="line">    PWINDBG_CHECK_CONTROL_C                lpCheckControlCRoutine;</span><br><span class="line">    PWINDBG_READ_PROCESS_MEMORY_ROUTINE64  lpReadProcessMemoryRoutine;</span><br><span class="line">    PWINDBG_WRITE_PROCESS_MEMORY_ROUTINE64 lpWriteProcessMemoryRoutine;</span><br><span class="line">    PWINDBG_GET_THREAD_CONTEXT_ROUTINE     lpGetThreadContextRoutine;</span><br><span class="line">    PWINDBG_SET_THREAD_CONTEXT_ROUTINE     lpSetThreadContextRoutine;</span><br><span class="line">    PWINDBG_IOCTL_ROUTINE                  lpIoctlRoutine;</span><br><span class="line">    PWINDBG_STACKTRACE_ROUTINE64           lpStackTraceRoutine;</span><br><span class="line">&#125; WINDBG_EXTENSION_APIS64, *PWINDBG_EXTENSION_APIS64;</span><br></pre></td></tr></table></figure>
+
+<p>但是微软官方文档却并未对其有所说明</p>
+<p><code>GetWindbgExtensionApis64</code>函数会填充<code>ExtensionApis</code>这个结构，据文档所说：</p>
+<blockquote>
+<p>If you are including Wdbgexts.h in your extension code, you should call this method during the initialization of the extension DLL </p>
+<p>如果你的拓展代码中include了<code>Wdbgexts.h</code>，就应该在初始化拓展dll的时候调用这个函数</p>
+</blockquote>
+<p>实际上，在<code>DebugExtensionInitialize</code>函数中，所做的操作就是各种初始化，初始化你的拓展所需要的全局变量、各种结构体等</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line"><span class="keyword">void</span></span><br><span class="line">CALLBACK</span><br><span class="line">DebugExtensionNotify(ULONG Notify, ULONG64 Argument)</span><br><span class="line">&#123;</span><br><span class="line">    UNREFERENCED_PARAMETER(Argument);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// The first time we actually connect to a target</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((Notify == DEBUG_NOTIFY_SESSION_ACCESSIBLE) &amp;&amp; (!Connected))</span><br><span class="line">    &#123;</span><br><span class="line">        IDebugClient *DebugClient;</span><br><span class="line">        HRESULT Hr;</span><br><span class="line">        PDEBUG_CONTROL DebugControl;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((Hr = DebugCreate(__uuidof(IDebugClient),</span><br><span class="line">                              (<span class="keyword">void</span> **)&amp;DebugClient)) == S_OK)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//</span></span><br><span class="line">            <span class="comment">// Get the architecture type.</span></span><br><span class="line">            <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((Hr = DebugClient-&gt;QueryInterface(__uuidof(IDebugControl),</span><br><span class="line">                                       (<span class="keyword">void</span> **)&amp;DebugControl)) == S_OK)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> ((Hr = DebugControl-&gt;GetActualProcessorType(</span><br><span class="line">                                             &amp;TargetMachine)) == S_OK)</span><br><span class="line">                &#123;</span><br><span class="line">                    Connected = TRUE;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                NotifyOnTargetAccessible(DebugControl);</span><br><span class="line"></span><br><span class="line">                DebugControl-&gt;Release();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            DebugClient-&gt;Release();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (Notify == DEBUG_NOTIFY_SESSION_INACTIVE)</span><br><span class="line">    &#123;</span><br><span class="line">        Connected = FALSE;</span><br><span class="line">        TargetMachine = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当会话更改其活动或可访问状态时，引擎将调用<code>DebugExtensionNotify</code>回调函数来通知扩展DLL。</p>
+<p>文档中说，该函数是可选的，如果要在会话状态更改时，拓展能得到通知，则DbgEng扩展DLL需要导出此函数</p>
+<p>该函数发生在会话开始和结束之间，或者目标执行的开始和结束之间</p>
+<p>对于该函数的逻辑，我的理解是：</p>
+<p>如果当前会话是可访问的，即当前会话处于暂停状态，应该就是windbg的break状态，就得到并输出当前物理处理器的处理器类型。如果没有会话是活动的，那么就重置存储当前会话的架构的变量</p>
+<p>至于这里的实现有什么用呢？我认为其用处只是获取当前会话的架构，例如<code>IA64</code>，<code>X86</code></p>
+<p>另外<code>NotifyOnTargetAccessible</code>函数是自定义的，并不是文档中的，位于<code>exts.cpp</code>中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line">HRESULT</span><br><span class="line">CALLBACK</span><br><span class="line">KnownStructOutput(</span><br><span class="line">    _In_ ULONG Flag,</span><br><span class="line">    _In_ ULONG64 Address,</span><br><span class="line">    _In_ PSTR StructName,</span><br><span class="line">    _Out_writes_opt_(*BufferSize) PSTR Buffer,</span><br><span class="line">    _Inout_opt_ _When_(Flag == DEBUG_KNOWN_STRUCT_GET_NAMES, _Notnull_) _When_(Flag == DEBUG_KNOWN_STRUCT_GET_SINGLE_LINE_OUTPUT, _Notnull_) PULONG BufferSize</span><br><span class="line">    )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* KnownStructs[] = &#123;<span class="string">"_LARGE_INTEGER"</span>, <span class="string">"_SYSTEMTIME"</span>, <span class="literal">NULL</span>&#125;;</span><br><span class="line">    HRESULT Hr = S_OK;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((Flag == DEBUG_KNOWN_STRUCT_GET_NAMES) &amp;&amp; (Buffer != <span class="literal">NULL</span>) &amp;&amp; (BufferSize != <span class="literal">NULL</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Return names of known structs in multi string</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        ULONG SizeRemaining = *BufferSize, SizeNeeded = <span class="number">0</span>, Length;</span><br><span class="line">        PCHAR CopyAt = Buffer;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ULONG i=<span class="number">0</span>; KnownStructs[i] != <span class="literal">NULL</span>; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (SizeRemaining &gt; (Length = (ULONG)<span class="built_in">strlen</span>(KnownStructs[i]) + <span class="number">1</span>) &amp;&amp;</span><br><span class="line">                Hr == S_OK)</span><br><span class="line">            &#123;</span><br><span class="line">                Hr = StringCbCopy(CopyAt, SizeRemaining, KnownStructs[i]);</span><br><span class="line"></span><br><span class="line">                SizeRemaining -= Length;</span><br><span class="line">                CopyAt += Length;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Hr = S_FALSE;</span><br><span class="line">            &#125;</span><br><span class="line">            SizeNeeded += Length;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Terminate multistring and return size copied</span></span><br><span class="line">        *CopyAt = <span class="number">0</span>;</span><br><span class="line">        *BufferSize = SizeNeeded+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((Flag == DEBUG_KNOWN_STRUCT_GET_SINGLE_LINE_OUTPUT) &amp;&amp; (Buffer != <span class="literal">NULL</span>) &amp;&amp; (BufferSize != <span class="literal">NULL</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(StructName, KnownStructs[<span class="number">0</span>]))</span><br><span class="line">        &#123;</span><br><span class="line">            ULONG64 Data;</span><br><span class="line">            ULONG ret;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (ReadMemory(Address, &amp;Data, <span class="keyword">sizeof</span>(Data), &amp;ret))</span><br><span class="line">            &#123;</span><br><span class="line">                Hr = StringCbPrintf(Buffer, *BufferSize, <span class="string">" &#123; %lx`%lx &#125;"</span>, (ULONG) (Data &gt;&gt; <span class="number">32</span>), (ULONG) Data);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Hr = E_INVALIDARG;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(StructName, KnownStructs[<span class="number">1</span>]))</span><br><span class="line">        &#123;</span><br><span class="line">            SYSTEMTIME Data;</span><br><span class="line">            ULONG ret;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (ReadMemory(Address, &amp;Data, <span class="keyword">sizeof</span>(Data), &amp;ret))</span><br><span class="line">            &#123;</span><br><span class="line">                Hr = StringCbPrintf(Buffer, *BufferSize, <span class="string">" &#123; %02lu:%02lu:%02lu %02lu/%02lu/%04lu &#125;"</span>,</span><br><span class="line">                                    Data.wHour,</span><br><span class="line">                                    Data.wMinute,</span><br><span class="line">                                    Data.wSecond,</span><br><span class="line">                                    Data.wMonth,</span><br><span class="line">                                    Data.wDay,</span><br><span class="line">                                    Data.wYear);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Hr = E_INVALIDARG;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Hr = E_INVALIDARG;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (Flag == DEBUG_KNOWN_STRUCT_SUPPRESS_TYPE_NAME)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(StructName, KnownStructs[<span class="number">0</span>]))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Do not print type name for KnownStructs[0]</span></span><br><span class="line">            Hr = S_OK;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Print the type name</span></span><br><span class="line">            Hr = S_FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (Buffer)</span><br><span class="line">        &#123;</span><br><span class="line">            Buffer[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        Hr = E_INVALIDARG;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Hr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于文件中的<code>KnownStructOutput</code>函数，windows的文档并未说明，但是的确为其留了一席之地，希望后续可以进行说明</p>
+<p>但是，在<a href="http://www.dbgtech.net/windbghelp/hh/debugger/extensions_ref_dfff8fda-36a7-42ab-9ad7-1698c352c028.xml.htm中对其有说明" target="_blank" rel="noopener">http://www.dbgtech.net/windbghelp/hh/debugger/extensions_ref_dfff8fda-36a7-42ab-9ad7-1698c352c028.xml.htm中对其有说明</a></p>
+<p>接下来重点转到<code>exts.cpp</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">HRESULT CALLBACK</span><br><span class="line">cmdsample(PDEBUG_CLIENT4 Client, PCSTR args)</span><br><span class="line">&#123;</span><br><span class="line">    CHAR Input[<span class="number">256</span>];</span><br><span class="line">    INIT_API();</span><br><span class="line"></span><br><span class="line">    UNREFERENCED_PARAMETER(args);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Output a 10 frame stack</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    g_ExtControl-&gt;OutputStackTrace(DEBUG_OUTCTL_ALL_CLIENTS |   <span class="comment">// Flags on what to do with output</span></span><br><span class="line">                                   DEBUG_OUTCTL_OVERRIDE_MASK |</span><br><span class="line">                                   DEBUG_OUTCTL_NOT_LOGGED,</span><br><span class="line">                                   <span class="literal">NULL</span>,</span><br><span class="line">                                   <span class="number">10</span>,           <span class="comment">// number of frames to display</span></span><br><span class="line">                                   DEBUG_STACK_FUNCTION_INFO | DEBUG_STACK_COLUMN_NAMES |</span><br><span class="line">                                   DEBUG_STACK_ARGUMENTS | DEBUG_STACK_FRAME_ADDRESSES);</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Engine interface for print</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    g_ExtControl-&gt;Output(DEBUG_OUTCTL_ALL_CLIENTS, <span class="string">"\n\nDebugger module list\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// list all the modules by executing lm command</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    g_ExtControl-&gt;Execute(DEBUG_OUTCTL_ALL_CLIENTS |</span><br><span class="line">                          DEBUG_OUTCTL_OVERRIDE_MASK |</span><br><span class="line">                          DEBUG_OUTCTL_NOT_LOGGED,</span><br><span class="line">                          <span class="string">"lm"</span>, <span class="comment">// Command to be executed</span></span><br><span class="line">                          DEBUG_EXECUTE_DEFAULT );</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Ask for user input</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    g_ExtControl-&gt;Output(DEBUG_OUTCTL_ALL_CLIENTS, <span class="string">"\n\n***User Input sample\n\nEnter Command to run : "</span>);</span><br><span class="line">    GetInputLine(<span class="literal">NULL</span>, &amp;Input[<span class="number">0</span>], <span class="keyword">sizeof</span>(Input));</span><br><span class="line">    Input[ARRAYSIZE(Input) - <span class="number">1</span>] = <span class="number">0</span>; <span class="comment">// Ensure null termination</span></span><br><span class="line">    g_ExtControl-&gt;Execute(DEBUG_OUTCTL_ALL_CLIENTS |</span><br><span class="line">                          DEBUG_OUTCTL_OVERRIDE_MASK |</span><br><span class="line">                          DEBUG_OUTCTL_NOT_LOGGED,</span><br><span class="line">                          Input, <span class="comment">// Command to be executed</span></span><br><span class="line">                          DEBUG_EXECUTE_DEFAULT );</span><br><span class="line"></span><br><span class="line">    EXIT_API();</span><br><span class="line">    <span class="keyword">return</span> S_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该例向我们展示了如何获取从命令行进行的输入</p>
+<p>从这个函数中我们可以学到，<code>OutputStackTrace</code>函数可以打印出类似<code>kb</code>这种命令的效果</p>
+<p><code>Output</code>函数可以打印输出</p>
+<p><code>Execute</code>函数可以执行指令</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">HRESULT CALLBACK</span><br><span class="line">structsample(PDEBUG_CLIENT4 Client, PCSTR args)</span><br><span class="line">&#123;</span><br><span class="line">    ULONG64 Address;</span><br><span class="line">    INIT_API();</span><br><span class="line"></span><br><span class="line">    Address = GetExpression(args);</span><br><span class="line"></span><br><span class="line">    DWORD Buffer[<span class="number">4</span>], cb;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read and display first 4 dwords at Address</span></span><br><span class="line">    <span class="keyword">if</span> (ReadMemory(Address, &amp;Buffer, <span class="keyword">sizeof</span>(Buffer), &amp;cb) &amp;&amp; cb == <span class="keyword">sizeof</span>(Buffer)) &#123;</span><br><span class="line">        dprintf(<span class="string">"%p: %08lx %08lx %08lx %08lx\n\n"</span>, Address,</span><br><span class="line">                Buffer[<span class="number">0</span>], Buffer[<span class="number">1</span>], Buffer[<span class="number">2</span>], Buffer[<span class="number">3</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Method 1 to dump a struct</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    dprintf(<span class="string">"Method 1:\n"</span>);</span><br><span class="line">    <span class="comment">// Inititalze type read from the Address</span></span><br><span class="line">    <span class="keyword">if</span> (InitTypeRead(Address, _EXCEPTION_RECORD) != <span class="number">0</span>) &#123;</span><br><span class="line">        dprintf(<span class="string">"Error in reading _EXCEPTION_RECORD at %p"</span>, <span class="comment">// Use %p to print pointer values</span></span><br><span class="line">                Address);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// read and dump the fields</span></span><br><span class="line">        dprintf(<span class="string">"_EXCEPTION_RECORD @ %p\n"</span>, Address);</span><br><span class="line">        dprintf(<span class="string">"\tExceptionCode           : %lx\n"</span>, (ULONG) ReadField(ExceptionCode));</span><br><span class="line">        dprintf(<span class="string">"\tExceptionAddress        : %p\n"</span>, ReadField(ExceptionAddress));</span><br><span class="line">        dprintf(<span class="string">"\tExceptionInformation[1] : %I64lx\n"</span>, ReadField(ExceptionInformation[<span class="number">1</span>]));</span><br><span class="line">        <span class="comment">// And so on...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Method 2 to read a struct</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    ULONG64 ExceptionInformation_1, ExceptionAddress, ExceptionCode;</span><br><span class="line">    dprintf(<span class="string">"\n\nMethod 2:\n"</span>);</span><br><span class="line">    <span class="comment">// Read and dump the fields by specifying type and address individually</span></span><br><span class="line">    <span class="keyword">if</span> (GetFieldValue(Address, <span class="string">"_EXCEPTION_RECORD"</span>, <span class="string">"ExceptionCode"</span>, ExceptionCode)) &#123;</span><br><span class="line">        dprintf(<span class="string">"Error in reading _EXCEPTION_RECORD at %p\n"</span>,</span><br><span class="line">                Address);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Pointers are read as ULONG64 values</span></span><br><span class="line">        GetFieldValue(Address, <span class="string">"_EXCEPTION_RECORD"</span>, <span class="string">"ExceptionAddress"</span>, ExceptionAddress);</span><br><span class="line">        GetFieldValue(Address, <span class="string">"_EXCEPTION_RECORD"</span>, <span class="string">"ExceptionInformation[1]"</span>, ExceptionInformation_1);</span><br><span class="line">        <span class="comment">// And so on..</span></span><br><span class="line"></span><br><span class="line">        dprintf(<span class="string">"_EXCEPTION_RECORD @ %p\n"</span>, Address);</span><br><span class="line">        dprintf(<span class="string">"\tExceptionCode           : %lx\n"</span>, ExceptionCode);</span><br><span class="line">        dprintf(<span class="string">"\tExceptionAddress        : %p\n"</span>, ExceptionAddress);</span><br><span class="line">        dprintf(<span class="string">"\tExceptionInformation[1] : %I64lx\n"</span>, ExceptionInformation_1);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ULONG64 Module;</span><br><span class="line">    ULONG   i, TypeId;</span><br><span class="line">    CHAR Name[MAX_PATH];</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// To get/list field names</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    g_ExtSymbols-&gt;GetSymbolTypeId(<span class="string">"_EXCEPTION_RECORD"</span>, &amp;TypeId, &amp;Module);</span><br><span class="line">    dprintf(<span class="string">"Fields of _EXCEPTION_RECORD\n"</span>);</span><br><span class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; ;i++) &#123;</span><br><span class="line">        HRESULT Hr;</span><br><span class="line">        ULONG Offset=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        Hr = g_ExtSymbols-&gt;GetFieldName(Module, TypeId, i, Name, MAX_PATH, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="keyword">if</span> (Hr == S_OK) &#123;</span><br><span class="line">            g_ExtSymbols-&gt;GetFieldOffset(Module, TypeId, Name, &amp;Offset);</span><br><span class="line">            dprintf(<span class="string">"%lx (+%03lx) %s\n"</span>, i, Offset, Name);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Hr == E_INVALIDARG) &#123;</span><br><span class="line">            <span class="comment">// All Fields done</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            dprintf(<span class="string">"GetFieldName Failed %lx\n"</span>, Hr);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Get name for an enumerate</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">//     typedef enum &#123;</span></span><br><span class="line">    <span class="comment">//        Enum1,</span></span><br><span class="line">    <span class="comment">//        Enum2,</span></span><br><span class="line">    <span class="comment">//        Enum3,</span></span><br><span class="line">    <span class="comment">//     &#125; TEST_ENUM;</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    ULONG   ValueOfEnum = <span class="number">0</span>;</span><br><span class="line">    g_ExtSymbols-&gt;GetSymbolTypeId(<span class="string">"TEST_ENUM"</span>, &amp;TypeId, &amp;Module);</span><br><span class="line">    g_ExtSymbols-&gt;GetConstantName(Module, TypeId, ValueOfEnum, Name, MAX_PATH, <span class="literal">NULL</span>);</span><br><span class="line">    dprintf(<span class="string">"Testenum %I64lx == %s\n"</span>, ExceptionCode, Name);</span><br><span class="line">    <span class="comment">// This prints out, Testenum 0 == Enum1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Read an array</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">//    typedef struct FOO_TYPE &#123;</span></span><br><span class="line">    <span class="comment">//      ULONG Bar;</span></span><br><span class="line">    <span class="comment">//      ULONG Bar2;</span></span><br><span class="line">    <span class="comment">//    &#125; FOO_TYPE;</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">//    FOO_TYPE sampleArray[20];</span></span><br><span class="line">    ULONG Bar, Bar2;</span><br><span class="line">    CHAR TypeName[<span class="number">100</span>];</span><br><span class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;<span class="number">20</span>; i++) &#123;</span><br><span class="line">        sprintf_s(TypeName, <span class="keyword">sizeof</span>(TypeName), <span class="string">"sampleArray[%lx]"</span>, i);</span><br><span class="line">        <span class="keyword">if</span> (GetFieldValue(<span class="number">0</span>, TypeName, <span class="string">"Bar"</span>, Bar))</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        GetFieldValue(<span class="number">0</span>, TypeName, <span class="string">"Bar2"</span>, Bar2);</span><br><span class="line">        dprintf(<span class="string">"%16s -  Bar %2ld  Bar2 %ld\n"</span>, TypeName, Bar, Bar2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    EXIT_API();</span><br><span class="line">    <span class="keyword">return</span> S_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>GetExpression</code>函数可以返回表达式的值，因为该函数的目的是从指定地址读取数据然后将其按照结构体的格式输出，所以地址可能是一个表达式，因此这里使用了<code>GetExpression</code>函数来获取参数</p>
+<p><code>ReadMemory</code>函数可以获取指定地址的数据</p>
+<p><code>InitTypeRead</code>宏就文档所说，是可以将第一个参数即地址挂载为结构体类型即第二个参数，该函数执行完毕之后就可以使用<code>ReadField</code>宏来使用字段名来获取其对应的数据，这也是该示例函数所介绍的第一种打印结构体的方法</p>
+<p>第二种方法是使用<code>GetFieldValue</code>函数来获取字段数据，挺直白的</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   Extension to look at locals through IDebugSymbolGroup interface</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">        Usage: !symgrptest [args]</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">        To demontrate local/args lookup, this will go through the stack</span></span><br><span class="line"><span class="comment">        and set scope with the instruction of the stack frame and</span></span><br><span class="line"><span class="comment">        enumerate all the locals/arguments for the frame function</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">HRESULT CALLBACK</span><br><span class="line">symgrptest(PDEBUG_CLIENT4 Client, PCSTR args)</span><br><span class="line">&#123;</span><br><span class="line">    HRESULT hRes;</span><br><span class="line">    IDebugSymbolGroup *pDbgSymGroup;</span><br><span class="line">    ULONG ulCount, nFrames;</span><br><span class="line">    DEBUG_STACK_FRAME Stack[<span class="number">50</span>];</span><br><span class="line">    ULONG SymGroupType;</span><br><span class="line"></span><br><span class="line">    INIT_API();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!_stricmp(args, <span class="string">"args"</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Disply only the arguments</span></span><br><span class="line">        SymGroupType = DEBUG_SCOPE_GROUP_ARGUMENTS;</span><br><span class="line">    &#125; <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Display all the locals</span></span><br><span class="line">        SymGroupType = DEBUG_SCOPE_GROUP_LOCALS;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Get the current stack</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="keyword">if</span> ((hRes = g_ExtControl-&gt;GetStackTrace(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, &amp;Stack[<span class="number">0</span>], <span class="number">50</span>, &amp;nFrames)) != S_OK) &#123;</span><br><span class="line">        dprintf(<span class="string">"Stacktrace failed - %lx\n"</span>, hRes);</span><br><span class="line">        nFrames = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a local symbol group client</span></span><br><span class="line">    <span class="keyword">if</span> ((hRes = g_ExtSymbols-&gt;</span><br><span class="line">         GetScopeSymbolGroup(SymGroupType,</span><br><span class="line">                             <span class="literal">NULL</span>, &amp;pDbgSymGroup)) == E_NOTIMPL)</span><br><span class="line">    &#123;</span><br><span class="line">        EXIT_API();</span><br><span class="line">        <span class="keyword">return</span> S_OK;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (nFrames) &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Enumerate locals for this frame</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        --nFrames;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Set scope at this frame</span></span><br><span class="line">        g_ExtSymbols-&gt;SetScope(<span class="number">0</span>, &amp;Stack[nFrames], <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// refresh the symbol group with current scope</span></span><br><span class="line">        <span class="keyword">if</span> ((hRes = g_ExtSymbols-&gt;</span><br><span class="line">             GetScopeSymbolGroup(DEBUG_SCOPE_GROUP_LOCALS,</span><br><span class="line">                                 pDbgSymGroup, &amp;pDbgSymGroup)) == E_NOTIMPL)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        hRes =</span><br><span class="line">            pDbgSymGroup-&gt;GetNumberSymbols ( &amp;ulCount);</span><br><span class="line"></span><br><span class="line">        dprintf(<span class="string">"\n\n&gt;Scope Frame %lx: %lx Symbols\n"</span>,nFrames,ulCount);</span><br><span class="line"></span><br><span class="line">        PDEBUG_SYMBOL_PARAMETERS pSymParams = <span class="keyword">new</span> DEBUG_SYMBOL_PARAMETERS[ ulCount ] ;</span><br><span class="line">        <span class="keyword">if</span> (ulCount)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Get all symbols for the frame</span></span><br><span class="line">            hRes =</span><br><span class="line">                pDbgSymGroup-&gt;GetSymbolParameters (<span class="number">0</span>,</span><br><span class="line">                                               ulCount    ,</span><br><span class="line">                                               pSymParams);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( S_OK == hRes )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> ( ULONG i = <span class="number">0</span> ; i &lt; ulCount ; i++ )</span><br><span class="line">            &#123;</span><br><span class="line">                TCHAR szName[ MAX_PATH ], *pName;</span><br><span class="line">                ULONG ulSize;</span><br><span class="line">                DEBUG_VALUE Value;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Lookup symbol name and print</span></span><br><span class="line">                pName = &amp;szName[<span class="number">1</span>];</span><br><span class="line">                hRes = pDbgSymGroup-&gt;GetSymbolName ( i,</span><br><span class="line">                                                     pName,</span><br><span class="line">                                                     MAX_PATH - <span class="number">1</span>,</span><br><span class="line">                                                     &amp;ulSize ) ;</span><br><span class="line">                <span class="keyword">if</span> (SUCCEEDED(hRes))</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// Prefix ! so this is evaluated as symbol</span></span><br><span class="line">                    szName[<span class="number">0</span>] = <span class="string">'!'</span>;</span><br><span class="line">                    hRes = g_ExtControl-&gt;Evaluate(szName,</span><br><span class="line">                                                  DEBUG_VALUE_INVALID,</span><br><span class="line">                                                  &amp;Value, <span class="literal">NULL</span>);</span><br><span class="line">                    <span class="keyword">if</span> (SUCCEEDED(hRes))</span><br><span class="line">                    &#123;</span><br><span class="line">                        dprintf(<span class="string">"%lx: %32s = 0x%p\n"</span>, i, pName, Value.I64);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">delete</span> []pSymParams;</span><br><span class="line">    &#125;</span><br><span class="line">    pDbgSymGroup-&gt;Release();</span><br><span class="line">    EXIT_API();</span><br><span class="line">    <span class="keyword">return</span> S_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释说，该函数的作用是通过<code>IDebugSymbolGroup</code>接口查找函数的参数</p>
+<p>它首先通过<code>GetStackTrace</code>函数得到了栈帧，然后又通过<code>GetScopeSymbolGroup</code>函数得到了<code>IDebugSymbolGroup</code>接口</p>
+<p>通过<code>SetScope</code>来设置当前栈帧的范围，我不懂的是为什么要设置为0？</p>
+<p>通过<code>GetScopeSymbolGroup</code>来重新刷新接口，然后就可以通过<code>GetNumberSymbols</code>来得到当前参数个数，当然这些必须是在有符号的前提下</p>
+<p>最后就可以通过<code>GetSymbolParameters</code>函数来获取参数的符号了，对应的，在参数名前加!并用<code>Evalute</code>函数，可以得到其值</p>
+
+        </div>
+        
+<blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2020-07-19T03:39:26.397Z" itemprop="dateUpdated">2020-07-19 11:39:26</time>
+</span><br>
+
+
+        
+        转载注明出处，原文地址：<a href="/2020/07/17/windbg插件编写摸索/" target="_blank" rel="external">http://dayjun.top/2020/07/17/windbg插件编写摸索/</a>
+        
+    </div>
+    <footer>
+        <a href="http://dayjun.top">
+            <img src="/img/girl.jpg" alt="DaJun">
+            DaJun
+        </a>
+    </footer>
+</blockquote>
+
+        
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/windbg/">windbg</a></li></ul>
+
+            <div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/07/17/windbg插件编写摸索/&title=《windbg插件编写摸索》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/07/17/windbg插件编写摸索/&title=《windbg插件编写摸索》 — DaJun的Blog&source=感觉有必要学习一下写一个windbg插件" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+        </div>
+        
+            
+    <div id="comment"></div>
+
+
+
+        
+    </div>
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="next">
+      <a href="/2020/07/10/漏洞分析要点记录/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">漏洞分析要点记录</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+    
+    
+</article>
+
+
+</div>
+
+    </main>
+    <footer class="footer ">
+    
+    <div class="top">
+        
+            <p>
+    <span>Links：</span>
+    
+    <span class="blogroll-item">
+        <a href="https://3nd.xyz/" target="_blank">3ND</a>
+    </span>
+    
+    <span class="blogroll-item">
+        <a href="http://blog.douluodalu.wang/" target="_blank">PwmHt</a>
+    </span>
+    
+</p>
+
+        
+    </div>
+    
+    <div class="bottom">
+        <p>
+            <span>
+                DaJun &copy; 2019 - 2020
+            </span>
+        		
+           	
+           	<span>
+           		<a href="http://www.beian.miit.gov.cn" target="_blank">苏ICP备19059861号</a>
+           	</span>
+           	
+            
+            
+            <span>
+	            Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/codefine/hexo-theme-mellow" target="_blank">mellow</a>
+            </span>
+            
+            
+            
+
+            
+                
+<span class="site-uv" title="总访客量">
+    <i class="icon icon-user"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>
+
+
+<span class="site-pv" title="总访问量">
+    <i class="icon icon-eye"></i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+            
+        </p>
+    </div>
+</footer>
+
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://dayjun.top/2020/07/17/windbg插件编写摸索/&title=《windbg插件编写摸索》 — DaJun的Blog&pic=http://dayjun.top/img/girl.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://dayjun.top/2020/07/17/windbg插件编写摸索/&title=《windbg插件编写摸索》 — DaJun的Blog&source=感觉有必要学习一下写一个windbg插件" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACJElEQVR42u3aQXLjMAwEwPz/096qPeWwkmcIJbUmWyeV7FBsHxCAwNdXfL3+Xt/vvz9pv391f/XksQsDA+NjGa/b637pq29ePUkA9397+SNiYGAcwMiD5tVCa5u4D7jJ3jAwMDDyl00CNAYGBsazATcvTecwDAwMjDaBSz5N1mzxD9fiGBgYH8hYawz8zv2P9zcwMDD+e8arvNZWWwvBxa4wMDC2ZrTjDmsJ39qabTGMgYGxK6NtTCbFZxKmJ6Mb/1gBAwPjGMb9ppPR1d+ps98EXAwMjO0YSUhtU7eE3T6JfhQMDIxNGflrWnA7BJYf7WFgYJzJSIrSp5BrQRYDAwMjLyxzUh4u521ODAyMvRmTaask1WsL3clbMDAwdmU81XRMUsBJuvnmIA8DA+MYRr6tSWPyR5JRDAyMAxiTA692FKNtHiQJIgYGxgmMBNMG37XG5GKzEwMD40jGs8XqWlgvUkYMDIytGW3obEvZPFnEwMDASAJumyDmxWfy+02KZwwMjBMYi4dc4wO1JMVc/C+BgYGxEaMNcKMps3ET9A0PAwNjU8arvNqIl6eDbcIaTbdhYGBswZgEx6SgXRuNTcbUMDAwTmO0R2l5uMxbnnkxXLQHMDAwtmO0AxZtU7Ntjrb7wcDAwGiHwNZSxnaFujGAgYFxDCMpUNsAnQ+QvSliMTAwtmY8dXw2Su8GExQYGBh7M9rXzxuWbeE6aaxiYGB8OOMPM3iyUIzEebYAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+    
+    <!-- main-js -->
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="/js/plugins/fastclick.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/plugins/ios-orientationchange-fix.js?v=1.4.4"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.2/dist/jquery.fancybox.min.js"></script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+
+<script type="text/javascript" src="/js/method.js?v=1.4.4"></script>
+<script type="text/javascript" src="/js/blog.js?v=1.4.4"></script>
+
+<!-- third-party -->
+
+
+
+
+
+
+<script type="text/javascript" src="/js/plugins/local_search.js?v=1.4.4"></script>
+<script type="text/javascript">
+	var search_path = "search.xml";
+	if (search_path.length === 0) {
+		search_path = "search.xml";
+	}
+	var path = "/" + search_path;
+	searchFunc(path, "local-search-input", "local-search-result");
+</script>
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+    
+        <script type="text/javascript" src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script type="text/javascript" src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script type="text/javascript" src="/js/plugins/valine.js?v=1.4.4"></script>
+    
+    
+
+
+
+<script type="text/javascript" src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+<script type="text/javascript" src="/js/plugins/leancloud_visitors.js?v=1.4.4"></script>
+
+
+
+    <!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+            processEscapes: true,
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+    <script>
+    (function() {
+        var OriginTitile = document.title, titleTime;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                document.title = '(～﹃～)~zZ';
+                clearTimeout(titleTime);
+            } else {
+                document.title = '(￣▽￣)';
+                titleTime = setTimeout(function() {
+                    document.title = OriginTitile;
+                },2000);
+            }
+        });
+    })();
+</script>
+
+
+
+
+
+    
+</body>
+</html>
