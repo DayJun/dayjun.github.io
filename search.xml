@@ -2668,8 +2668,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -2763,8 +2763,8 @@
         <category>browser</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
         <tag>chrome</tag>
         <tag>v8</tag>
       </tags>
@@ -2827,8 +2827,8 @@
       </categories>
       <tags>
         <tag>malloc</tag>
-        <tag>pwn</tag>
         <tag>free</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
   <entry>
@@ -2912,8 +2912,8 @@
         <category>writeup</category>
       </categories>
       <tags>
-        <tag>CTF</tag>
         <tag>pwn</tag>
+        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
