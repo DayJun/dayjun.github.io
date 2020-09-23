@@ -104,7 +104,7 @@
 <p>同<code>NMAbortConnect</code>非常相似，而且，在这里<code>a1+0x1c</code>依旧是7，即这一个字节的最后一位依旧是1</p>
 <p>从调用栈中我们可以看到，<code>NMAbortConnect</code>的第一个参数是<code>83247ae0</code>，同样也是它里面的<code>NMDetachUserReq</code>的参数，而<code>NM_Disconnect</code>的第一个参数也是<code>83247ae0</code>，其同样也是它里面的<code>NMDetachUserReq</code>的参数</p>
 <p>这里其实就可以发现问题了：在<code>MCSAttachUserRequest</code>分配出来的堆，在<code>DetachUser</code>被释放了之后，又在<code>NM_Disconnect</code>被使用了！典型的UAF</p>
-<p>再继续运行下去的话，便会崩溃：</p>
+<p>再继续运行下去的话，便会崩溃(这里是另一次调试的结果，call stack中参数与上不符)：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">Access violation - code c0000005 (!!! second chance !!!)</span><br><span class="line">RDPWD!MCSDetachUserRequest+0x14:</span><br><span class="line">8cbd570c 8b11            mov     edx,dword ptr [ecx]</span><br><span class="line">0: kd&gt; kb</span><br><span class="line"> # ChildEBP RetAddr      Args to Child              </span><br><span class="line">00 8bff78e0 8cbc1a68     a2095f50 00000010 8326c624 RDPWD!MCSDetachUserRequest+0x14</span><br><span class="line">01 8bff78f4 8cbbc431     8326c910 8bff790c 8cbbb99e RDPWD!NMDetachUserReq+0x14</span><br><span class="line">02 8bff7900 8cbbb99e     8326c910 8bff791c 8cbc1b67 RDPWD!NM_Disconnect+0x16</span><br><span class="line">03 8bff790c 8cbc1b67     8326c624 8326c910 8bff793c RDPWD!SM_Disconnect+0x27</span><br><span class="line">04 8bff791c 8cbc1aa8     8326c624 00000000 00000001 RDPWD!SM_OnConnected+0x70</span><br><span class="line">05 8bff793c 8cbbc805     8326c910 00000002 8326c624 RDPWD!NMAbortConnect+0x23</span><br><span class="line">06 8bff797c 8cbbc26e     0026c910 00000002 8326c3fe RDPWD!NM_Connect+0x68</span><br><span class="line">07 8bff799c 8cbba296     8326c624 864b1128 864b1134 RDPWD!SM_Connect+0x11d</span><br><span class="line">08 8bff79d8 8cbbaa96     8326c008 864b1044 864b1128 RDPWD!WDWConnect+0x557</span><br><span class="line">09 8bff7a14 8cbb5af2     8326c008 00000000 86967674 RDPWD!WDLIB_TShareConfConnect+0xa0</span><br><span class="line">0a 8bff7a30 906686f5     8326c008 8bff7a8c 86967670 RDPWD!WDSYS_Ioctl+0x79c</span><br><span class="line">0b 8bff7a4c 90668bad     86b67f58 00000005 8bff7a8c termdd!_IcaCallSd+0x37</span><br><span class="line">0c 8bff7a6c 90669109     86967668 00000005 8bff7a8c termdd!_IcaCallStack+0x57</span><br><span class="line">0d 8bff7ab4 90666f9f     86967668 87b9f088 87b9f0f8 termdd!IcaDeviceControlStack+0x503</span><br><span class="line">0e 8bff7ae4 90667173     87b9f088 87b9f0f8 87bc8a00 termdd!IcaDeviceControl+0x59</span><br><span class="line">0f 8bff7afc 83c48593     86a356a8 87b9f088 87b9f088 termdd!IcaDispatch+0x13f</span><br><span class="line">10 8bff7b14 83e3c99f     87bc8a00 87b9f088 87b9f0f8 nt!IofCallDriver+0x63</span><br><span class="line">11 8bff7b34 83e3fb71     86a356a8 87bc8a00 00000000 nt!IopSynchronousServiceTail+0x1f8</span><br><span class="line">12 8bff7bd0 83e863f4     86a356a8 87b9f088 00000000 nt!IopXxxControlFile+0x6aa</span><br><span class="line">13 8bff7c04 83c4f1ea     000003e0 00000000 00000000 nt!NtDeviceIoControlFile+0x2a</span><br><span class="line">14 8bff7c04 779070b4 (T) 000003e0 00000000 00000000 nt!KiFastCallEntry+0x12a</span><br><span class="line">15 0193ea08 77905864 (T) 6edc1948 000003e0 00000000 ntdll!KiFastSystemCallRet</span><br><span class="line">16 0193ea0c 6edc1948     000003e0 00000000 00000000 ntdll!ZwDeviceIoControlFile+0xc</span><br><span class="line">17 0193ea48 6edc1bc6     000003e0 00382403 03591bb8 ICAAPI!IcaIoControl+0x29</span><br><span class="line">18 0193ea74 6edc1b76     001910b0 00382403 03591bb8 ICAAPI!_IcaStackIoControlWorker+0x64</span><br><span class="line">19 0193ea9c 6e9d50fe     001910b0 00382403 03591bb8 ICAAPI!IcaStackIoControl+0x29</span><br><span class="line">1a 0193ead4 6e9d532c     001910b0 00000000 0193eb24 rdpwsx!TSrvInitWDConnectInfo+0x6a</span><br><span class="line">1b 0193eafc 6e9d53c1     03591a88 0193eb24 00000000 rdpwsx!TSrvInitWD+0x23</span><br><span class="line">1c 0193eb1c 6e9d54b1     00000000 00000000 03591a88 rdpwsx!TSrvConfCreateResp+0x26</span><br><span class="line">1d 0193eb30 6e9d559d     03591a88 0193eb90 00000000 rdpwsx!TSrvDoConnectResponse+0x10</span><br><span class="line">1e 0193eb5c 6e9d55fe     03591a88 00000544 01f50e60 rdpwsx!TSrvDoConnect+0xb6</span><br><span class="line">1f 0193eb70 6e9d44da     00000544 001910b0 0193eb90 rdpwsx!TSrvStackConnect+0x33</span><br><span class="line">20 0193eb94 6e9ffaf7     01f50e60 00000544 001910b0 rdpwsx!WsxIcaStackIoControl+0x19b</span><br><span class="line">21 0193ebc0 6e9fac07     00000544 001910b0 0038004b rdpcorekmts!CWsx::StackIoControl+0x2f</span><br><span class="line">22 0193ebe8 6edc1f28     011bedf0 001910b0 0038004b rdpcorekmts!CStack::staticExtensionIoControl+0x32</span><br><span class="line">23 0193ec18 6edc28f5     001910b0 0038004b 00000000 ICAAPI!_IcaStackIoControl+0x33</span><br><span class="line">24 0193f200 6edc3264     001910b0 011b56c0 0193f247 ICAAPI!_IcaStackWaitForIca+0x40</span><br><span class="line">25 0193f808 6e9fe28e     00000544 001910b0 011b567c ICAAPI!IcaStackConnectionAccept+0x19d</span><br><span class="line">26 0193fadc 6e9ff482     011b567c 011b56c0 011b9824 rdpcorekmts!CStack::Accept+0x69</span><br><span class="line">27 0193fb10 6ee30997     011b5640 011afdb0 6ee31af0 rdpcorekmts!CKMRDPConnection::AcceptConnection+0xbf</span><br><span class="line">28 0193fc80 6ee31ab7     0119ed94 0119ed88 0119ed98 termsrv!CConnectionEx::Accept+0x20e</span><br><span class="line">29 0193fc94 6ee31def     011afdb0 00000000 00000000 termsrv!CListenerEx::TransferWorkItem+0x21</span><br><span class="line">2a 0193fcb0 77a63c45     0119ed88 0193fcfc 779237f5 termsrv!CListenerEx::staticTransferWorkItem+0x1c</span><br><span class="line">2b 0193fcbc 779237f5     0119ed88 760aa416 00000000 kernel32!BaseThreadInitThunk+0xe</span><br><span class="line">2c 0193fcfc 779237c8     6ee31dd3 0119ed88 00000000 ntdll!__RtlUserThreadStart+0x70</span><br><span class="line">2d 0193fd14 00000000     6ee31dd3 0119ed88 00000000 ntdll!_RtlUserThreadStart+0x1b</span><br></pre></td></tr></table></figure>
 
 <p>崩溃的原因是，在<code>MCSDetachUserRequest</code>函数中，由于其第一个参数是已经被释放过的块，此时可能已经被其他地方分配出去了，结果就被填充了其他数据，这些数据并不符合原本该结构体的结构</p>
@@ -113,7 +113,6 @@
 <h2 id="c-verify"><a href="#c-verify" class="headerlink" title="c. verify"></a>c. verify</h2><p>写如下windbg脚本：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bp rdpwd!GetNewDynamicChannel+5 &quot;.printf \&quot;GetNewDynamicChannel(%x) \&quot;, poi(ebp+8);gc;&quot;</span><br><span class="line">bp rdpwd!GetNewDynamicChannel+21 &quot;.printf \&quot;index=%x maxChannelIds=%x ret_ID=%x\\n\&quot;, poi(poi(ebp+8)+34), poi(poi(ebp+8)+a8), eax;kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!MCSAttachUserRequest+50 &quot;.printf \&quot;vul heap allocated: %x\\n\&quot;, eax;kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!MCSDetachUserRequest+5 &quot;.printf \&quot;MCSDetachUserRequest(%x)\\n\&quot;, poi(ebp+8);kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!NMAbortConnect+9 &quot;.printf \&quot;offset 0x1c is %x\\n\&quot;, by(esi+1c);kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!DetachUser+10e &quot;.printf \&quot;heap %x freed!\\n\&quot;, eax;kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!NM_Disconnect++b &quot;.printf \&quot;offset 0x1c is %x\\n\&quot;, by(ecx+1c);kb;.echo;gc;&quot;</span><br><span class="line">bp rdpwd!NM_Connect+63 &quot;.echo goto NMAbortConnect!;.echo;gc;&quot;</span><br></pre></td></tr></table></figure>
 
-<p>输出示例可见 windbg_log.txt，与分析的流程是一致的</p>
 <h1 id="3-microsoft-official-patch"><a href="#3-microsoft-official-patch" class="headerlink" title="3. microsoft official patch"></a>3. microsoft official patch</h1><p>根据漏洞发生的原因，可以确定两个必须patch的位置：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">stdcall <span class="title">NMAbortConnect</span><span class="params">(struct tagNM_HANDLE_DATA *a1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> ( *((_BYTE *)a1 + <span class="number">0x1C</span>) &amp; <span class="number">1</span> )</span><br><span class="line">    NMDetachUserReq(a1);</span><br><span class="line">  SM_OnConnected(*(_DWORD *)a1, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> __<span class="function">stdcall <span class="title">NM_Disconnect</span><span class="params">(struct tagNM_HANDLE_DATA *a1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  result = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( *((_BYTE *)a1 + <span class="number">0x1C</span>) &amp; <span class="number">1</span> )</span><br><span class="line">    result = NMDetachUserReq(a1);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -2562,9 +2561,9 @@
         
         <tags>
             
-            <tag> chrome </tag>
-            
             <tag> v8 </tag>
+            
+            <tag> chrome </tag>
             
             <tag> 漏洞复现 </tag>
             
@@ -2790,9 +2789,9 @@
         
         <tags>
             
-            <tag> chrome </tag>
-            
             <tag> v8 </tag>
+            
+            <tag> chrome </tag>
             
             <tag> 漏洞复现 </tag>
             
@@ -2845,9 +2844,9 @@
         
         <tags>
             
-            <tag> chrome </tag>
-            
             <tag> v8 </tag>
+            
+            <tag> chrome </tag>
             
         </tags>
         
@@ -2907,9 +2906,9 @@
             
             <tag> CTF </tag>
             
-            <tag> chrome </tag>
-            
             <tag> v8 </tag>
+            
+            <tag> chrome </tag>
             
         </tags>
         
@@ -3354,9 +3353,9 @@
             
             <tag> pwn </tag>
             
-            <tag> chrome </tag>
-            
             <tag> v8 </tag>
+            
+            <tag> chrome </tag>
             
         </tags>
         
@@ -3427,9 +3426,9 @@
             
             <tag> pwn </tag>
             
-            <tag> free </tag>
-            
             <tag> malloc </tag>
+            
+            <tag> free </tag>
             
         </tags>
         
